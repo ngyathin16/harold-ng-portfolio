@@ -2,6 +2,10 @@
 
 ## 16 November 2026
 
+- Launched [haroldng.dev](https://haroldng.dev) on Cloudflare Workers Free with HTTPS, permanent HTTP/`www` redirects, custom 404 responses, production metadata, and automatic GitHub deployments behind required checks.
+- Confirmed the US$8.20 domain purchase, US$12.20 renewal quote, and auto-renew. Rehearsed version rollback in an isolated Worker and proved a failed build leaves production unchanged. See [deployment evidence](DEPLOYMENT-VERIFICATION.md) for release identifiers, hosted checks, and DNSSEC propagation status.
+- Published the footer copyright through the normal release workflow and corrected hosted verification for Cloudflare's native 307 trailing-slash response while retaining permanent host/protocol redirects.
+
 - Prepared Workers Static Assets with locked Wrangler, Node 24, isolated noindex previews, custom-origin checks, a required browser/build workflow, and production deployment restricted to verified merged commits.
 - Added hosted route, redirect, metadata, caching, download checks and three-run mobile Lighthouse reporting. Updated the launch and recovery runbook; domain purchase and Cloudflare activation remain pending.
 
@@ -19,7 +23,7 @@
 - Kept private planning documents and local development history outside the publication export.
 - Verified a clean standalone export with `npm ci` and `npm run build`: zero errors, warnings, or hints. Browser checks passed 12 page/viewport combinations, 29 local links, keyboard navigation, and downloads at `http://127.0.0.1:4322` on Windows.
 
-The portfolio’s public web deployment and custom domain remain separate work. The original browser, accessibility, and performance evidence is dated 11 November in [verification](VERIFICATION.md); a GitHub push does not establish a deployed website.
+The original local browser, accessibility, and performance evidence is dated 11 November in [verification](VERIFICATION.md). The public launch has its own [deployment evidence](DEPLOYMENT-VERIFICATION.md); a GitHub push alone does not establish a deployed website.
 
 ## 11 November 2026
 

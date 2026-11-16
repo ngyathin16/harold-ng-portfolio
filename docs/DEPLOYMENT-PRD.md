@@ -1,7 +1,7 @@
 # PRD: Public portfolio deployment and custom domain
 
 - Date: 16 November 2026 (Asia/Hong_Kong).
-- Status: Implementation requirements; no hosting project, domain purchase, or production deployment completed by this task.
+- Status: Implementation requirements; implemented at [haroldng.dev](https://haroldng.dev) on 16 November 2026. See the [deployment evidence](DEPLOYMENT-VERIFICATION.md) for measured results and remaining follow-ups. The preparation context below records the original planning state.
 - Owner: Harold Ng.
 - Source: [ngyathin16/harold-ng-portfolio](https://github.com/ngyathin16/harold-ng-portfolio).
 

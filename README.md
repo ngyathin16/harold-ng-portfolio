@@ -56,7 +56,7 @@ Images belong in `public/images`. Real product screenshots accompany each case s
 - Edit `content/resume.md`, then run `npm run resume`. This generates `public/resume.pdf` using Edge on Windows, or the Chromium-based browser in `BROWSER_EXECUTABLE`.
 - Run `node scripts/build-social.mjs` to regenerate the 1200 × 630 social image.
 - Run `python scripts/package-relay.py --source ../relay-desk` after updating a sibling Relay Desk checkout. It creates `public/downloads/relay-desk.zip` from an explicit allowlist, excluding credentials and local databases. The zip has its own startup instructions. Keep the archive and published application source in sync. A source archive already ships with this repository; cloning Relay is only needed to regenerate it.
-- Newsreader and DM Sans are self-hosted from their Fontsource packages; licenses ship in `public/fonts/`. The portfolio ships no browser JavaScript.
+- Newsreader and DM Sans are self-hosted from their Fontsource packages; licenses ship in `public/fonts/`. The built portfolio includes no application JavaScript. Cloudflare injects its analytics beacon into the hosted page; the hosted measurements include that script.
 
 ## Supporting project
 

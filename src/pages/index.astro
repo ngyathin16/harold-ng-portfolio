@@ -1,0 +1,85 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const projects = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+---
+<Layout>
+  <section class="hero shell" aria-labelledby="intro-title">
+    <div class="eyebrow hero-eyebrow"><span class="status-dot" aria-hidden="true"></span> AI, and the software around it.</div>
+    <h1 id="intro-title">Harold Ng<span class="name-period">.</span></h1>
+    <div class="hero-bottom">
+      <h2>AI engineer<br />based in <em>Hong Kong.</em></h2>
+      <div class="hero-intro">
+        <p>I work on AI tools and desktop software at Yau Lee. Before that, I studied data science at UC Irvine and worked in analytics at CooperVision.</p>
+        <div class="hero-actions">
+          <a class="button" href="mailto:haroldng2001@gmail.com">Email me <span aria-hidden="true">↗</span></a>
+          <a class="text-link" href="https://www.linkedin.com/in/harold-ng-986a5b252/">LinkedIn <span aria-hidden="true">↗</span></a>
+          <a class="text-link" href="https://github.com/ngyathin16">GitHub <span aria-hidden="true">↗</span></a>
+        </div>
+        <a class="resume-link" href="/resume.pdf" download>Download résumé <span class="file-label">PDF</span> <span aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+    <a href="#work" class="hero-scroll"><span aria-hidden="true">↓</span> A closer look at my work</a>
+  </section>
+
+  <section id="work" class="work-section shell" aria-labelledby="work-title">
+    <div class="section-heading">
+      <div><p class="eyebrow">01 / Selected work</p><h2 id="work-title">From idea to something useful.</h2></div>
+      <p class="section-note">Two personal projects.<br /> The decisions, the evidence, and the limits.</p>
+    </div>
+    <div class="project-grid">
+      {projects.map(({ data }, index) => (
+        <article class={`project-card project-${data.slug}`}>
+          <a class="project-image-link" href={`/work/${data.slug}/`} aria-label={`Read the ${data.title} case study`}>
+            <div class="project-image"><img src={data.cover} alt={data.coverAlt} width={data.coverWidth} height={data.coverHeight} loading="lazy" decoding="async" /></div>
+            <span class="image-arrow" aria-hidden="true">↗</span>
+          </a>
+          <div class="project-kicker"><span>{String(index + 1).padStart(2, '0')} / {data.workType}</span><span>{data.period}</span></div>
+          <h3><a href={`/work/${data.slug}/`}>{data.title}<span aria-hidden="true">↗</span></a></h3>
+          <p>{data.summary}</p>
+          <div class="project-status"><span class="status-dot" aria-hidden="true"></span>{data.status}</div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section id="about" class="about-section shell" aria-labelledby="about-title">
+    <div class="about-intro">
+      <p class="eyebrow">02 / A little context</p>
+      <h2 id="about-title">A path through<br />math, data,<br />and <em>building things.</em></h2>
+      <p>I studied applied mathematics at UCLA, then data science at UC Irvine. An analytics internship brought me to San Ramon. Today, I’m in Hong Kong, working on AI and software for the built environment.</p>
+      <p>I’m interested in the work between a model and the person using it: making its decisions visible, handling what goes wrong, and explaining what it can actually do.</p>
+      <a class="text-link" href="/resume.pdf" download>The full résumé <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="background">
+      <h3 class="eyebrow">Experience</h3>
+      <article class="timeline-entry">
+        <div class="timeline-meta"><span>Jan 2026 — present</span><span>Hong Kong</span></div>
+        <h4>A.I. Engineer</h4>
+        <p class="organization">Yau Lee Holdings Limited</p>
+        <p>AI tools for construction workflows, including speech recognition and a BIM-AI desktop editor. Co-developed a desktop BIM authoring platform, contributing to IFC rendering, authoring, undo/redo, and snapping.</p>
+      </article>
+      <article class="timeline-entry">
+        <div class="timeline-meta"><span>Jun — Nov 2024</span><span>San Ramon, CA</span></div>
+        <h4>Data Analytics Intern</h4>
+        <p class="organization">CooperVision</p>
+        <p>Python data pipelines for sales-trend analysis and sentiment analysis of customer feedback.</p>
+      </article>
+      <h3 class="eyebrow education-label">Education</h3>
+      <div class="education-entry"><div><h4>University of California, Irvine</h4><p>MS, Data Science</p></div><span>2024</span></div>
+      <div class="education-entry"><div><h4>University of California, Los Angeles</h4><p>BS, Applied Mathematics · Computing</p></div><span>2023</span></div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact-section" aria-labelledby="contact-title">
+    <div class="shell contact-inner">
+      <div><p class="eyebrow">03 / Get in touch</p><h2 id="contact-title">Let’s make<br /><em>something useful.</em></h2></div>
+      <div class="contact-details">
+        <p>Have an engineering role or a project in mind?<br />I’d be glad to hear about it.</p>
+        <a class="contact-email" href="mailto:haroldng2001@gmail.com">haroldng2001@gmail.com <span aria-hidden="true">↗</span></a>
+        <div class="contact-links"><a href="https://www.linkedin.com/in/harold-ng-986a5b252/">LinkedIn <span aria-hidden="true">↗</span></a><a href="https://github.com/ngyathin16">GitHub <span aria-hidden="true">↗</span></a><a href="/resume.pdf" download>Résumé <span aria-hidden="true">↓</span></a></div>
+      </div>
+    </div>
+  </section>
+</Layout>

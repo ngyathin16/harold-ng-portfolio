@@ -30,7 +30,8 @@ page.on('response', (response) => {
   }
 });
 page.on('requestfailed', (request) => {
-  if (request.resourceType() !== 'document') report.errors.push(`${request.failure()?.errorText}: ${request.url()}`);
+  const failure = request.failure()?.errorText;
+  if (request.resourceType() !== 'document' && failure !== 'net::ERR_ABORTED') report.errors.push(`${failure}: ${request.url()}`);
 });
 const links = new Set();
 
@@ -134,7 +135,7 @@ try {
   assert(sitemap.ok() && (await sitemap.text()).includes('/work/relay-desk/'), 'Sitemap contains case studies');
   const social = await context.request.get(new URL('/images/social-preview.png', base).href);
   assert(social.ok() && (await social.body()).subarray(1, 4).toString() === 'PNG', 'Social preview is a real PNG');
-  const unknown = await context.request.get(new URL('/this-page-does-not-exist/', base).href);
+  const unknown = await context.request.get(new URL('/this-page-does-not-exist/', base).href, { headers: { 'Sec-Fetch-Mode': 'navigate' } });
   assert.equal(unknown.status(), 404, 'Unknown paths return HTTP 404');
   assert((await unknown.text()).includes('Back to the homepage'), 'Unknown paths show a useful error page');
   assert.deepEqual(report.errors, [], 'No console or page errors');

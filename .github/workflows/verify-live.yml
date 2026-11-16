@@ -1,0 +1,91 @@
+name: Verify live deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_commit:
+        description: Full Git commit SHA deployed to production
+        required: true
+        type: string
+      deployment_version:
+        description: Cloudflare version ID serving production
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+      DEPLOYMENT_VERSION: ${{ inputs.deployment_version }}
+      BASE_URL: ${{ vars.APPROVED_SITE_URL }}
+      APPROVED_SITE_URL: ${{ vars.APPROVED_SITE_URL }}
+    steps:
+      - name: Require an explicit deployed commit
+        shell: bash
+        run: |
+          [[ "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ]] || { echo 'expected_commit must be a full lowercase Git SHA'; exit 1; }
+          [[ -n "$BASE_URL" ]] || { echo 'Repository variable APPROVED_SITE_URL is required'; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.expected_commit }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Record the runner network without retaining its IP
+        shell: bash
+        run: |
+          mkdir -p artifacts/live
+          node --input-type=module <<'NODE'
+          import { appendFile, writeFile } from 'node:fs/promises';
+          let country = null;
+          let edge = null;
+          try {
+            const response = await fetch('https://www.cloudflare.com/cdn-cgi/trace', { signal: AbortSignal.timeout(15000) });
+            if (response.ok) {
+              const trace = await response.text();
+              country = trace.match(/^loc=([A-Z]{2})$/m)?.[1] || null;
+              edge = trace.match(/^colo=([A-Z]{3})$/m)?.[1] || null;
+            }
+          } catch {}
+          const location = `GitHub-hosted runner; country=${country || 'unverified'}; Cloudflare edge=${edge || 'unverified'}`;
+          await appendFile(process.env.GITHUB_ENV, `TEST_LOCATION=${location}\n`);
+          await writeFile('artifacts/live/network.json', JSON.stringify({
+            measuredAt: new Date().toISOString(),
+            runner: 'GitHub-hosted',
+            country,
+            cloudflareEdge: edge,
+            source: 'https://www.cloudflare.com/cdn-cgi/trace',
+            note: 'Country and edge are reported by Cloudflare trace; missing values establish no geographic location. The IP address is not retained.',
+          }, null, 2));
+          console.log(location);
+          NODE
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify production HTTP responses and visitor journeys
+        shell: bash
+        run: |
+          [[ "$(git rev-parse HEAD)" == "$EXPECTED_COMMIT" ]] || { echo 'Checkout differs from the deployed commit'; exit 1; }
+          http_status=0
+          GITHUB_SHA="$EXPECTED_COMMIT" npm run verify:hosted -- --mode production 2>&1 | tee artifacts/live/http.log || http_status=$?
+          browser_status=0
+          GITHUB_SHA="$EXPECTED_COMMIT" npm test 2>&1 | tee artifacts/live/browser.log || browser_status=$?
+          if [[ "$http_status" -ne 0 || "$browser_status" -ne 0 ]]; then exit 1; fi
+      - name: Preserve live verification evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-verification-${{ github.run_id }}
+          path: |
+            artifacts/live/
+            artifacts/hosted/
+            artifacts/portfolio/
+          if-no-files-found: warn
+          retention-days: 14

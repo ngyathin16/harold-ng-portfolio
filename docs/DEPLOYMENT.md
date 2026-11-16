@@ -15,6 +15,8 @@ Wrangler is locked to `4.162.0`. The configuration uses compatibility date `2026
 
 ## Require verification before merging
 
+The `main` rule was activated and read back on 16 November 2026. It requires `release-checks`, an up-to-date branch, and a pull request, applies to administrators, and disables force pushes and deletion. See [the verification record](DEPLOYMENT-VERIFICATION.md) for the successful CI run and remaining launch evidence. The following steps document that setup for maintenance or recovery.
+
 1. Run the repository's GitHub Actions workflow on a branch or pull request so the `release-checks` status exists.
 2. Protect `main` with an active GitHub branch rule or ruleset. Require a pull request, the `release-checks` status, and an up-to-date branch before merging. A sole maintainer can require a pull request without requiring another person's approval.
 3. Apply the rule to administrators. Leave the bypass list empty. Disable force pushes and branch deletion. Confirm an unverified direct push cannot reach `main`.

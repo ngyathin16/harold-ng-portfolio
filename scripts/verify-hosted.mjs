@@ -1,9 +1,25 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { get as httpsGet } from 'node:https';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { validateOrigin, verifyPageMetadata } from './verify-release.mjs';
+
+function fetchNavigation(url, { signal }) {
+  // Node fetch overwrites Sec-Fetch-Mode; HTTPS preserves browser navigation semantics.
+  return new Promise((resolve, reject) => {
+    httpsGet(url, { signal, headers: { Accept: 'text/html', 'Sec-Fetch-Mode': 'navigate' } }, async (response) => {
+      try {
+        const chunks = [];
+        for await (const chunk of response) chunks.push(chunk);
+        resolve(new Response(Buffer.concat(chunks), { status: response.statusCode, headers: response.headers }));
+      } catch (error) {
+        reject(error);
+      }
+    }).on('error', reject);
+  });
+}
 
 export function verifyCache(headers, fingerprinted = false) {
   const policy = headers.get('cache-control') || '';
@@ -43,7 +59,7 @@ export async function verifyRedirect(start, expected, maxHops, fetchImpl = fetch
   }
 }
 
-export async function verifyHosted({ base, mode, approvedOrigin, fetchImpl = fetch, report = {} }) {
+export async function verifyHosted({ base, mode, approvedOrigin, fetchImpl = fetch, navigationFetch = fetchNavigation, report = {} }) {
   assert(['production', 'preview'].includes(mode), 'Mode must be production or preview');
   base = new URL(base);
   assert.equal(base.protocol, 'https:', 'Hosted checks require HTTPS');
@@ -52,8 +68,8 @@ export async function verifyHosted({ base, mode, approvedOrigin, fetchImpl = fet
   if (mode === 'production') assert.equal(base.origin, origin, 'BASE_URL must match the approved production origin');
   Object.assign(report, { date: new Date().toISOString(), base: base.href, mode, commit: process.env.GITHUB_SHA || null, deploymentVersion: process.env.DEPLOYMENT_VERSION || null, location: process.env.TEST_LOCATION || 'Not recorded', routes: [], redirects: [], passed: false });
 
-  async function get(path, status = 200, fingerprinted = false) {
-    const response = await fetchImpl(new URL(path, base), { redirect: 'manual', signal: AbortSignal.timeout(30000) });
+  async function get(path, status = 200, fingerprinted = false, navigation = false) {
+    const response = await (navigation ? navigationFetch : fetchImpl)(new URL(path, base), { redirect: 'manual', signal: AbortSignal.timeout(30000) });
     assert.equal(response.status, status, `${path}: HTTP status`);
     const headers = response.headers;
     assert.equal(headers.get('x-content-type-options'), 'nosniff', `${path}: nosniff`);
@@ -64,7 +80,7 @@ export async function verifyHosted({ base, mode, approvedOrigin, fetchImpl = fet
     if (mode === 'production' && status !== 404) assert.doesNotMatch(headers.get('x-robots-tag') || '', /\bnoindex\b/i, `${path}: production response is indexable`);
     if (mode === 'preview') assert.match(headers.get('x-robots-tag') || '', /\bnoindex\b/i, `${path}: provider preview noindex header`);
     const body = Buffer.from(await response.arrayBuffer());
-    report.routes.push({ path, status, bytes: body.length, headers: Object.fromEntries(headers) });
+    report.routes.push({ path, status, request: navigation ? 'navigation' : 'http', bytes: body.length, headers: Object.fromEntries(headers) });
     return { body, headers, text: body.toString('utf8') };
   }
 
@@ -83,7 +99,15 @@ export async function verifyHosted({ base, mode, approvedOrigin, fetchImpl = fet
   }
   assert(assets.size > 0, 'Generated pages reference fingerprinted assets');
   for (const asset of assets) await get(asset, 200, true);
-  const missing = await get('/__portfolio_missing__/', 404);
+  const missingPath = '/__portfolio_missing__/';
+  if (mode === 'preview') {
+    const raw = await fetchImpl(new URL(missingPath, base), { redirect: 'manual', signal: AbortSignal.timeout(30000) });
+    assert.equal(raw.status, 404, 'Preview non-navigation misses return HTTP 404');
+    assert.match(raw.headers.get('x-robots-tag') || '', /\bnoindex\b/i, 'Preview non-navigation 404 remains noindex');
+    const body = await raw.text();
+    report.previewRaw404 = { path: missingPath, status: raw.status, headers: Object.fromEntries(raw.headers), body, custom404: body.includes('Back to the homepage') };
+  }
+  const missing = await get(missingPath, 404, false, mode === 'preview');
   assert(missing.text.includes('Back to the homepage'), 'Unknown paths render the useful custom 404');
   verifyPageMetadata({ html: missing.text, pathname: '/404/', origin, noindex: true });
   const robots = await get('/robots.txt');

@@ -64,7 +64,7 @@ cd relay-desk
 npm start
 ```
 
-Open `http://127.0.0.1:3210`. The free baseline requires no package install or API credential. [Relay Desk’s README](https://github.com/ngyathin16/relay-desk) covers tests, evaluation, optional live models, and limitations. This is a local, single-user service with a mock CRM; static hosting does not run it. Private repository access requires an authorized GitHub login; the portfolio also includes a reviewed standalone source ZIP.
+Open `http://127.0.0.1:3210`. The free baseline requires no package install or API credential. [Relay Desk’s README](https://github.com/ngyathin16/relay-desk) covers tests, evaluation, optional live models, and limitations. This is a local, single-user service with a mock CRM; static hosting does not run it. The public repository can be browsed without signing in; the portfolio also includes a reviewed standalone source ZIP.
 
 Maintain Relay Desk in its own repository. Keep application changes, documentation, and verification together there, then update this portfolio’s case study and source archive to match the published revision. This portfolio repository contains the site and evidence assets; it does not include the application’s working database or credentials.
 

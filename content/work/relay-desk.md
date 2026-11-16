@@ -7,6 +7,7 @@ period: November 2026
 role: Personal project, developed with AI assistance
 workType: Personal project
 contribution: Workflow, bilingual fixtures, integration handling, and evaluation; developed with AI assistance.
+repository: https://github.com/ngyathin16/relay-desk
 sourceDownload: /downloads/relay-desk.zip
 cover: /images/relay-desk.webp
 coverWidth: 1440

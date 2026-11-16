@@ -2,6 +2,8 @@
 
 ## 16 November 2026
 
+- Published the portfolio and Relay Desk repositories publicly under `ngyathin16` and linked Relay source from its case study.
+
 - Prepared the Astro portfolio as a standalone GitHub repository with public-facing source and documentation.
 - Separated Relay Desk development into its own repository and retained the independently runnable source download.
 - Made source-archive generation accept a standalone Relay Desk checkout.

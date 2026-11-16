@@ -42,8 +42,8 @@ The initial dependency installation encountered insufficient space on the C: dri
 | Renewal review deadline | 2 October 2027, 45 days before expiry; date arithmetic checked. No scheduled reminder is claimed. |
 | Cloudflare account owner and plan | Harold's account authenticated through OAuth. Zone API confirms an active Free Website plan at US$0. Workers subscription confirmation is still pending. |
 | Authoritative nameservers | `alexandra.ns.cloudflare.com`, `paul.ns.cloudflare.com` |
-| DNSSEC | Registry RDAP reports `zoneSigned: true`, `delegationSigned: false`; delegation is not yet active |
-| GitHub integration | Harold confirmed it connected; Builds editing controls are disabled, and production/preview build commands and variables remain unconfirmed |
+| DNSSEC | Enabled through Cloudflare; API status is `pending`. The last registry RDAP check reported `zoneSigned: true`, `delegationSigned: false`. Active delegation remains to verify. |
+| GitHub integration | Canonical repository and `main` confirmed through the Builds API. Production and preview commands/variables saved and read back; automatic builds and preview builds enabled. |
 | Public Preview URL | [launch-review](https://launch-review-harold-ng-portfolio.ngyathin16.workers.dev) |
 | Preview ID | `a8ff75e1ae574fa9aec776cf5c89b1c1` |
 | Preview deployment ID | `09792254-accb-4d14-970b-513cf898fd09` |
@@ -71,7 +71,25 @@ The browser suite initially reported an aborted favicon request during navigatio
 | Browser and accessibility engine | Microsoft Edge `157.0.4341.57`, axe `4.14.0` |
 | Artifact/source association | Preview deployment `09792254-accb-4d14-970b-513cf898fd09`, source `43884702b42e72826abef93d6604870546362f28`; browser report includes both, while the HTTP report records the deployment and leaves its commit field unset |
 
-The current OAuth permissions return HTTP 403 for Builds and subscription inspection. Harold confirmed the GitHub integration is connected; build settings and the Workers plan still need confirmation in the dashboard. Builds editing controls are currently disabled, with the reason still under investigation. At this checkpoint, the activation branch has not been pushed, so it has not triggered an automatic production deployment. The zone's Free Website plan does not establish the Workers subscription tier.
+## Hosted configuration before first production deploy
+
+Harold connected the GitHub integration but could not edit its disabled Builds controls; the dashboard supplied no tooltip. The original Wrangler OAuth session could not access Builds configuration. Authentication through the official `cf@1.0.0-beta.32` CLI, running on portable Node `24.22`, resolved the configuration access. Additional OAuth permissions were limited to Builds configuration, DNS, and redirects. No broad billing or domain-purchase permissions were requested. The repository's locked Wrangler version remains `4.162.0`.
+
+The Builds API accepted the configuration changes. A subsequent read confirmed these saved settings:
+
+| Setting | Verified saved value |
+| --- | --- |
+| Repository and production branch | `ngyathin16/harold-ng-portfolio`, `main` |
+| Build command | `npm ci && npm run build:deployment` |
+| Production deploy command | `npm run deploy:production` |
+| Preview command | `npm run deploy:preview` |
+| Production build variables | `NODE_VERSION=24`, `SKIP_DEPENDENCY_INSTALL=1`, `SITE_URL=https://haroldng.dev`, `APPROVED_SITE_URL=https://haroldng.dev` |
+| Preview build variables | `NODE_VERSION=24`, `SKIP_DEPENDENCY_INSTALL=1`; `SITE_URL` and `APPROVED_SITE_URL` absent |
+| Automatic builds and preview builds | Enabled |
+
+The activation changes are committed locally at `b94d758` and have not yet been pushed at this checkpoint. No initial production deployment has run. The zone's Free Website plan does not establish the Workers subscription tier.
+
+A proxied `www` DNS A record pointing to `192.0.2.1` was created. A Single Redirect rule was saved to send HTTP apex requests and `www` requests to HTTPS apex with status 301, preserving the path and query string. These are confirmed API configurations, not measured redirect or TLS results. DNSSEC was enabled and the API reported `pending`.
 
 `harold.work` was excluded from normal registration because its registry RDAP record showed it already registered. Harold instead purchased `haroldng.dev` at the selected one-year quote and verified the registration email. The zone API reports it active. The current renewal quote does not guarantee future renewal pricing.
 
@@ -107,12 +125,14 @@ This verifies isolated static-asset version recovery from one local runner. It d
 | --- | --- | --- |
 | D1: Ownership and budget | Partially verified | Harold confirmed `haroldng.dev` purchased and registration email verified. Registry expiration is 16 November 2027, with renewal review due 2 October 2027. The US$8.20 one-year quote and US$12.20 current renewal are recorded; the active zone's Free Website plan is US$0. Actual HKD charge including fees and Workers free-plan confirmation remain pending. |
 | D2: Public access | Pending | Clean-browser result, apex and `www` certificate coverage, and DNS/TLS observations from Hong Kong and one independent network or location. |
-| D3: Routes and redirects | Partially verified | Preview HTTP suite passed 10 paths, including both preview 404 behaviors and asset headers. Final-origin routes, path/query preservation, redirects, raw custom 404, security headers, and caching remain to verify. |
+| D3: Routes and redirects | Partially verified | Preview HTTP suite passed 10 paths, including both preview 404 behaviors and asset headers. The proxied `www` record and permanent HTTP/www redirect are configured. Final-origin routes, path/query preservation, redirect responses, raw custom 404, security headers, and caching remain to verify. |
 | D4: Visitor journey | Partially verified | Public preview passed 12 page/viewport checks and 28 links at all required widths, with zero axe violations or errors. Repeat the suite and manual contact/repository journey on the final custom origin. |
 | D5: Search metadata | Partially verified | Preview noindex and custom 404 checks passed. Production metadata was built locally for `https://haroldng.dev`; final served canonicals/social/sitemap/robots and indexability remain to verify. |
-| D6: Update delivery | Partially verified | Required GitHub check passed and main protection was applied/read back. Still needs a blocked failing change, visible production update through the normal workflow, and Cloudflare deployment/version matched to its Git SHA. |
+| D6: Update delivery | Partially verified | Required GitHub check passed, main protection was applied/read back, and canonical GitHub integration plus production/preview Builds settings were saved/read back. Still needs a blocked failing change, visible production update through the normal workflow, and Cloudflare deployment/version matched to its Git SHA. |
 | D7: Recovery | Partially verified | Isolated A/B/rollback rehearsal passed, restored all 25 served files, and temporary Worker cleanup was confirmed. A known-good production version and production recovery record remain pending. |
 | D8: Quality and cost | Pending | Final-origin browser suite, three hosted mobile Lighthouse reports with conditions and median scores, resolved launch blockers, and actual free-plan usage. |
+
+The remaining user-supplied evidence is the actual domain charge in HKD, Workers billing/usage confirmation, and final-site observations from the required independent networks. Build settings no longer require manual entry. Production deployment, DNSSEC propagation, TLS, redirects, and automated final-origin checks remain technical launch work.
 
 ## Add a hosted verification run
 
@@ -127,3 +147,5 @@ For each launch or recovery run, add the actual observations below. Leave untest
 - Unresolved limits and their effect on launch acceptance.
 
 Automated reports are stored under `artifacts/hosted/`, `artifacts/portfolio/`, and `artifacts/lighthouse/`. They are ignored by Git. Retain the relevant CI artifact links or attach reports to the release evidence. Do not publish authentication material, receipts, or personal registrant details.
+
+Automatic preview build evidence: Cloudflare build `5eef93b5-ff23-4665-be0e-406594d2aeed` succeeded for commit `b94d75806ada386253926e639aceafe520068be2`. Hosted logs confirm Node 24.22.3, npm 11.9.0, explicit `npm ci`, Wrangler 4.162.0, and preview URL `https://deployment-launch-activation-harold-ng-portfolio.ngyathin16.workers.dev`. A local Cloudflare trace reports network country HK, edge HKG, and TLS 1.3; no IP address was retained.

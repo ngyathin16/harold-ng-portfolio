@@ -2,6 +2,8 @@
 
 A static Astro portfolio with Markdown case studies and an independently runnable Relay Desk project. Node.js 24 is required.
 
+Live site: **[haroldng.dev](https://haroldng.dev)**. Hosted on Cloudflare Workers Free; see the [launch evidence](docs/DEPLOYMENT-VERIFICATION.md).
+
 ```sh
 npm ci
 npm run dev
@@ -70,11 +72,11 @@ Maintain Relay Desk in its own repository. Keep application changes, documentati
 
 ## Launch configuration
 
-Cloudflare Workers Static Assets publishes only `dist/`. Wrangler is locked in the npm dependencies. The deployment uses free hosting and one domain costing at most HK$200 annually including renewal. Domain ownership and a live release remain subject to the [deployment evidence](docs/DEPLOYMENT-VERIFICATION.md).
+Cloudflare Workers Static Assets publishes only `dist/` at `https://haroldng.dev`. Wrangler is locked in the npm dependencies. Hosting uses the free plan. The domain cost US$8.20 for the first year; the quoted annual renewal is US$12.20, subject to the HK$200 yearly budget and a price review before renewal. See the [deployment evidence](docs/DEPLOYMENT-VERIFICATION.md).
 
 Set build-time `SITE_URL` and independent `APPROVED_SITE_URL` to the selected custom HTTPS origin for production. `npm run build:deployment` runs the Astro build and release checks. Workers Builds selects the mode from its branch. For a local run, set `DEPLOYMENT_MODE` to `production` or `preview`. Preview builds require `SITE_URL` to be absent and emit noindex. The production check rejects missing, mismatched, placeholder, and provider origins.
 
-`npm run test:release` tests the release checks. `npm run check:release -- --mode production` checks a built production artifact. GitHub's `release-checks` job validates preview and production-style builds and runs the browser suite before merging to protected `main`. Follow the [deployment runbook](docs/DEPLOYMENT.md) to activate branch protection, connect Workers Builds, purchase the approved domain, configure redirects, and verify recovery.
+`npm run test:release` tests the release checks. `npm run check:release -- --mode production` checks a built production artifact. GitHub's `release-checks` job validates preview and production-style builds and runs the browser suite before merging to protected `main`. Workers Builds deploys verified `main` commits automatically. Follow the [deployment runbook](docs/DEPLOYMENT.md) for settings, release verification, and recovery.
 
 After deployment, set `BASE_URL` to the final origin and run `npm run verify:hosted -- --mode production`, `npm test`, and `npm run audit`. Hosted production checks also require `APPROVED_SITE_URL`. Audit runs retain three mobile Lighthouse reports and check their median against the 90/90 target. Supply the actual `GITHUB_SHA` and `DEPLOYMENT_VERSION` for traceable reports. Hosting checks do not run the Relay Desk backend.
 

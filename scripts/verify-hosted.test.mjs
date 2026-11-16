@@ -37,6 +37,23 @@ test('redirect check rejects temporary redirects, loops and dropped queries', as
   await assert.rejects(verifyRedirect(from, to, 1, responses({ [from]: [301, 'https://harold.work/'], 'https://harold.work/': [200] })), /preserves path\/query/);
 });
 
+test('307 is allowed only for query-preserving trailing slash normalization on canonical HTTPS', async () => {
+  const from = 'https://harold.work/work/ifc-gpt?path=a%2Fb&x=1';
+  const to = 'https://harold.work/work/ifc-gpt/?path=a%2Fb&x=1';
+  const result = await verifyRedirect(from, to, 1, responses({ [from]: [307, '/work/ifc-gpt/?path=a%2Fb&x=1'], [to]: [200] }));
+  assert.equal(result.final, to);
+  assert.equal(result.hops[0].status, 307);
+  for (const [start, destination] of [
+    [from.replace('https:', 'http:'), to],
+    [from.replace('harold.work', 'www.harold.work'), to],
+    [from, to.replace('ifc-gpt', 'relay-desk')],
+    [from, to.replace('x=1', 'x=2')],
+  ]) {
+    await assert.rejects(verifyRedirect(start, to, 2, responses({ [start]: [307, destination] })), /permanent/);
+  }
+  await assert.rejects(verifyRedirect(from, to, 1, responses({ [from]: [302, to] })), /permanent/);
+});
+
 test('hosted checker rejects missing approval, wrong origins and insecure URLs before fetching', async () => {
   const fetchImpl = () => assert.fail('Invalid configuration must not fetch');
   await assert.rejects(verifyHosted({ base: 'https://harold.work', mode: 'production', fetchImpl }));

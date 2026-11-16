@@ -49,13 +49,20 @@ export async function verifyRedirect(start, expected, maxHops, fetchImpl = fetch
       assert(hops.length > 0, 'A normalization redirect occurred');
       return { start: String(start), final: current.href, hops };
     }
-    assert([301, 308].includes(response.status), `Normalization must be permanent, got ${response.status}`);
     const location = response.headers.get('location');
     assert(location, 'Redirect supplies Location');
+    const target = new URL(location, current);
+    const canonical = new URL(expected);
+    // Workers uses 307 for native trailing-slash normalization on the canonical host.
+    const nativeSlashRedirect = response.status === 307 && current.origin === canonical.origin
+      && current.protocol === 'https:' && target.origin === current.origin
+      && target.pathname === `${current.pathname}/` && target.search === current.search
+      && target.href === canonical.href;
+    assert([301, 308].includes(response.status) || nativeSlashRedirect, `Host and protocol redirects must be permanent, got ${response.status}`);
     hops.push({ url: current.href, status: response.status, location });
     await response.body?.cancel();
     assert(hops.length <= maxHops, `Too many redirects from ${start}; limit ${maxHops}`);
-    current = new URL(location, current);
+    current = target;
   }
 }
 

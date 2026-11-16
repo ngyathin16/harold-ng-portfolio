@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=24.0.0"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",
@@ -14,7 +14,13 @@
     "test": "node scripts/verify-site.mjs",
     "resume": "node scripts/build-resume.mjs",
     "audit": "node scripts/audit-site.mjs",
-    "social": "node scripts/build-social.mjs"
+    "social": "node scripts/build-social.mjs",
+    "build:deployment": "node scripts/build-deployment.mjs",
+    "check:release": "node scripts/verify-release.mjs",
+    "test:release": "node --test scripts/*.test.mjs",
+    "deploy:production": "npm run check:release -- --mode production && node scripts/require-release-check.mjs && npx wrangler deploy",
+    "deploy:preview": "npm run check:release -- --mode preview && npx wrangler preview",
+    "verify:hosted": "node scripts/verify-hosted.mjs"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.3.0",
@@ -27,6 +33,8 @@
     "chrome-launcher": "^1.2.3",
     "lighthouse": "^13.6.0",
     "playwright": "^1.65.0",
-    "typescript": "^6.0.3"
-  }
+    "typescript": "^6.0.3",
+    "wrangler": "4.162.0"
+  },
+  "packageManager": "npm@11.9.0"
 }

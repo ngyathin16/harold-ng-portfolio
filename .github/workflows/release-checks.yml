@@ -1,0 +1,71 @@
+name: Release checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, 'deployment/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      WRANGLER_SEND_METRICS: 'false'
+      APPROVED_SITE_URL: ${{ vars.APPROVED_SITE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:release
+      - name: Build and check isolated preview
+        run: npm run build:deployment
+        env:
+          DEPLOYMENT_MODE: preview
+          SITE_URL: ''
+      - name: Verify production metadata and browser journey
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          if [ -n "$APPROVED_SITE_URL" ]; then
+            export SITE_URL="$APPROVED_SITE_URL"
+            DEPLOYMENT_MODE=production npm run build:deployment
+          else
+            export SITE_URL=https://portfolio-ci.invalid
+            export APPROVED_SITE_URL=https://portfolio-ci.invalid
+            npm run build
+            npm run check:release -- --mode ci
+          fi
+          npx wrangler deploy --dry-run > artifacts/wrangler-dry-run.log 2>&1
+          npx wrangler dev --ip 127.0.0.1 --port 4321 > artifacts/local-workers.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:4321/ > /dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:4321/ > /dev/null
+          BASE_URL=http://127.0.0.1:4321 npm test
+      - name: Preserve verification evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-checks-${{ github.sha }}
+          path: |
+            artifacts/
+            dist/
+          if-no-files-found: warn
+          retention-days: 14

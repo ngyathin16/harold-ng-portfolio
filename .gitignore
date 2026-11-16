@@ -9,3 +9,6 @@ test-results/
 artifacts/
 dist/
 .astro/
+.wrangler/
+.dev.vars
+.dev.vars.*

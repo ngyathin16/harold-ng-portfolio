@@ -70,9 +70,13 @@ Maintain Relay Desk in its own repository. Keep application changes, documentati
 
 ## Launch configuration
 
-Set `SITE_URL` to the final custom HTTPS origin before building the public release. This updates canonical URLs, social URLs, robots, and the sitemap. Without `SITE_URL`, the build uses localhost and explicitly disables indexing. The deployment PRD selects Cloudflare Workers Static Assets with free hosting and a domain costing at most HK$200 annually including renewal. No domain is presumed owned.
+Cloudflare Workers Static Assets publishes only `dist/`. Wrangler is locked in the npm dependencies. The deployment uses free hosting and one domain costing at most HK$200 annually including renewal. Domain ownership and a live release remain subject to the [deployment evidence](docs/DEPLOYMENT-VERIFICATION.md).
 
-Only upload `dist/`. Planning documents, private source paths, project databases, and API configuration are not part of the static site. A domain and hosting account are still required to complete public launch.
+Set build-time `SITE_URL` and independent `APPROVED_SITE_URL` to the selected custom HTTPS origin for production. `npm run build:deployment` runs the Astro build and release checks. Workers Builds selects the mode from its branch. For a local run, set `DEPLOYMENT_MODE` to `production` or `preview`. Preview builds require `SITE_URL` to be absent and emit noindex. The production check rejects missing, mismatched, placeholder, and provider origins.
+
+`npm run test:release` tests the release checks. `npm run check:release -- --mode production` checks a built production artifact. GitHub's `release-checks` job validates preview and production-style builds and runs the browser suite before merging to protected `main`. Follow the [deployment runbook](docs/DEPLOYMENT.md) to activate branch protection, connect Workers Builds, purchase the approved domain, configure redirects, and verify recovery.
+
+After deployment, set `BASE_URL` to the final origin and run `npm run verify:hosted -- --mode production`, `npm test`, and `npm run audit`. Hosted production checks also require `APPROVED_SITE_URL`. Audit runs retain three mobile Lighthouse reports and check their median against the 90/90 target. Supply the actual `GITHUB_SHA` and `DEPLOYMENT_VERSION` for traceable reports. Hosting checks do not run the Relay Desk backend.
 
 ## Repository maintenance
 

@@ -1,5 +1,9 @@
 # Portfolio verification
 
+## Project-list readiness — 16 November 2026
+
+Verified the content-derived project count, ordered next-project navigation and sitemap-derived browser route list on Windows with Node 24.14.0. `npm run build` passed with zero errors, warnings or hints. `TEST_BASE_URL=http://127.0.0.1:4322 npm test` passed 12 page/viewport combinations, 29 local links, keyboard/navigation/download checks and automated accessibility scans. The current two published case studies remain the only project routes. QueryProof has not yet earned publication under its acceptance gates.
+
 Verified on 11 November 2026 (Hong Kong) against the static production build served by Astro preview at `http://127.0.0.1:4321`.
 
 ## Browser and accessibility checks

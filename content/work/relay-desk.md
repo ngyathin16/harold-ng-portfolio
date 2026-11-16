@@ -1,5 +1,5 @@
 ---
-title: Relay Desk
+title: ""
 slug: relay-desk
 summary: A bilingual support workbench that keeps the source, the reply, and the human decision together.
 status: Local working prototype

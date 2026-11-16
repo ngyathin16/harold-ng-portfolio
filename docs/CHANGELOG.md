@@ -2,6 +2,10 @@
 
 ## 16 November 2026
 
+- Made the selected-project count derive from published content and next-project links cycle in the same order.
+- Changed browser verification to discover project routes from the production sitemap. Build and all 12 current page/viewport checks passed, including 29 local links and automated accessibility scans.
+- QueryProof remains under separate development; no unfinished case study is published by this change.
+
 - Added a researched deployment PRD covering free Workers Static Assets hosting, a custom domain within the confirmed HK$200 annual budget, release verification, and recovery. This is planning; no domain purchase or website deployment occurred.
 
 - Published the portfolio and Relay Desk repositories publicly under `ngyathin16` and linked Relay source from its case study.

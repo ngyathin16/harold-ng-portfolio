@@ -10,7 +10,8 @@ const { project } = Astro.props;
 const { data } = project;
 const { Content, headings } = await render(project);
 const projects = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
-const related = projects.find((entry) => entry.id !== project.id);
+const projectIndex = projects.findIndex((entry) => entry.id === project.id);
+const related = projects.length > 1 ? projects[(projectIndex + 1) % projects.length] : undefined;
 ---
 <Layout title={`${data.title} — Harold Ng`} description={data.summary}>
   <article class={`case-study case-${data.slug}`}>

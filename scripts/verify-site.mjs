@@ -6,7 +6,14 @@ import AxeBuilder from '@axe-core/playwright';
 
 const base = new URL(process.env.TEST_BASE_URL || 'http://127.0.0.1:4321');
 const artifacts = new URL('../artifacts/portfolio/', import.meta.url);
-const routes = ['/', '/work/ifc-gpt/', '/work/relay-desk/', '/404.html'];
+const sitemapResponse = await fetch(new URL('/sitemap.xml', base));
+assert(sitemapResponse.ok, 'Production sitemap is available');
+const sitemapXml = await sitemapResponse.text();
+const projectRoutes = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)]
+  .map((match) => new URL(match[1]).pathname)
+  .filter((path) => path.startsWith('/work/'));
+assert(projectRoutes.length > 0, 'Sitemap contains published projects');
+const routes = ['/', ...new Set(projectRoutes), '/404.html'];
 const widths = [360, 768, 1440];
 await mkdir(artifacts, { recursive: true });
 const browser = await chromium.launch({
@@ -110,7 +117,7 @@ try {
   assert.deepEqual(report.errors, [], 'No console or page errors');
   assert.deepEqual(report.routes.filter(({ violations }) => violations.length), [], 'Automated accessibility findings; see artifacts/portfolio/browser-check.json');
   report.passed = true;
-  report.checks = ['12 page/viewport checks', 'WCAG 2.2 AA automated scan', 'local links and anchors', 'keyboard skip and focus', 'work navigation', 'source download', 'PDF signature', 'contact URLs', 'sitemap', 'robots', 'social PNG', 'HTTP 404'];
+  report.checks = [`${report.routes.length} page/viewport checks`, 'WCAG 2.2 AA automated scan', 'local links and anchors', 'keyboard skip and focus', 'work navigation', 'source download', 'PDF signature', 'contact URLs', 'sitemap', 'robots', 'social PNG', 'HTTP 404'];
   process.stdout.write(`Passed: ${report.routes.length} page/viewport checks, ${report.links.length} local links, keyboard and downloads.\n`);
 } finally {
   await writeFile(new URL('browser-check.json', artifacts), JSON.stringify(report, null, 2));

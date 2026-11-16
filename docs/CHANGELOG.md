@@ -2,6 +2,8 @@
 
 ## 16 November 2026
 
+- Added a researched deployment PRD covering free Workers Static Assets hosting, a custom domain within the confirmed HK$200 annual budget, release verification, and recovery. This is planning; no domain purchase or website deployment occurred.
+
 - Published the portfolio and Relay Desk repositories publicly under `ngyathin16` and linked Relay source from its case study.
 
 - Prepared the Astro portfolio as a standalone GitHub repository with public-facing source and documentation.

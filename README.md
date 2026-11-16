@@ -18,7 +18,7 @@ npm run preview
 
 The build validates case-study metadata and produces `dist/`. With the preview running at `http://127.0.0.1:4321`, run `npm test` for browser checks. Run `node scripts/audit-site.mjs` for the mobile Lighthouse report. Browser verification uses Microsoft Edge on Windows; install Playwright Chromium with `npx playwright install chromium` on other platforms. A custom browser path can be supplied through `BROWSER_EXECUTABLE`.
 
-See [verification results](docs/VERIFICATION.md), [change history](docs/CHANGELOG.md), and [deployment instructions](docs/DEPLOYMENT.md).
+See [verification results](docs/VERIFICATION.md), [change history](docs/CHANGELOG.md), the [deployment PRD](docs/DEPLOYMENT-PRD.md), and [deployment instructions](docs/DEPLOYMENT.md).
 
 ## Edit a case study
 
@@ -70,7 +70,7 @@ Maintain Relay Desk in its own repository. Keep application changes, documentati
 
 ## Launch configuration
 
-Set `SITE_URL` to the final HTTPS origin, such as the actual Cloudflare Pages URL or a purchased domain, before building the release. This updates canonical URLs, social URLs, robots, and the sitemap. Without `SITE_URL`, the build uses localhost and explicitly disables indexing. No domain is presumed owned.
+Set `SITE_URL` to the final custom HTTPS origin before building the public release. This updates canonical URLs, social URLs, robots, and the sitemap. Without `SITE_URL`, the build uses localhost and explicitly disables indexing. The deployment PRD selects Cloudflare Workers Static Assets with free hosting and a domain costing at most HK$200 annually including renewal. No domain is presumed owned.
 
 Only upload `dist/`. Planning documents, private source paths, project databases, and API configuration are not part of the static site. A domain and hosting account are still required to complete public launch.
 

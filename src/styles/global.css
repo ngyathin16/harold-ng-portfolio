@@ -123,6 +123,7 @@ figcaption{font-size:11px;color:var(--muted);line-height:1.7;padding-top:12px;ma
 .prose ul,.prose ol{padding-left:22px;margin:20px 0}
 .prose a{color:var(--accent)}
 .prose img{width:100%;height:auto;border:1px solid var(--line);border-radius:4px;margin-top:28px}
+.prose video{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:4px;margin:24px 0;background:#233d36}
 .prose blockquote{border-left:2px solid var(--accent);padding-left:22px;margin:30px 0;font:400 24px/1.5 var(--serif);color:var(--accent)}
 .prose pre{background:#e9ece5;padding:20px;overflow-x:auto;border-radius:4px;font-size:13px;line-height:1.6}
 .prose code{font-size:.85em;background:#e9ece5;border-radius:3px;padding:2px 4px;color:var(--ink)}

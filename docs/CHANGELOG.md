@@ -1,5 +1,11 @@
 # Change history
 
+## 17 November 2026
+
+- Added accepted QueryProof and ReleaseGuard case studies with real screenshots, measured evidence, runnable source and explicit limitations. Preserved Relay Desk and IFC-GPT routes.
+- Added a local captioned ReleaseGuard walkthrough and responsive video presentation. Selected work now lists four projects in the intended order.
+- Verified the production build, all 18 responsive route views, 48 local links and 21 deployment checks. See the project implementation record for application verification and source delivery.
+
 ## 16 November 2026
 
 - Launched [haroldng.dev](https://haroldng.dev) on Cloudflare Workers Free with HTTPS, permanent HTTP/`www` redirects, custom 404 responses, production metadata, and automatic GitHub deployments behind required checks.

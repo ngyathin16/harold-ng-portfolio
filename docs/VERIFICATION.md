@@ -1,5 +1,11 @@
 # Portfolio verification
 
+## QueryProof and ReleaseGuard integration — 17 November 2026
+
+The production build includes four case studies and passed with zero errors, warnings or hints. Windows Node 24.14.0 and the local Workers runtime were used for `npm test`: **18 page/viewport combinations** at 360, 768 and 1440 px, **48 local links**, keyboard navigation, downloads and automated WCAG-tagged checks passed. All **21 release/deployment tests** passed. Source and measured application evidence are linked in [the implementation record](PROJECTS-IMPLEMENTATION.md). The ReleaseGuard recording is a static asset, with a separate caption track; no local backend is included in static hosting.
+
+Earlier verification entries below describe the then-current two-project portfolio.
+
 ## Project-list readiness — 16 November 2026
 
 Verified the content-derived project count, ordered next-project navigation and sitemap-derived browser route list on Windows with Node 24.14.0. `npm run build` passed with zero errors, warnings or hints. `TEST_BASE_URL=http://127.0.0.1:4322 npm test` passed 12 page/viewport combinations, 29 local links, keyboard/navigation/download checks and automated accessibility scans. The current two published case studies remain the only project routes. QueryProof has not yet earned publication under its acceptance gates.

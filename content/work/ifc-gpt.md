@@ -14,7 +14,7 @@ coverWidth: 1440
 coverHeight: 900
 coverAlt: IFC-GPT browser interface showing the floors, walls, and windows of a synthetic three-storey building in X-Ray view.
 coverCaption: Actual prototype, captured 11 November 2026. A hand-authored plan was built into an IFC file and opened in the viewer; this capture does not use a live AI call.
-order: 1
+order: 4
 ---
 
 ## The problem

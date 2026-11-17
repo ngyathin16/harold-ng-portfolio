@@ -14,7 +14,7 @@ coverWidth: 1440
 coverHeight: 1782
 coverAlt: Relay Desk with an English support ticket, a source-linked reply, and human approval controls.
 coverCaption: The running local workbench, using the free source-excerpt baseline. No live model call is shown.
-order: 2
+order: 3
 technologies: [JavaScript, Node.js, SQLite, Ollama]
 ---
 

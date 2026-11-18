@@ -2,6 +2,20 @@
 title: Relay Desk
 slug: relay-desk
 summary: A bilingual support workbench that keeps the source, the reply, and the human decision together.
+focus: Sources first. A person approves the reply.
+decision: Keep retrieval, editing and approval visible. Editing revokes approval; a retried handoff must not create a duplicate successful delivery.
+evidence:
+  label: Inspect the fixed development checks
+  url: /images/relay-evaluation.webp
+workflow:
+  - title: Retrieve the sources
+    description: Match an English or Traditional Chinese ticket with self-authored knowledge articles.
+  - title: Prepare a draft
+    description: Show source excerpts by default, with a separately selected live-model option.
+  - title: Review and approve
+    description: Let the operator inspect and edit the reply before explicitly approving delivery.
+  - title: Deliver with history
+    description: Record a local mock CRM handoff and retry failures without duplicate successful replies.
 status: Local working prototype
 period: November 2026
 role: Personal project, developed with AI assistance

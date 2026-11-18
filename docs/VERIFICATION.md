@@ -1,5 +1,29 @@
 # Portfolio verification
 
+## Design upgrade — 18 November 2026
+
+The approved redesign builds all six HTML routes with zero Astro errors, warnings or hints on Windows, Node 24.14.0. All 21 release tests passed. The updated browser suite covers 18 page/viewport combinations and 52 local links, including downloads, keyboard navigation, real 404 behavior and automated accessibility scans. Initial contrast and 200% text-reflow findings were fixed before the final checks.
+
+The design suite passed in Edge 157.0.4341.60, Firefox 159 and Playwright WebKit 27.2 on Windows: 20 route/viewport combinations per engine at 320, 390, 768 and 1440 px, five no-JavaScript journeys per engine, and an extra 320 px no-JavaScript anchor-clearance check. It verifies the current title and metadata, readable navigation, active About/Contact states, unobscured anchors, visible focus, reduced motion, mobile contents, evidence media and 200% text enlargement. All three reported zero browser errors. Engine-specific reports and screenshots are retained under `artifacts/design/`.
+
+Edge and Firefox passed native Tab traversal and Enter activation. Windows Playwright WebKit skips native links in its Tab order, reproduced in an independent plain-HTML fixture. Its run verifies focus appearance and Enter activation after programmatic focus and records that limitation explicitly. It is not a Safari-device test. A bounded font-status wait avoids a Windows WebKit document-readiness promise that remained unresolved despite loaded fonts. The final 320 px anchor fix and test-harness changes followed the 412 px local Lighthouse measurements below; hosted checks use the merged release.
+
+The generated résumé is one page; extracted text contains the updated AI Solutions Engineer title in all three intended positions. The 1200 × 630 social image and desktop/mobile page captures were visually inspected. [Design implementation and screenshots](DESIGN-UPGRADE.md) · [source adoption and licenses](COMPONENT-ADOPTION.md).
+
+Final local production-build Lighthouse results, after all functional browser sessions were stopped:
+
+| Run | Performance | Accessibility | LCP | TBT | CLS |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 98 | 100 | 2,330 ms | 0 ms | 0 |
+| 2 | 98 | 100 | 2,330 ms | 0 ms | 0 |
+| 3 | 98 | 100 | 2,330 ms | 0 ms | 0 |
+
+Median performance/accessibility: **98/100**, LCP **2,330 ms**, CLS **0**. Lighthouse 13.6.0, Edge 157, Windows, Intel Core Ultra 9 285K with 24 logical processors; simulated mobile throttling, 150 ms RTT, 1,638.4 Kbps throughput, 4× CPU slowdown, 412 × 823 viewport and 1.75 device scale. Storage was reset on each navigation. Each report transferred the actual document, had no failed network request and no runtime error. The final summary is `artifacts/design/final-local-lighthouse/summary.json`.
+
+The fresh **hosted pre-upgrade** baseline returned performance/accessibility **100/100** in all three runs, with median LCP **776 ms**. It is not directly comparable to the local redesigned build. The new portrait becomes the mobile LCP element; initial local regressions were investigated and reduced through responsive AVIF and font loading changes. Hosted after-release results belong to the release PR, including the Cloudflare analytics script. These lab checks do not establish real-user INP or complete accessibility conformance.
+
+The build's conservative first-party JavaScript upper bound is **72,258 bytes gzip per route**, including inline bootstrap scripts and every external loadable chunk. Provider-injected analytics is outside that first-party budget and included in hosted audits.
+
 ## Completed-project update — 18 November 2026
 
 Refreshed the homepage, completion labels, case-study evidence and résumé against the published QueryProof `fa5760f` and ReleaseGuard `74b7a6f` revisions. Application measurements are retained evidence from those projects; their evaluation suites were not rerun for this content update.
@@ -82,7 +106,7 @@ npm test
 node scripts/audit-site.mjs
 ```
 
-The scripts use `http://127.0.0.1:4321` by default; set `TEST_BASE_URL` to change it. On Windows they use installed Microsoft Edge. On another platform, install Playwright Chromium with `npx playwright install chromium` for browser tests and provide `BROWSER_EXECUTABLE` for the Lighthouse browser if Chrome is not automatically discoverable. That variable also overrides the browser-test executable. `AUDIT_RUNS` changes the number of Lighthouse runs; the default is five, and a score below 90 causes a failing exit status.
+The scripts use `http://127.0.0.1:4321` by default; set `TEST_BASE_URL` to change it. On Windows they use installed Microsoft Edge. On another platform, install Playwright Chromium with `npx playwright install chromium` for browser tests and provide `BROWSER_EXECUTABLE` for the Lighthouse browser if Chrome is not automatically discoverable. That variable also overrides the browser-test executable. `AUDIT_RUNS` changes the number of Lighthouse runs; the current default is three. The design-upgrade gate requires median performance/accessibility of 95, LCP at most 2.5 seconds and CLS at most 0.1.
 
 ## Deployment limits
 

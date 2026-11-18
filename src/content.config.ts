@@ -2,12 +2,25 @@ import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
+const evidenceUrl = z.union([
+  z.url({ protocol: /^https$/ }),
+  z.string().regex(/^\/(?:images|downloads|work)\//),
+]);
+
 const work = defineCollection({
   loader: glob({ pattern: '*.md', base: './content/work' }),
   schema: z.object({
     title: z.string().min(1),
     slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
     summary: z.string().min(1),
+    focus: z.string().min(1),
+    decision: z.string().min(1),
+    evidence: z.object({ label: z.string().min(1), url: evidenceUrl }),
+    walkthrough: evidenceUrl.optional(),
+    workflow: z.array(z.object({
+      title: z.string().min(1),
+      description: z.string().min(1),
+    })).min(3),
     period: z.string().min(1),
     workType: z.string().min(1),
     role: z.string().min(1),

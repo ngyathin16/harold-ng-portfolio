@@ -137,7 +137,7 @@ $env:AUDIT_RUNS = '3'
 npm run audit
 ```
 
-Retain `artifacts/hosted/http-check.json`, `artifacts/portfolio/`, and all three `artifacts/lighthouse/` reports. Record the Lighthouse test location, browser, mobile simulation conditions, individual scores, and median. The target is median performance and accessibility of at least 90. Automated reports do not establish a Hong Kong or independent-network test by themselves.
+Retain `artifacts/hosted/http-check.json`, `artifacts/portfolio/`, `artifacts/design/`, and all three `artifacts/lighthouse/` reports. Run `npm run test:design` for the responsive, no-JavaScript and navigation journeys. Record the Lighthouse test location, browser, mobile simulation conditions, individual scores, and median. The design upgrade requires median performance and accessibility of at least 95, LCP at most 2.5 seconds and CLS at most 0.1. Automated reports do not establish a Hong Kong or independent-network test by themselves.
 
 For an independent network check, open GitHub **Actions → Verify live deployment → Run workflow** on `main`. Set `expected_commit` to the full deployed Git SHA and `deployment_version` to its actual Cloudflare version ID. The workflow runs the live HTTP/browser suites and records the runner's country and Cloudflare edge. Download the reports and screenshots from the completed run; GitHub retains these artifacts for 14 days. Confirm the recorded network differs from the local test network before counting it as independent evidence.
 

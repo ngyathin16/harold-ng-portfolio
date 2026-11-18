@@ -1,13 +1,14 @@
 # Harold Ng
 
-AI Engineer · Hong Kong  
+AI Solutions Engineer · Hong Kong
+
 [haroldng2001@gmail.com](mailto:haroldng2001@gmail.com) · [LinkedIn](https://www.linkedin.com/in/harold-ng-986a5b252/) · [GitHub](https://github.com/ngyathin16)
 
-AI engineer working on speech recognition, AI agents, and desktop software for construction and BIM/CAD workflows. Background in data analytics and applied mathematics.
+AI Solutions Engineer working on speech recognition, AI agents, and desktop software for construction and BIM/CAD workflows. Background in data analytics and applied mathematics.
 
 ## Experience
 
-### Yau Lee Holdings Limited — A.I. Engineer
+### Yau Lee Holdings Limited — AI Solutions Engineer
 
 Hong Kong · January 2026–present
 

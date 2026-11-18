@@ -2,6 +2,21 @@
 title: QueryProof
 slug: queryproof
 summary: A SQL review workbench that checks a number against its definition and shows the rows behind a misleading result.
+focus: A correct query is more than valid SQL.
+decision: Compare the query with an independent calculation, then show the rows that explain the difference. Keep model advice separate from executed evidence.
+evidence:
+  label: Read the evaluation and its failures
+  url: https://github.com/ngyathin16/queryproof/blob/main/docs/VERIFICATION.md
+walkthrough: https://raw.githubusercontent.com/ngyathin16/queryproof/main/docs/walkthrough.mp4
+workflow:
+  - title: Define the metric
+    description: State the grain, population and meaning of the number before reviewing the query.
+  - title: Execute independently
+    description: Run bounded SQL and a separate row-based reference calculation against the same snapshot.
+  - title: Inspect the difference
+    description: Trace mismatched totals to duplicated rows, contract clauses and diagnostic queries.
+  - title: Review a repair
+    description: Execute a candidate revision before acceptance and retain the original inputs in history.
 status: Completed · runs locally
 period: November 2026
 role: Product direction and implementation with AI assistance

@@ -1,48 +1,90 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import '../../styles/case-study.css';
 
 export async function getStaticPaths() {
   const projects = await getCollection('work');
   return projects.map((project) => ({ params: { slug: project.data.slug }, props: { project } }));
 }
+
+interface Props { project: CollectionEntry<'work'>; }
 const { project } = Astro.props;
 const { data } = project;
 const { Content, headings } = await render(project);
+const sections = headings.filter((heading) => heading.depth === 2);
 const projects = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
 const projectIndex = projects.findIndex((entry) => entry.id === project.id);
 const related = projects.length > 1 ? projects[(projectIndex + 1) % projects.length] : undefined;
+const projectNumber = String(projectIndex + 1).padStart(2, '0');
 ---
 <Layout title={`${data.title} — Harold Ng`} description={data.summary}>
   <article class={`case-study case-${data.slug}`}>
-    <header class="case-header shell">
-      <a class="back-link" href="/#work"><span aria-hidden="true">←</span> Selected work</a>
-      <div class="case-kicker eyebrow">{data.workType}<span aria-hidden="true">/</span>{data.period}</div>
-      <h1>{data.title}</h1>
-      <p class="case-summary">{data.summary}</p>
-      <dl class="case-facts">
-        <div><dt>My contribution</dt><dd>{data.contribution}</dd></div>
-        <div><dt>Status</dt><dd>{data.status}</dd></div>
-        <div><dt>Built with</dt><dd>{data.technologies.join(' · ')}</dd></div>
-      </dl>
-      <div class="case-actions">
-        {data.repository && <a class="button" href={data.repository}>View source on GitHub <span aria-hidden="true">↗</span></a>}
-        {data.sourceDownload && <a class="button" href={data.sourceDownload} download>Download runnable source <span class="file-label">ZIP</span> <span aria-hidden="true">↓</span></a>}
-        {data.demo && <a class="text-link" href={data.demo}>Open demo <span aria-hidden="true">↗</span></a>}
+    <header class="study-header shell">
+      <div class="study-breadcrumb">
+        <a class="text-link" href="/#work"><span aria-hidden="true">←</span> Selected work</a>
+        <span class="study-index">{projectNumber} / Case study</span>
       </div>
+      <p class="study-kicker eyebrow">{data.workType}<span aria-hidden="true">/</span>{data.period}</p>
+      <div class="study-introduction">
+        <div>
+          <h1>{data.title}</h1>
+          <p class="study-summary">{data.summary}</p>
+          <div class="study-actions">
+            {data.repository && <a class="button" href={data.repository}>View source on GitHub <span aria-hidden="true">↗</span></a>}
+            {data.walkthrough && <a class="text-link" href={data.walkthrough}>Watch the walkthrough <span aria-hidden="true">↗</span></a>}
+            {data.sourceDownload && <a class="text-link" href={data.sourceDownload} download>Download runnable source <span class="file-label">ZIP</span><span aria-hidden="true">↓</span></a>}
+            {data.demo && <a class="text-link" href={data.demo}>Open demo <span aria-hidden="true">↗</span></a>}
+          </div>
+        </div>
+        <aside class="study-reading-guide" aria-labelledby="reading-guide-title">
+          <p class="eyebrow">What to look for</p>
+          <h2 id="reading-guide-title">{data.focus}</h2>
+          <p>{data.decision}</p>
+          <a href={data.evidence.url}>{data.evidence.label}<span aria-hidden="true">↗</span></a>
+        </aside>
+      </div>
+      <dl class="study-facts">
+        <div class="study-contribution"><dt>My contribution</dt><dd>{data.contribution}</dd></div>
+        <div><dt>Project status</dt><dd class="study-status"><span aria-hidden="true"></span>{data.status}</dd></div>
+        <div><dt>Built with</dt><dd><ul class="study-stack" role="list" aria-label="Technologies">{data.technologies.map((technology) => <li>{technology}</li>)}</ul></dd></div>
+      </dl>
     </header>
-    <figure class="case-cover shell">
-      <a href={data.cover} aria-label={`Open full screenshot of ${data.title}`}><img src={data.cover} alt={data.coverAlt} width={data.coverWidth} height={data.coverHeight} fetchpriority="high" /></a>
-      <figcaption>{data.coverCaption}</figcaption>
+
+    <figure class="study-cover shell">
+      <div class="study-preview-label"><span><span class="study-preview-dot" aria-hidden="true"></span>{data.title} / Interface overview</span><a href={data.cover}>Open full capture <span aria-hidden="true">↗</span></a></div>
+      <a class="study-preview" href={data.cover} aria-label={`Open full screenshot of ${data.title}`}>
+        <img src={data.cover} alt={data.coverAlt} width={data.coverWidth} height={data.coverHeight} fetchpriority="high" />
+      </a>
+      <figcaption><span class="study-caption-number" aria-hidden="true">Fig. 01</span><span>{data.coverCaption} <span class="study-crop-note">Overview crop; open the full capture for all detail.</span></span></figcaption>
     </figure>
-    <div class="case-body shell">
-      <aside class="case-sidebar"><nav aria-label="On this page"><p class="eyebrow">In this project</p>{headings.filter((heading) => heading.depth === 2).map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}</nav></aside>
-      <div class="prose"><Content /></div>
+
+    <section class="study-workflow shell" aria-labelledby="workflow-overview">
+      <div class="study-section-heading"><div><p class="eyebrow">The system at a glance</p><h2 id="workflow-overview">From input to a decision.</h2></div><p>A reading guide to the implementation.<br />Verification scope and limitations follow below.</p></div>
+      <ol class="study-flow" role="list">
+        {data.workflow.map((step, index) => <li><span class="study-step-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><h3>{step.title}</h3><p>{step.description}</p></li>)}
+      </ol>
+    </section>
+
+    <div class="study-layout shell">
+      <aside class="study-sidebar">
+        <nav class="study-desktop-contents" aria-label="On this page">
+          <p class="eyebrow">Inside the project</p>
+          <a href="#workflow-overview">The system at a glance</a>
+          {sections.map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}
+          <a class="study-toc-contact" href="mailto:haroldng2001@gmail.com">Discuss the work <span aria-hidden="true">↗</span></a>
+        </nav>
+        <details class="study-mobile-contents">
+          <summary>On this page</summary>
+          <nav aria-label="Case study sections"><a href="#workflow-overview">The system at a glance</a>{sections.map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}</nav>
+        </details>
+      </aside>
+      <div class="study-prose"><Content /></div>
     </div>
   </article>
-  <section class="case-next shell" aria-label="More work">
-    <p class="eyebrow">Keep exploring</p>
-    {related && <a href={`/work/${related.data.slug}/`}>{related.data.title}<span aria-hidden="true">↗</span></a>}
-    <a class="text-link" href="mailto:haroldng2001@gmail.com">Talk to me about the work <span aria-hidden="true">↗</span></a>
+
+  <section class="study-next shell" aria-labelledby="next-project-title">
+    <div><p class="eyebrow">Keep exploring</p><h2 id="next-project-title">Another way to look at the work.</h2><a class="text-link" href="mailto:haroldng2001@gmail.com">Talk to me about a project <span aria-hidden="true">↗</span></a></div>
+    {related && <a class="study-next-project" href={`/work/${related.data.slug}/`}><span class="eyebrow">Next case study</span><span class="study-next-title">{related.data.title}<span aria-hidden="true">↗</span></span><span class="study-next-summary">{related.data.summary}</span></a>}
   </section>
 </Layout>

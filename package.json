@@ -9,9 +9,10 @@
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",
     "check": "astro check",
-    "build": "astro check && astro build",
+    "build": "astro check && astro build && node scripts/check-client-budget.mjs",
     "preview": "astro preview --host 127.0.0.1",
     "test": "node scripts/verify-site.mjs",
+    "test:design": "node scripts/verify-design.mjs",
     "resume": "node scripts/build-resume.mjs",
     "audit": "node scripts/audit-site.mjs",
     "social": "node scripts/build-social.mjs",
@@ -23,13 +24,18 @@
     "verify:hosted": "node scripts/verify-hosted.mjs"
   },
   "dependencies": {
+    "@astrojs/react": "^7.1.9",
     "@fontsource-variable/dm-sans": "^5.3.0",
-    "@fontsource-variable/newsreader": "^5.3.0",
-    "astro": "^7.4.10"
+    "@fontsource/newsreader": "^5.3.0",
+    "astro": "^7.4.10",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
     "@axe-core/playwright": "^4.14.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "chrome-launcher": "^1.2.3",
     "lighthouse": "^13.6.0",
     "playwright": "^1.65.0",

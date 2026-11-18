@@ -2,6 +2,21 @@
 title: ReleaseGuard
 slug: releaseguard
 summary: A release safety workbench that makes the evidence for advancing, holding, or stopping a canary inspectable.
+focus: A release advances only with evidence.
+decision: Treat insufficient or missing measurements as inconclusive, and confirm a stop through the router and subsequent requests.
+evidence:
+  label: Inspect the statistical evidence
+  url: https://github.com/ngyathin16/releaseguard/blob/main/docs/STATISTICS.md
+walkthrough: /work/releaseguard/#watch-and-reproduce
+workflow:
+  - title: Declare the policy
+    description: Choose a local scenario and inspect the fixed checkpoints, tolerances and required cohorts.
+  - title: Measure real traffic
+    description: Send HTTP requests to separate baseline and candidate processes through a local router.
+  - title: Judge each cohort
+    description: Compare uncertainty bounds and complete observations before marking a stage eligible.
+  - title: Advance or withdraw
+    description: Require explicit advancement, or verify withdrawal with router acknowledgement and probes.
 status: Completed · runs locally
 period: November 2026
 role: Personal project, developed with AI assistance

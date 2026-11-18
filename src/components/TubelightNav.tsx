@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 // Adapted from Serenity UI's MIT-licensed Tubelight Navbar; see docs/COMPONENT-ADOPTION.md.
 type Section = 'work' | 'about' | 'contact';
@@ -15,6 +15,7 @@ export default function TubelightNav({ pathname }: { pathname: string }) {
   );
   const navRef = useRef<HTMLElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
+  const pendingSection = useRef<Section | null>(null);
 
   useEffect(() => {
     const header = navRef.current?.closest('header');
@@ -48,52 +49,55 @@ export default function TubelightNav({ pathname }: { pathname: string }) {
       if (window.scrollY > 0 && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
         current = 'contact';
       }
+      // Keep the clicked destination selected while native anchor scrolling passes other sections.
+      if (pendingSection.current && pendingSection.current !== current) return;
+      pendingSection.current = null;
       setActiveTab(current);
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(updateSection);
     };
+    const resumeTracking = () => {
+      pendingSection.current = null;
+      onScroll();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) resumeTracking();
+    };
 
     updateSection();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
+    window.addEventListener('scrollend', resumeTracking);
+    window.addEventListener('wheel', resumeTracking, { passive: true });
+    window.addEventListener('touchstart', resumeTracking, { passive: true });
+    window.addEventListener('keydown', onKeyDown);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
+      window.removeEventListener('scrollend', resumeTracking);
+      window.removeEventListener('wheel', resumeTracking);
+      window.removeEventListener('touchstart', resumeTracking);
+      window.removeEventListener('keydown', onKeyDown);
     };
   }, [pathname]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const nav = navRef.current;
     const indicator = indicatorRef.current;
     const activeLink = nav?.querySelector<HTMLAnchorElement>(`[data-section="${activeTab}"]`);
     if (!nav || !indicator || !activeLink) return;
 
     const positionIndicator = () => {
-      const previous = indicator.getBoundingClientRect();
       const origin = nav.getBoundingClientRect();
       const target = activeLink.getBoundingClientRect();
       const left = target.left - origin.left - nav.clientLeft;
       const top = target.top - origin.top - nav.clientTop;
-      const nextTransform = `translate(${left}px, ${top}px)`;
-      const ready = nav.dataset.ready === 'true';
-
-      indicator.getAnimations().forEach(animation => animation.cancel());
       indicator.style.width = `${target.width}px`;
       indicator.style.height = `${target.height}px`;
-      indicator.style.transform = nextTransform;
+      indicator.style.transform = `translate(${left}px, ${top}px)`;
       nav.dataset.ready = 'true';
-
-      if (ready && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        indicator.animate(
-          [
-            { transform: `translate(${previous.left - origin.left - nav.clientLeft}px, ${previous.top - origin.top - nav.clientTop}px)`, width: `${previous.width}px` },
-            { transform: nextTransform, width: `${target.width}px` },
-          ],
-          { duration: 220, easing: 'cubic-bezier(.22, 1, .36, 1)' },
-        );
-      }
     };
 
     positionIndicator();
@@ -102,7 +106,6 @@ export default function TubelightNav({ pathname }: { pathname: string }) {
     observer.observe(activeLink);
     return () => {
       observer.disconnect();
-      indicator.getAnimations().forEach(animation => animation.cancel());
     };
   }, [activeTab]);
 
@@ -123,7 +126,11 @@ export default function TubelightNav({ pathname }: { pathname: string }) {
             data-section={tab.section}
             data-active={isActive ? 'true' : undefined}
             aria-current={isActive ? 'location' : undefined}
-            onClick={() => setActiveTab(tab.section)}
+            onClick={event => {
+              if (pathname !== '/' || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+              pendingSection.current = tab.section;
+              setActiveTab(tab.section);
+            }}
           >
             <span className="tubelight-label">{tab.name}</span>
           </a>

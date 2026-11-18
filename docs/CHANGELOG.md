@@ -2,6 +2,8 @@
 
 ## 18 November 2026
 
+- Fixed top-bar highlight flicker by keeping the clicked section selected during anchor scrolling and allowing indicator transitions to continue from their visible position when retargeted. Added browser regression checks for smooth movement, rapid selection changes, scroll tracking and reduced motion.
+
 - Made hosted design checks wait for stylesheets and font layout before testing reflow, including JavaScript-disabled pages. This removes an unstyled-document timing failure without relaxing overflow assertions.
 
 - Rebuilt the homepage and four case studies around ivory, graphite and teal, Newsreader typography, real photography and larger project evidence.

@@ -1,8 +1,10 @@
 # Harold Ng — portfolio
 
-A static Astro portfolio with Markdown case studies and an independently runnable Relay Desk project. Node.js 24 is required.
+A static Astro portfolio with Markdown case studies for QueryProof, ReleaseGuard, Relay Desk and IFC-GPT. Node.js 24 is required.
 
 Live site: **[haroldng.dev](https://haroldng.dev)**. Hosted on Cloudflare Workers Free; see the [launch evidence](docs/DEPLOYMENT-VERIFICATION.md).
+
+The latest completed projects are [QueryProof](https://haroldng.dev/work/queryproof/), a SQL metric review workbench, and [ReleaseGuard](https://haroldng.dev/work/releaseguard/), a local canary release workbench. Their case studies link public source, recorded walkthroughs, measured evidence and local startup instructions. Both also appear in the downloadable résumé.
 
 ```sh
 npm ci

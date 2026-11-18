@@ -24,6 +24,8 @@ The fresh **hosted pre-upgrade** baseline returned performance/accessibility **1
 
 The build's conservative first-party JavaScript upper bound is **72,258 bytes gzip per route**, including inline bootstrap scripts and every external loadable chunk. Provider-injected analytics is outside that first-party budget and included in hosted audits.
 
+The first hosted no-JavaScript run exposed a test-readiness race: `DOMContentLoaded` arrived before the external stylesheet, and the test measured unstyled images at 1,488 px wide. Once the stylesheet arrived, the same page was 390 px wide with no overflow. The design verifier now waits for stylesheet objects, forces layout to initiate font requests, and waits for loaded font status with explicit timeouts before measuring either JavaScript or no-JavaScript pages. Polling runs in Node because disabled JavaScript also stops browser timer callbacks. The first no-JavaScript stylesheet is deliberately delayed 500 ms to exercise this condition on every run. The verifier does not wait for an on-demand video's load event.
+
 ## Completed-project update — 18 November 2026
 
 Refreshed the homepage, completion labels, case-study evidence and résumé against the published QueryProof `fa5760f` and ReleaseGuard `74b7a6f` revisions. Application measurements are retained evidence from those projects; their evaluation suites were not rerun for this content update.

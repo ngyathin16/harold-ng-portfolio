@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { setTimeout as delay } from 'node:timers/promises';
 import { chromium, firefox, webkit } from 'playwright';
 
 const base = new URL(process.env.BASE_URL || process.env.TEST_BASE_URL || 'http://127.0.0.1:4321');
@@ -33,14 +34,29 @@ const visible = async (locator, message) => assert(await locator.isVisible(), me
 const noOverflow = async (target, label) => {
   assert(await target.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${label}: horizontal page overflow`);
 };
+const openPage = async (target, url) => {
+  const response = await target.goto(url, { waitUntil: 'domcontentloaded' });
+  const deadline = Date.now() + 10000;
+  let state;
+  // Browser timers stop when JavaScript is disabled; poll readiness from Node.
+  while (Date.now() < deadline) {
+    state = await target.evaluate(() => {
+      const stylesLoaded = [...document.querySelectorAll('link[rel="stylesheet"]')].every(link => link.sheet);
+      if (stylesLoaded) document.body.getBoundingClientRect();
+      return { stylesLoaded, fonts: document.fonts.status };
+    });
+    if (state.stylesLoaded && state.fonts === 'loaded') return response;
+    await delay(50);
+  }
+  assert.fail(`${url}: styles or fonts did not become ready: ${JSON.stringify(state)}`);
+};
 
 try {
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     for (const route of routes) {
-      const response = await page.goto(new URL(route, base).href, { waitUntil: 'domcontentloaded' });
+      const response = await openPage(page, new URL(route, base).href);
       assert([200, 304].includes(response?.status()), `${route}: successful response or validated browser cache`);
-      await page.waitForFunction(() => document.fonts.status === 'loaded', undefined, { timeout: 10000 });
       await noOverflow(page, `${route} at ${width}`);
       const nav = page.getByRole('navigation', { name: 'Main navigation', exact: true });
       for (const name of ['Work', 'About', 'Contact']) {
@@ -96,8 +112,7 @@ try {
       }
       report.viewports.push({ route, width });
     }
-    await page.goto(base.href, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => document.fonts.status === 'loaded', undefined, { timeout: 10000 });
+    await openPage(page, base.href);
     for (const image of await page.locator('img').all()) {
       await image.scrollIntoViewIfNeeded();
       await page.waitForFunction(element => element.complete && element.naturalWidth > 0, await image.elementHandle(), { timeout: 10000 });
@@ -108,7 +123,7 @@ try {
   }
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(base.href, { waitUntil: 'domcontentloaded' });
+  await openPage(page, base.href);
   const navigation = page.getByRole('navigation', { name: 'Main navigation', exact: true });
   await navigation.getByRole('link', { name: 'About', exact: true }).click();
   await page.waitForFunction(() => document.querySelector('nav[aria-label="Main navigation"] a[href="/#about"]')?.getAttribute('aria-current') === 'location');
@@ -125,7 +140,7 @@ try {
   }
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(base.href, { waitUntil: 'domcontentloaded' });
+  await openPage(page, base.href);
   let focusedWork = false;
   if (engine === 'webkit' && process.platform === 'win32') {
     report.limitations.push('Windows Playwright WebKit skips native links in its Tab order, reproduced with an independent plain-HTML fixture. Navigation focus appearance and Enter activation are checked after programmatic focus; native Tab reachability is covered by Chromium and Firefox. This engine run is not a Safari-device test.');
@@ -150,8 +165,7 @@ try {
   assert.equal(new URL(page.url()).hash, '#work', 'Keyboard activates the focused navigation link');
 
   for (const route of ['/', '/work/queryproof/']) {
-    await page.goto(new URL(route, base).href, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => document.fonts.status === 'loaded', undefined, { timeout: 10000 });
+    await openPage(page, new URL(route, base).href);
     await page.evaluate(() => {
       const sizes = [...document.querySelectorAll('body, body *')]
         .filter(element => element instanceof HTMLElement)
@@ -162,9 +176,13 @@ try {
   }
 
   const noScript = await browser.newContext({ javaScriptEnabled: false, reducedMotion: 'reduce', viewport: { width: 390, height: 844 } });
+  await noScript.route('**/*.css', async route => {
+    await delay(500);
+    await route.continue();
+  }, { times: 1 });
   const staticPage = await noScript.newPage();
   for (const route of routes) {
-    await staticPage.goto(new URL(route, base).href, { waitUntil: 'domcontentloaded' });
+    await openPage(staticPage, new URL(route, base).href);
     await visible(staticPage.locator('h1'), `${route}: heading visible without JavaScript`);
     await noOverflow(staticPage, `${route}: no-JavaScript reflow`);
     const links = staticPage.getByRole('navigation', { name: 'Main navigation', exact: true });
@@ -181,7 +199,7 @@ try {
     report.noJavaScript.push(route);
   }
   await staticPage.setViewportSize({ width: 320, height: 844 });
-  await staticPage.goto(base.href, { waitUntil: 'domcontentloaded' });
+  await openPage(staticPage, base.href);
   const staticNavigation = staticPage.getByRole('navigation', { name: 'Main navigation', exact: true });
   await staticNavigation.getByRole('link', { name: 'About', exact: true }).click();
   const staticAboutTop = await staticPage.locator('#about').evaluate(element => element.getBoundingClientRect().top);

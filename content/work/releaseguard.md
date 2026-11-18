@@ -2,7 +2,7 @@
 title: ReleaseGuard
 slug: releaseguard
 summary: A release safety workbench that makes the evidence for advancing, holding, or stopping a canary inspectable.
-status: Verified local application
+status: Completed · runs locally
 period: November 2026
 role: Personal project, developed with AI assistance
 workType: Personal project
@@ -22,6 +22,8 @@ technologies: [TypeScript, Node.js, React, SQLite]
 A release can look healthy on average while making one group of users worse off. Sparse measurements can also look reassuring when they actually provide too little evidence. Stopping the rollout adds another question: did new traffic really stop reaching the candidate?
 
 ReleaseGuard makes those decisions inspectable in a local experiment. It compares a fresh baseline and candidate, checks each required cohort, and verifies withdrawal through the router and subsequent requests.
+
+Completed in November 2026, with public source, a captioned walkthrough, repeatable fault scenarios and exported evidence that can reproduce each recorded decision.
 
 ## The workflow
 
@@ -43,7 +45,9 @@ The frozen synthetic evaluation includes 200 no-regression simulations and 100 p
 
 The [statistical record](https://github.com/ngyathin16/releaseguard/blob/main/docs/STATISTICS.md) links independent SciPy reference calculations, the frozen manifests, raw observations, uncertainty intervals and initial failed evaluations. The conservative method's delays are reported alongside its useful detections. An overall-threshold baseline is evaluated against the same captured inputs.
 
-The [runtime verification record](https://github.com/ngyathin16/releaseguard/blob/main/docs/VERIFICATION.md) includes real process tests, repeated live fault scenarios, controller termination during a stop, stale commands, and observed withdrawal timings. The browser workflow was checked at 360, 768, and 1440 pixels, including keyboard operation and automated accessibility checks. Automated testing is not a human usability study.
+Clean Windows and Ubuntu checkouts passed **29 tests**. Final-source control verification repeated insufficient traffic, missing telemetry, candidate crash and lease expiry three times each: **12 live runs and 63,712 HTTP requests**. The slowest observed withdrawal in those runs was **164.565 ms**, measured from the stop request through router acknowledgement and three subsequent baseline probes. These are local observations; requests already in flight are excluded.
+
+The [runtime verification record](https://github.com/ngyathin16/releaseguard/blob/main/docs/VERIFICATION.md) also retains an earlier 33-run fault suite, controller termination during a stop, stale commands and exact evidence reanalysis. The browser workflow passed **12 responsive views** at 360, 768 and 1440 pixels and **seven additional boundary checks**, including keyboard operation and automated accessibility checks. Automated testing is not a human usability study.
 
 ## Watch and reproduce
 

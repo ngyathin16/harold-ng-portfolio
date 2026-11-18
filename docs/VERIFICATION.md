@@ -1,5 +1,13 @@
 # Portfolio verification
 
+## Completed-project update — 18 November 2026
+
+Refreshed the homepage, completion labels, case-study evidence and résumé against the published QueryProof `fa5760f` and ReleaseGuard `74b7a6f` revisions. Application measurements are retained evidence from those projects; their evaluation suites were not rerun for this content update.
+
+On Windows with Node 24.14.0, the production `npm run build:deployment` passed with zero Astro errors, warnings or hints. All **21 release tests** passed. Browser checks against the local Workers runtime at `http://127.0.0.1:4323` passed **18 page/viewport combinations**, **48 local links**, keyboard navigation, downloads and automated accessibility checks. Desktop and mobile homepage screenshots were visually inspected.
+
+`npm run resume` generated the updated PDF. PyMuPDF confirmed **one A4 page**, extractable text for both projects and all **five expected link annotations**. The rendered page was visually inspected for clipping and readability. Local artifacts are `artifacts/portfolio/` and `artifacts/resume-updated.png`; hosted results are recorded on the release pull request after deployment.
+
 ## QueryProof and ReleaseGuard integration — 17 November 2026
 
 The production build includes four case studies and passed with zero errors, warnings or hints. Windows Node 24.14.0 and the local Workers runtime were used for `npm test`: **18 page/viewport combinations** at 360, 768 and 1440 px, **48 local links**, keyboard navigation, downloads and automated WCAG-tagged checks passed. All **21 release/deployment tests** passed. Source and measured application evidence are linked in [the implementation record](PROJECTS-IMPLEMENTATION.md). The ReleaseGuard recording is a static asset, with a separate caption track; no local backend is included in static hosting.

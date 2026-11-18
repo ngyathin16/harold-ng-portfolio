@@ -2,7 +2,7 @@
 title: QueryProof
 slug: queryproof
 summary: A SQL review workbench that checks a number against its definition and shows the rows behind a misleading result.
-status: Verified local application
+status: Completed · runs locally
 period: November 2026
 role: Product direction and implementation with AI assistance
 workType: Personal project
@@ -22,6 +22,8 @@ technologies: [Python, DuckDB, SQLGlot, SQLite, React, TypeScript, Ollama]
 A SQL query can run successfully and still support the wrong decision. Join orders to both line items and campaign touches, then sum order totals, and the repeated rows can make revenue look much higher than it is. The SQL engine has done what it was asked; the analysis has lost its intended grain.
 
 QueryProof lets an analyst state what the metric means, run a query against a pinned dataset, and inspect evidence before accepting a revision. The default workflow needs no account or API key.
+
+Completed in November 2026, with public source, a captioned walkthrough and reproducible evaluation evidence. The [acceptance record](https://github.com/ngyathin16/queryproof/blob/main/docs/ACCEPTANCE.md) maps the delivered features to their checks and scope limits.
 
 ## A number with evidence
 

@@ -1,5 +1,12 @@
 # Change history
 
+## 18 November 2026
+
+- Marked QueryProof and ReleaseGuard as completed local applications and introduced them in the homepage copy and search/social descriptions.
+- Added QueryProof's acceptance link and ReleaseGuard's final 29-test, 12-run control evidence with its measurement scope.
+- Added both projects to the one-page résumé, including public source links, and regenerated the downloadable PDF.
+- Verified the production build, 21 release tests, 18 responsive page views and 48 local links. See [verification](VERIFICATION.md) for scope.
+
 ## 17 November 2026
 
 - Added accepted QueryProof and ReleaseGuard case studies with real screenshots, measured evidence, runnable source and explicit limitations. Preserved Relay Desk and IFC-GPT routes.

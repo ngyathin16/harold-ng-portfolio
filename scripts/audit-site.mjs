@@ -64,9 +64,12 @@ try {
     process.stdout.write(`${JSON.stringify(metrics)}\n`);
     await writeFile(new URL('summary.json', artifacts), JSON.stringify(summary, null, 2));
   }
-  summary.median = Object.fromEntries(['performance', 'accessibility'].map((key) => [key, median(results.map((result) => result[key]))]));
-  summary.range = Object.fromEntries(['performance', 'accessibility'].map((key) => [key, [Math.min(...results.map((result) => result[key])), Math.max(...results.map((result) => result[key]))]]));
-  assert(summary.median.performance >= 90 && summary.median.accessibility >= 90, 'Median missed the 90/90 target; inspect artifacts/lighthouse');
+  const metrics = ['performance', 'accessibility', 'largestContentfulPaintMs', 'cumulativeLayoutShift'];
+  summary.median = Object.fromEntries(metrics.map((key) => [key, median(results.map((result) => result[key]))]));
+  summary.range = Object.fromEntries(metrics.map((key) => [key, [Math.min(...results.map((result) => result[key])), Math.max(...results.map((result) => result[key]))]]));
+  assert(summary.median.performance >= 95 && summary.median.accessibility >= 95, 'Median missed the 95/95 target; inspect artifacts/lighthouse');
+  assert(summary.median.largestContentfulPaintMs <= 2500, 'Median LCP exceeds 2.5 seconds');
+  assert(summary.median.cumulativeLayoutShift <= 0.1, 'Median CLS exceeds 0.1');
   summary.passed = true;
   process.stdout.write(`Median: ${JSON.stringify(summary.median)}\n`);
 } catch (error) {

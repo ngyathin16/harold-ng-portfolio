@@ -77,7 +77,9 @@ jobs:
           GITHUB_SHA="$EXPECTED_COMMIT" npm run verify:hosted -- --mode production 2>&1 | tee artifacts/live/http.log || http_status=$?
           browser_status=0
           GITHUB_SHA="$EXPECTED_COMMIT" npm test 2>&1 | tee artifacts/live/browser.log || browser_status=$?
-          if [[ "$http_status" -ne 0 || "$browser_status" -ne 0 ]]; then exit 1; fi
+          design_status=0
+          GITHUB_SHA="$EXPECTED_COMMIT" npm run test:design 2>&1 | tee artifacts/live/design.log || design_status=$?
+          if [[ "$http_status" -ne 0 || "$browser_status" -ne 0 || "$design_status" -ne 0 ]]; then exit 1; fi
       - name: Preserve live verification evidence even on failure
         if: always()
         uses: actions/upload-artifact@v4
@@ -87,5 +89,6 @@ jobs:
             artifacts/live/
             artifacts/hosted/
             artifacts/portfolio/
+            artifacts/design/
           if-no-files-found: warn
           retention-days: 14

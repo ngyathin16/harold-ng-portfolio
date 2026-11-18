@@ -2,6 +2,20 @@
 title: IFC-GPT v2
 slug: ifc-gpt
 summary: From a building description to an inspectable 3D model, with planning and checks along the way.
+focus: A visible model still needs validation.
+decision: Separate the structured building plan from geometry and validation. A downloadable IFC file does not establish that every check passed.
+evidence:
+  label: Read the verified results and limits
+  url: /work/ifc-gpt/#what-i-verified
+workflow:
+  - title: Structure the plan
+    description: Represent storeys, dimensions, element types and relationships before building geometry.
+  - title: Build the IFC
+    description: Use Python geometry functions to create walls, slabs, windows and other planned elements.
+  - title: Check and repair
+    description: Run plan, schema and property checks within a bounded repair workflow.
+  - title: Export and inspect
+    description: Open the file in the viewer while keeping validation failures separate from rendering success.
 status: Public prototype
 period: 'April 2026'
 workType: Personal project

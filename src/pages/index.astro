@@ -1,94 +1,85 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-
+import ProjectShowcase from '../components/ProjectShowcase';
+import ExperienceTimeline from '../components/ExperienceTimeline.astro';
 const projects = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
 ---
 <Layout>
   <section class="hero shell" aria-labelledby="intro-title">
-    <div class="eyebrow hero-eyebrow"><span class="status-dot" aria-hidden="true"></span> AI, and the software around it.</div>
-    <div class="hero-heading">
-      <h1 id="intro-title">Harold Ng<span class="name-period">.</span></h1>
-      <img class="hero-portrait" src="/images/harold-portrait-480.webp" srcset="/images/harold-portrait-240.webp 240w, /images/harold-portrait-480.webp 480w, /images/harold-portrait-720.webp 720w" sizes="(max-width: 700px) 112px, (max-width: 1000px) 180px, 240px" alt="Harold standing beneath a tree on a city street." width="720" height="961" loading="eager" fetchpriority="high" decoding="async" data-source="client" data-subject="Harold Ng" />
-    </div>
-    <div class="hero-bottom">
-      <h2>AI engineer<br />based in <em>Hong Kong.</em></h2>
-      <div class="hero-intro">
-        <p>I work on AI tools and desktop software at Yau Lee. My latest personal projects, QueryProof and ReleaseGuard, help people check SQL results and decide whether a release is safe to advance.</p>
-        <div class="hero-actions">
-          <a class="button" href="mailto:haroldng2001@gmail.com">Email me <span aria-hidden="true">↗</span></a>
-          <a class="text-link" href="https://www.linkedin.com/in/harold-ng-986a5b252/">LinkedIn <span aria-hidden="true">↗</span></a>
-          <a class="text-link" href="https://github.com/ngyathin16">GitHub <span aria-hidden="true">↗</span></a>
-        </div>
-        <a class="resume-link" href="/resume.pdf" download>Download résumé <span class="file-label">PDF</span> <span aria-hidden="true">↓</span></a>
+    <div class="hero-copy">
+      <p class="eyebrow hero-eyebrow"><span class="status-dot" aria-hidden="true"></span> Based in Hong Kong · Building with intention</p>
+      <h1 id="intro-title">Harold Ng<span>.</span></h1>
+      <p class="hero-role">AI Solutions Engineer</p>
+      <p class="hero-statement">From a complex problem<br />to <em>something useful.</em></p>
+      <p class="hero-description">I build AI tools and the software that makes their decisions inspectable. Currently working on AI and desktop software at Yau Lee.</p>
+      <div class="hero-actions">
+        <a class="button" href="mailto:haroldng2001@gmail.com">Email me <span aria-hidden="true">↗</span></a>
+        <a class="text-link" href="#work">Explore selected work <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="hero-links">
+        <a class="resume-link" href="/resume.pdf" download>Résumé <span class="file-label">PDF</span> <span aria-hidden="true">↓</span></a>
+        <span aria-hidden="true">/</span><a href="https://www.linkedin.com/in/harold-ng-986a5b252/">LinkedIn ↗</a><a href="https://github.com/ngyathin16">GitHub ↗</a>
       </div>
     </div>
-    <a href="#work" class="hero-scroll"><span aria-hidden="true">↓</span> A closer look at my work</a>
+    <figure class="hero-visual">
+      <div class="portrait-mat">
+        <span class="portrait-coordinate" aria-hidden="true">A LITTLE CONTEXT / 01</span>
+        <picture>
+          <source type="image/avif" srcset="/images/harold-portrait-240.avif 240w, /images/harold-portrait-480.avif 480w, /images/harold-portrait-576.avif 576w, /images/harold-portrait-720.avif 720w" sizes="(max-width: 700px) min(298px, calc(100vw - 92px)), (max-width: 1000px) 33vw, 350px" />
+          <img class="hero-portrait" src="/images/harold-portrait-480.webp" srcset="/images/harold-portrait-240.webp 240w, /images/harold-portrait-480.webp 480w, /images/harold-portrait-720.webp 720w" sizes="(max-width: 700px) min(298px, calc(100vw - 92px)), (max-width: 1000px) 33vw, 350px" alt="Harold standing beneath a tree on a city street." width="720" height="961" loading="eager" fetchpriority="high" decoding="async" />
+        </picture>
+        <span class="portrait-mark" aria-hidden="true">hn.</span>
+      </div>
+      <figcaption><span>A person behind the projects.</span><span aria-hidden="true">↗</span></figcaption>
+    </figure>
+    <div class="hero-context">
+      <p><span>Currently</span>Yau Lee Holdings <span aria-hidden="true">↗</span></p>
+      <p><span>The path here</span>Applied mathematics → Data science → AI</p>
+      <a href="#work">Selected work, below <span aria-hidden="true">↓</span></a>
+    </div>
   </section>
-
   <section id="work" class="work-section shell" aria-labelledby="work-title">
     <div class="section-heading">
-      <div><p class="eyebrow">01 / Selected work</p><h2 id="work-title">From idea to something useful.</h2></div>
-      <p class="section-note">{projects.length} personal projects.<br /> The decisions, the evidence, and the limits.</p>
+      <div><p class="eyebrow">01 / Selected work</p><h2 id="work-title">Built to work.<br /><em>Open to inspection.</em></h2></div>
+      <p class="section-note">Four personal projects.<br />The problem, the decisions,<br />and the evidence behind them.</p>
     </div>
-    <div class="project-grid">
-      {projects.map(({ data }, index) => (
-        <article class={`project-card project-${data.slug}`}>
-          <a class="project-image-link" href={`/work/${data.slug}/`} aria-label={`Read the ${data.title} case study`}>
-            <div class="project-image"><img src={data.cover} alt={data.coverAlt} width={data.coverWidth} height={data.coverHeight} loading="lazy" decoding="async" /></div>
-            <span class="image-arrow" aria-hidden="true">↗</span>
-          </a>
-          <div class="project-kicker"><span>{String(index + 1).padStart(2, '0')} / {data.workType}</span><span>{data.period}</span></div>
-          <h3><a href={`/work/${data.slug}/`}>{data.title}<span aria-hidden="true">↗</span></a></h3>
-          <p>{data.summary}</p>
-          <div class="project-status"><span class="status-dot" aria-hidden="true"></span>{data.status}</div>
-        </article>
-      ))}
+    <ProjectShowcase projects={projects.map(({ data }) => data)} />
+  </section>
+  <section class="approach-section shell" aria-labelledby="approach-title">
+    <div class="section-heading">
+      <div><p class="eyebrow">02 / How I approach the work</p><h2 id="approach-title">The details<br /><em>make the difference.</em></h2></div>
+      <p class="section-note">A useful result should come<br />with a way to understand it.</p>
+    </div>
+    <div class="approach-grid">
+      <article><span class="approach-number" aria-hidden="true">01</span><h3>Make decisions inspectable.</h3><p>Show the definition, the source and the reasoning behind a result. Give people something they can check.</p><a href="/work/queryproof/#a-number-with-evidence">The rows behind a number <span aria-hidden="true">↗</span></a></article>
+      <article><span class="approach-number" aria-hidden="true">02</span><h3>Measure what happens.</h3><p>Run the experiment, keep the failures, and distinguish a promising result from a reliable conclusion.</p><a href="/work/releaseguard/#measured-evidence">Evidence before exposure <span aria-hidden="true">↗</span></a></article>
+      <article><span class="approach-number" aria-hidden="true">03</span><h3>Keep people in control.</h3><p>Make review and recovery part of the workflow. A model's suggestion should leave room for a human decision.</p><a href="/work/relay-desk/">A reply, with room for review <span aria-hidden="true">↗</span></a></article>
     </div>
   </section>
-
   <section id="about" class="about-section shell" aria-labelledby="about-title">
     <div class="about-intro">
-      <p class="eyebrow">02 / A little context</p>
-      <h2 id="about-title">A path through<br />math, data,<br />and <em>building things.</em></h2>
+      <p class="eyebrow">03 / A little context</p>
+      <h2 id="about-title">Math, data,<br /><em>and building things.</em></h2>
       <p>I studied applied mathematics at UCLA, then data science at UC Irvine. An analytics internship brought me to San Ramon. Today, I’m in Hong Kong, working on AI and software for the built environment.</p>
       <p>I’m interested in the work between a model and the person using it: making its decisions visible, handling what goes wrong, and explaining what it can actually do.</p>
       <a class="text-link" href="/resume.pdf" download>The full résumé <span aria-hidden="true">↗</span></a>
       <div class="about-personal">
         <h3>Away from the screen.</h3>
         <div class="about-photos">
-          <img src="/images/harold-trail-640.webp" srcset="/images/harold-trail-320.webp 320w, /images/harold-trail-640.webp 640w" sizes="(max-width: 700px) calc((100vw - 56px) / 2), (max-width: 1000px) calc((100vw - 144px) / 4), (max-width: 1312px) calc((100vw - 244px) / 4), 267px" alt="Harold beside a MacLehose Trail sign on a sunny hike." width="640" height="853" loading="lazy" decoding="async" data-source="client" data-subject="Harold on the MacLehose Trail" />
-          <img src="/images/harold-court-640.webp" srcset="/images/harold-court-320.webp 320w, /images/harold-court-640.webp 640w" sizes="(max-width: 700px) calc((100vw - 56px) / 2), (max-width: 1000px) calc((100vw - 144px) / 4), (max-width: 1312px) calc((100vw - 244px) / 4), 267px" alt="Harold on a pink and yellow outdoor basketball court." width="640" height="853" loading="lazy" decoding="async" data-source="client" data-subject="Harold on a colorful basketball court" />
+          <figure><img src="/images/harold-trail-640.webp" srcset="/images/harold-trail-320.webp 320w, /images/harold-trail-640.webp 640w" sizes="(max-width: 700px) calc((100vw - 60px) / 2), 240px" alt="Harold beside a MacLehose Trail sign on a sunny hike." width="640" height="853" loading="lazy" decoding="async" /><figcaption>Along the MacLehose Trail.</figcaption></figure>
+          <figure><img src="/images/harold-court-640.webp" srcset="/images/harold-court-320.webp 320w, /images/harold-court-640.webp 640w" sizes="(max-width: 700px) calc((100vw - 60px) / 2), 240px" alt="Harold on a pink and yellow outdoor basketball court." width="640" height="853" loading="lazy" decoding="async" /><figcaption>A stop at the court.</figcaption></figure>
         </div>
       </div>
     </div>
-    <div class="background">
-      <h3 class="eyebrow">Experience</h3>
-      <article class="timeline-entry">
-        <div class="timeline-meta"><span>Jan 2026 — present</span><span>Hong Kong</span></div>
-        <h4>A.I. Engineer</h4>
-        <p class="organization">Yau Lee Holdings Limited</p>
-        <p>AI tools for construction workflows, including speech recognition and a BIM-AI desktop editor. Co-developed a desktop BIM authoring platform, contributing to IFC rendering, authoring, undo/redo, and snapping.</p>
-      </article>
-      <article class="timeline-entry">
-        <div class="timeline-meta"><span>Jun — Nov 2024</span><span>San Ramon, CA</span></div>
-        <h4>Data Analytics Intern</h4>
-        <p class="organization">CooperVision</p>
-        <p>Python data pipelines for sales-trend analysis and sentiment analysis of customer feedback.</p>
-      </article>
-      <h3 class="eyebrow education-label">Education</h3>
-      <div class="education-entry"><div><h4>University of California, Irvine</h4><p>MS, Data Science</p></div><span>2024</span></div>
-      <div class="education-entry"><div><h4>University of California, Los Angeles</h4><p>BS, Applied Mathematics · Computing</p></div><span>2023</span></div>
-    </div>
+    <ExperienceTimeline />
   </section>
-
   <section id="contact" class="contact-section" aria-labelledby="contact-title">
     <div class="shell contact-inner">
-      <div><p class="eyebrow">03 / Get in touch</p><h2 id="contact-title">Let’s make<br /><em>something useful.</em></h2></div>
+      <div><p class="eyebrow">04 / Get in touch</p><h2 id="contact-title">Good work starts<br /><em>with a conversation.</em></h2><p class="contact-note">Have an engineering role or a project in mind?<br />I’d be glad to hear about it.</p></div>
       <div class="contact-details">
-        <p>Have an engineering role or a project in mind?<br />I’d be glad to hear about it.</p>
         <a class="contact-email" href="mailto:haroldng2001@gmail.com">haroldng2001@gmail.com <span aria-hidden="true">↗</span></a>
-        <div class="contact-links"><a href="https://www.linkedin.com/in/harold-ng-986a5b252/">LinkedIn <span aria-hidden="true">↗</span></a><a href="https://github.com/ngyathin16">GitHub <span aria-hidden="true">↗</span></a><a href="/resume.pdf" download>Résumé <span aria-hidden="true">↓</span></a></div>
+        <div class="contact-links"><a href="https://www.linkedin.com/in/harold-ng-986a5b252/">LinkedIn ↗</a><a href="https://github.com/ngyathin16">GitHub ↗</a><a href="/resume.pdf" download>Résumé ↓</a></div>
       </div>
     </div>
   </section>

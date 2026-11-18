@@ -59,6 +59,7 @@ jobs:
           done
           curl --fail --silent http://127.0.0.1:4321/ > /dev/null
           BASE_URL=http://127.0.0.1:4321 npm test
+          BASE_URL=http://127.0.0.1:4321 npm run test:design
       - name: Preserve verification evidence even on failure
         if: always()
         uses: actions/upload-artifact@v4

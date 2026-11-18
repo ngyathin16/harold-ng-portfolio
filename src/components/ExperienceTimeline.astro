@@ -1,0 +1,74 @@
+---
+// Static Astro port of Arc's MIT-licensed Timeline; see docs/COMPONENT-ADOPTION.md.
+const experience = [
+  {
+    title: 'AI Solutions Engineer',
+    organization: 'Yau Lee Holdings Limited',
+    start: '2026-01',
+    startLabel: 'Jan 2026',
+    end: null,
+    endLabel: 'present',
+    location: 'Hong Kong',
+    detail: 'AI tools for construction workflows, including speech recognition and a BIM-AI desktop editor. Co-developed a desktop BIM authoring platform, contributing to IFC rendering, authoring, undo/redo, and snapping.',
+  },
+  {
+    title: 'Data Analytics Intern',
+    organization: 'CooperVision',
+    start: '2024-06',
+    startLabel: 'Jun 2024',
+    end: '2024-11',
+    endLabel: 'Nov 2024',
+    location: 'San Ramon, CA',
+    detail: 'Python data pipelines for sales-trend analysis and sentiment analysis of customer feedback.',
+  },
+];
+const education = [
+  { title: 'University of California, Irvine', degree: 'MS, Data Science', year: '2024' },
+  { title: 'University of California, Los Angeles', degree: 'BS, Applied Mathematics · Computing', year: '2023' },
+];
+---
+<div class="experience-timeline" role="region" aria-label="Experience and education">
+  <section class="experience-timeline-group" aria-labelledby="experience-heading">
+    <div class="experience-timeline-heading">
+      <h3 id="experience-heading" class="eyebrow">Experience</h3>
+      <span class="experience-timeline-count">Hong Kong &amp; California</span>
+    </div>
+    <ol class="experience-timeline-list">
+      {experience.map((entry, index) => (
+        <li class="experience-timeline-item">
+          <span class="experience-timeline-marker" data-current={index === 0 ? 'true' : undefined} aria-hidden="true"><span></span></span>
+          {index < experience.length - 1 && <span class="experience-timeline-segment" aria-hidden="true"></span>}
+          <div class="experience-timeline-content">
+            <div class="experience-timeline-entry">
+              <div class="experience-timeline-text">
+                <p class="experience-timeline-meta"><time datetime={entry.start}>{entry.startLabel}</time> – {entry.end ? <time datetime={entry.end}>{entry.endLabel}</time> : entry.endLabel}</p>
+                <h4>{entry.title}</h4>
+                <p class="experience-timeline-organization">{entry.organization}</p>
+                <p class="experience-timeline-location">{entry.location}</p>
+              </div>
+            </div>
+            <div class="experience-timeline-detail"><p>{entry.detail}</p></div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+  <section class="experience-timeline-group experience-timeline-education" aria-labelledby="education-heading">
+    <div class="experience-timeline-heading"><h3 id="education-heading" class="eyebrow">Education</h3></div>
+    <ol class="experience-timeline-list">
+      {education.map((entry, index) => (
+        <li class="experience-timeline-item">
+          <span class="experience-timeline-marker" aria-hidden="true"><span></span></span>
+          {index < education.length - 1 && <span class="experience-timeline-segment" aria-hidden="true"></span>}
+          <div class="experience-timeline-content experience-timeline-entry">
+            <div class="experience-timeline-text">
+              <h4>{entry.title}</h4>
+              <p class="experience-timeline-degree">{entry.degree}</p>
+            </div>
+            <time class="experience-timeline-year" datetime={entry.year}>{entry.year}</time>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+</div>

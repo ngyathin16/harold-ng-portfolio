@@ -2,6 +2,13 @@
 
 ## 18 November 2026
 
+- Rebuilt the homepage and four case studies around ivory, graphite and teal, Newsreader typography, real photography and larger project evidence.
+- Updated the current role, metadata, social image and one-page r?sum? to AI Solutions Engineer.
+- Adapted licensed author implementations selected through 21st.dev: Serenity Tubelight Navbar, Tailark Features Eight/Card and Arc Timeline. Preserved source revisions and MIT notices in the component adoption record.
+- Added contribution and decision summaries, evidence links, four-step workflows, native mobile contents and related-project navigation while retaining project narratives and caveats.
+- Added responsive/no-JavaScript/keyboard/reduced-motion/text-enlargement checks to required CI, a 90 KB first-party JavaScript build gate, and the 95/95 mobile Lighthouse gate.
+- Added AVIF portrait sources with WebP fallback and load only the Newsreader styles used by the design.
+
 - Added Harold's portrait beside the introduction and two personal photos in About, using responsive WebP assets, descriptive alternative text, and lazy loading below the fold.
 
 - Marked QueryProof and ReleaseGuard as completed local applications and introduced them in the homepage copy and search/social descriptions.

@@ -14,6 +14,7 @@
     "test": "node scripts/verify-site.mjs",
     "test:design": "node scripts/verify-design.mjs && node scripts/verify-navigation.mjs",
     "test:navigation": "node scripts/verify-navigation.mjs",
+    "test:research": "node scripts/verify-research.mjs",
     "resume": "node scripts/build-resume.mjs",
     "audit": "node scripts/audit-site.mjs",
     "social": "node scripts/build-social.mjs",

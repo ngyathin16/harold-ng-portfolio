@@ -99,3 +99,7 @@ After deployment, set `BASE_URL` to the final origin and run `npm run verify:hos
 ## Repository maintenance
 
 Commit and push verified updates to this repository as work is completed. Update case studies, documentation, and the change history alongside behavior or evidence changes. Run the build and affected browser checks before pushing; confirm the remote branch contains the intended commit afterward. Keep private planning files and credentials outside the published repository. Publishing source to GitHub does not deploy the website.
+
+## Research workspace
+
+Applications and the research explorer live at `/applications/` and `/applications/research/`. See [setup and release status](docs/RESEARCH-WORKSPACE.md) and [backend operations](projects/research-workspace/README.md). Set only `PUBLIC_RESEARCH_API_URL` for the browser; the static build requires no research database or secret.

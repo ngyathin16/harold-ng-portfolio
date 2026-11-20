@@ -1,0 +1,4144 @@
+{
+  "dataset_id": "tft-set-19",
+  "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+  "publication_id": "full",
+  "adapter_version": "set19-native-v1",
+  "units": [
+    {
+      "form_id": "tft19:unit:DA_19_Ahri",
+      "unit_id": "tft19:unit:DA_19_Ahri",
+      "champion_id": "tft19:unit:DA_19_Ahri",
+      "name": "Ahri",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Choreographer19",
+        "tft19:trait:DA_KDA19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[4]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_AkaliKDA19",
+      "unit_id": "tft19:unit:DA_AkaliKDA19",
+      "champion_id": "exclusive:DA_AkaliKDA19:DA_Akali_TrueDamage19",
+      "name": "Akali (K/DA)",
+      "cost": 5,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_KDA19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": "akali-mutual-exclusion",
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[5]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Akali_TrueDamage19",
+      "unit_id": "tft19:unit:DA_Akali_TrueDamage19",
+      "champion_id": "exclusive:DA_AkaliKDA19:DA_Akali_TrueDamage19",
+      "name": "Akali (Freestyle, True Damage)",
+      "cost": 5,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Akali_TrueDamage19_UniqueTrait",
+        "tft19:trait:DA_TrueDamage19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": "akali-mutual-exclusion",
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[6]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Alistar19",
+      "unit_id": "tft19:unit:DA_Alistar19",
+      "champion_id": "tft19:unit:DA_Alistar19",
+      "name": "Alistar",
+      "cost": 4,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Alistar19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[7]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Alune19",
+      "unit_id": "tft19:unit:DA_Alune19",
+      "champion_id": "tft19:unit:DA_Alune19",
+      "name": "Alune",
+      "cost": 4,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Heartsteel19",
+        "tft19:trait:DA_Manager19",
+        "tft19:trait:DA_Prodigy19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[8]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Amumu19",
+      "unit_id": "tft19:unit:DA_Amumu19",
+      "champion_id": "tft19:unit:DA_Amumu19",
+      "name": "Amumu",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Amumu19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[9]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Annie19",
+      "unit_id": "tft19:unit:DA_Annie19",
+      "champion_id": "tft19:unit:DA_Annie19",
+      "name": "Annie",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Arcanist19",
+        "tft19:trait:DA_IonicSpark19",
+        "tft19:trait:DA_Juggernaut19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[10]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Aphelios19",
+      "unit_id": "tft19:unit:DA_Aphelios19",
+      "champion_id": "tft19:unit:DA_Aphelios19",
+      "name": "Aphelios",
+      "cost": 5,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Heartsteel19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[11]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Ashe19",
+      "unit_id": "tft19:unit:DA_Ashe19",
+      "champion_id": "tft19:unit:DA_Ashe19",
+      "name": "Ashe",
+      "cost": 2,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_OceanSong19",
+        "tft19:trait:DA_Swiftstriker19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[12]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Aurora19",
+      "unit_id": "tft19:unit:DA_Aurora19",
+      "champion_id": "tft19:unit:DA_Aurora19",
+      "name": "Aurora",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_IonicSpark19",
+        "tft19:trait:DA_Renegade19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[13]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Bard19",
+      "unit_id": "tft19:unit:DA_Bard19",
+      "champion_id": "tft19:unit:DA_Bard19",
+      "name": "Bard",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Jazz19",
+        "tft19:trait:DA_Swiftstriker19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[14]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_BaronNashor19",
+      "unit_id": "tft19:unit:DA_BaronNashor19",
+      "champion_id": "tft19:unit:DA_BaronNashor19",
+      "name": "Baron Nashor",
+      "cost": 7,
+      "slots": 2,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_BaronNashor19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": false,
+      "slot_evidence": "baron-board-slots",
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[20]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Braum19",
+      "unit_id": "tft19:unit:DA_Braum19",
+      "champion_id": "tft19:unit:DA_Braum19",
+      "name": "Braum",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Illbeats19",
+        "tft19:trait:DA_Juggernaut19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[27]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Briar19",
+      "unit_id": "tft19:unit:DA_Briar19",
+      "champion_id": "tft19:unit:DA_Briar19",
+      "name": "Briar",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_IonicSpark19",
+        "tft19:trait:DA_Mosher19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[28]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Camille19",
+      "unit_id": "tft19:unit:DA_Camille19",
+      "champion_id": "tft19:unit:DA_Camille19",
+      "name": "Camille",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_DemonVision19",
+        "tft19:trait:DA_Mosher19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[29]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_DrMundo19",
+      "unit_id": "tft19:unit:DA_DrMundo19",
+      "champion_id": "tft19:unit:DA_DrMundo19",
+      "name": "Dr. Mundo",
+      "cost": 5,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_DrMundo19_UniqueTrait",
+        "tft19:trait:DA_Manager19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[32]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Draven19",
+      "unit_id": "tft19:unit:DA_Draven19",
+      "champion_id": "tft19:unit:DA_Draven19",
+      "name": "Draven",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Illbeats19",
+        "tft19:trait:DA_Trickshot19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[31]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Ekko19",
+      "unit_id": "tft19:unit:DA_Ekko19",
+      "champion_id": "tft19:unit:DA_Ekko19",
+      "name": "Ekko",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Juggernaut19",
+        "tft19:trait:DA_Prodigy19",
+        "tft19:trait:DA_TrueDamage19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[33]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Elise19",
+      "unit_id": "tft19:unit:DA_Elise19",
+      "champion_id": "tft19:unit:DA_Elise19",
+      "name": "Elise",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Frontman19",
+        "tft19:trait:DA_IonicSpark19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[35]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Evelynn19",
+      "unit_id": "tft19:unit:DA_Evelynn19",
+      "champion_id": "tft19:unit:DA_Evelynn19",
+      "name": "Evelynn",
+      "cost": 3,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_KDA19",
+        "tft19:trait:DA_Renegade19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[36]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Ezreal19",
+      "unit_id": "tft19:unit:DA_Ezreal19",
+      "champion_id": "tft19:unit:DA_Ezreal19",
+      "name": "Ezreal",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Encore19",
+        "tft19:trait:DA_Heartsteel19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[37]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Galio19",
+      "unit_id": "tft19:unit:DA_Galio19",
+      "champion_id": "tft19:unit:DA_Galio19",
+      "name": "Galio",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Frontman19",
+        "tft19:trait:DA_Jazz19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[38]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Garen19",
+      "unit_id": "tft19:unit:DA_Garen19",
+      "champion_id": "tft19:unit:DA_Garen19",
+      "name": "Garen",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Choreographer19",
+        "tft19:trait:DA_Garen19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[39]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Gnar19",
+      "unit_id": "tft19:unit:DA_Gnar19",
+      "champion_id": "tft19:unit:DA_Gnar19",
+      "name": "Gnar",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Pentakill19",
+        "tft19:trait:DA_Trickshot19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[40]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Gragas19",
+      "unit_id": "tft19:unit:DA_Gragas19",
+      "champion_id": "tft19:unit:DA_Gragas19",
+      "name": "Gragas",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Juggernaut19",
+        "tft19:trait:DA_KDA19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[41]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Graves19",
+      "unit_id": "tft19:unit:DA_Graves19",
+      "champion_id": "tft19:unit:DA_Graves19",
+      "name": "Graves",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_OceanSong19",
+        "tft19:trait:DA_Renegade19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[42]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Gwen19",
+      "unit_id": "tft19:unit:DA_Gwen19",
+      "champion_id": "tft19:unit:DA_Gwen19",
+      "name": "Gwen",
+      "cost": 5,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Gwen19_UniqueTrait",
+        "tft19:trait:DA_IonicSpark19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[43]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Illaoi19",
+      "unit_id": "tft19:unit:DA_Illaoi19",
+      "champion_id": "tft19:unit:DA_Illaoi19",
+      "name": "Illaoi",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Frontman19",
+        "tft19:trait:DA_Illbeats19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[44]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Janna19",
+      "unit_id": "tft19:unit:DA_Janna19",
+      "champion_id": "tft19:unit:DA_Janna19",
+      "name": "Janna",
+      "cost": 5,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Heavenscale19",
+        "tft19:trait:DA_Janna19_UniqueTrait",
+        "tft19:trait:DA_Prodigy19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[45]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Jax19",
+      "unit_id": "tft19:unit:DA_Jax19",
+      "champion_id": "tft19:unit:DA_Jax19",
+      "name": "Jax",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Bodyguard19",
+        "tft19:trait:DA_EDM19",
+        "tft19:trait:DA_Swiftstriker19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[46]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Jhin19",
+      "unit_id": "tft19:unit:DA_Jhin19",
+      "champion_id": "tft19:unit:DA_Jhin19",
+      "name": "Jhin",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Encore19",
+        "tft19:trait:DA_Virtuosos19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[47]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Jinx19",
+      "unit_id": "tft19:unit:DA_Jinx19",
+      "champion_id": "tft19:unit:DA_Jinx19",
+      "name": "Jinx",
+      "cost": 4,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Hitmaker19",
+        "tft19:trait:DA_IonicSpark19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[48]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_KSante19",
+      "unit_id": "tft19:unit:DA_KSante19",
+      "champion_id": "tft19:unit:DA_KSante19",
+      "name": "K'Sante",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Bodyguard19",
+        "tft19:trait:DA_Heartsteel19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[56]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Kaisa19",
+      "unit_id": "tft19:unit:DA_Kaisa19",
+      "champion_id": "tft19:unit:DA_Kaisa19",
+      "name": "Kai'Sa",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_KDA19",
+        "tft19:trait:DA_Trickshot19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[49]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Karthus19",
+      "unit_id": "tft19:unit:DA_Karthus19",
+      "champion_id": "tft19:unit:DA_Karthus19",
+      "name": "Karthus",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Arcanist19",
+        "tft19:trait:DA_Pentakill19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[50]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Katarina19",
+      "unit_id": "tft19:unit:DA_Katarina19",
+      "champion_id": "tft19:unit:DA_Katarina19",
+      "name": "Katarina",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Mosher19",
+        "tft19:trait:DA_Virtuosos19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[51]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Kayle19",
+      "unit_id": "tft19:unit:DA_Kayle19",
+      "champion_id": "tft19:unit:DA_Kayle19",
+      "name": "Kayle",
+      "cost": 4,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Pentakill19",
+        "tft19:trait:DA_Swiftstriker19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[52]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Kayn19",
+      "unit_id": "tft19:unit:DA_Kayn19",
+      "champion_id": "tft19:unit:DA_Kayn19",
+      "name": "Kayn",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Heartsteel19",
+        "tft19:trait:DA_Mosher19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[53]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Kennen19",
+      "unit_id": "tft19:unit:DA_Kennen19",
+      "champion_id": "tft19:unit:DA_Kennen19",
+      "name": "Kennen",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Bodyguard19",
+        "tft19:trait:DA_TrueDamage19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[54]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Kobuko19",
+      "unit_id": "tft19:unit:DA_Kobuko19",
+      "champion_id": "tft19:unit:DA_Kobuko19",
+      "name": "Kobuko",
+      "cost": 1,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Frontman19",
+        "tft19:trait:DA_GlitterBomb19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[55]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_LeeSin19",
+      "unit_id": "tft19:unit:DA_LeeSin19",
+      "champion_id": "tft19:unit:DA_LeeSin19",
+      "name": "Lee Sin",
+      "cost": 5,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Heavenscale19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[57]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Leona19",
+      "unit_id": "tft19:unit:DA_Leona19",
+      "champion_id": "tft19:unit:DA_Leona19",
+      "name": "Leona",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Bodyguard19",
+        "tft19:trait:DA_KDA19",
+        "tft19:trait:DA_Manager19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[58]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Lillia19",
+      "unit_id": "tft19:unit:DA_Lillia19",
+      "champion_id": "tft19:unit:DA_Lillia19",
+      "name": "Lillia",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Bodyguard19",
+        "tft19:trait:DA_KDA19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[59]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Locke19",
+      "unit_id": "tft19:unit:DA_Locke19",
+      "champion_id": "tft19:unit:DA_Locke19",
+      "name": "Locke",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_DemonVision19",
+        "tft19:trait:DA_Swiftstriker19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[60]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Lucian19",
+      "unit_id": "tft19:unit:DA_Lucian19",
+      "champion_id": "tft19:unit:DA_Lucian19",
+      "name": "Lucian",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Encore19",
+        "tft19:trait:DA_Hitmaker19",
+        "tft19:trait:DA_Jazz19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[61]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Lulu19",
+      "unit_id": "tft19:unit:DA_Lulu19",
+      "champion_id": "tft19:unit:DA_Lulu19",
+      "name": "Lulu",
+      "cost": 2,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Choreographer19",
+        "tft19:trait:DA_GlitterBomb19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[62]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Lux19",
+      "unit_id": "tft19:unit:DA_Lux19",
+      "champion_id": "tft19:unit:DA_Lux19",
+      "name": "Lux",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_IonicSpark19",
+        "tft19:trait:DA_Prodigy19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[63]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Malzahar19",
+      "unit_id": "tft19:unit:DA_Malzahar19",
+      "champion_id": "tft19:unit:DA_Malzahar19",
+      "name": "Malzahar",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Malzahar19_UniqueTrait",
+        "tft19:trait:DA_Prodigy19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[64]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Mel19",
+      "unit_id": "tft19:unit:DA_Mel19",
+      "champion_id": "tft19:unit:DA_Mel19",
+      "name": "Mel",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Arcanist19",
+        "tft19:trait:DA_RnB19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[65]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_MissFortune19",
+      "unit_id": "tft19:unit:DA_MissFortune19",
+      "champion_id": "tft19:unit:DA_MissFortune19",
+      "name": "Miss Fortune",
+      "cost": 5,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Hitmaker19",
+        "tft19:trait:DA_MissFortune19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[66]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Mordekaiser19",
+      "unit_id": "tft19:unit:DA_Mordekaiser19",
+      "champion_id": "tft19:unit:DA_Mordekaiser19",
+      "name": "Mordekaiser",
+      "cost": 5,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Pentakill19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[67]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Nasus19",
+      "unit_id": "tft19:unit:DA_Nasus19",
+      "champion_id": "tft19:unit:DA_Nasus19",
+      "name": "Nasus",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Bodyguard19",
+        "tft19:trait:DA_Virtuosos19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[68]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Neeko19",
+      "unit_id": "tft19:unit:DA_Neeko19",
+      "champion_id": "tft19:unit:DA_Neeko19",
+      "name": "Neeko",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Encore19",
+        "tft19:trait:DA_KDA19",
+        "tft19:trait:DA_Prodigy19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[69]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Nidalee19",
+      "unit_id": "tft19:unit:DA_Nidalee19",
+      "champion_id": "tft19:unit:DA_Nidalee19",
+      "name": "Nidalee",
+      "cost": 5,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Choreographer19",
+        "tft19:trait:DA_Nidalee19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[70]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Nunu19",
+      "unit_id": "tft19:unit:DA_Nunu19",
+      "champion_id": "tft19:unit:DA_Nunu19",
+      "name": "Nunu & Willump",
+      "cost": 5,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Frontman19",
+        "tft19:trait:DA_Nunu19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[72]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Olaf19",
+      "unit_id": "tft19:unit:DA_Olaf19",
+      "champion_id": "tft19:unit:DA_Olaf19",
+      "name": "Olaf",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_DemonVision19",
+        "tft19:trait:DA_Juggernaut19",
+        "tft19:trait:DA_Pentakill19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[73]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Pyke19",
+      "unit_id": "tft19:unit:DA_Pyke19",
+      "champion_id": "tft19:unit:DA_Pyke19",
+      "name": "Pyke",
+      "cost": 5,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_DemonVision19",
+        "tft19:trait:DA_Renegade19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[75]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Qiyana19",
+      "unit_id": "tft19:unit:DA_Qiyana19",
+      "champion_id": "tft19:unit:DA_Qiyana19",
+      "name": "Qiyana",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Renegade19",
+        "tft19:trait:DA_TrueDamage19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[76]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Rakan19",
+      "unit_id": "tft19:unit:DA_Rakan19",
+      "champion_id": "tft19:unit:DA_Rakan19",
+      "name": "Rakan",
+      "cost": 7,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Choreographer19",
+        "tft19:trait:DA_Rakan19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[77]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Rell19",
+      "unit_id": "tft19:unit:DA_Rell19",
+      "champion_id": "tft19:unit:DA_Rell19",
+      "name": "Rell",
+      "cost": 5,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Rell19_UniqueTrait",
+        "tft19:trait:DA_RnB19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[79]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_RenataGlasc19",
+      "unit_id": "tft19:unit:DA_RenataGlasc19",
+      "champion_id": "tft19:unit:DA_RenataGlasc19",
+      "name": "Renata Glasc",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Choreographer19",
+        "tft19:trait:DA_Virtuosos19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[80]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Renekton19",
+      "unit_id": "tft19:unit:DA_Renekton19",
+      "champion_id": "tft19:unit:DA_Renekton19",
+      "name": "Renekton",
+      "cost": 2,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Frontman19",
+        "tft19:trait:DA_OceanSong19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[81]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Samira19",
+      "unit_id": "tft19:unit:DA_Samira19",
+      "champion_id": "tft19:unit:DA_Samira19",
+      "name": "Samira",
+      "cost": 2,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Renegade19",
+        "tft19:trait:DA_Trickshot19",
+        "tft19:trait:DA_Virtuosos19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[82]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Senna19",
+      "unit_id": "tft19:unit:DA_Senna19",
+      "champion_id": "tft19:unit:DA_Senna19",
+      "name": "Senna",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Hitmaker19",
+        "tft19:trait:DA_TrueDamage19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[83]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Seraphine19_Indie",
+      "unit_id": "tft19:unit:DA_Seraphine19_Indie",
+      "champion_id": "tft19:unit:DA_Seraphine19_Indie",
+      "name": "Seraphine",
+      "cost": 2,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Seraphine19_IndieTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[84]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Seraphine19_Indie:form:TFT19_Seraphine",
+      "unit_id": "tft19:unit:DA_Seraphine19_Indie",
+      "champion_id": "tft19:unit:DA_Seraphine19_Indie",
+      "name": "Seraphine (Rising Star)",
+      "cost": 2,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Seraphine19_RisingStarTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[85]",
+        "form_source_key": "TFT19_Seraphine"
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Seraphine19_Indie:form:DA_SeraphineSuperstar19",
+      "unit_id": "tft19:unit:DA_Seraphine19_Indie",
+      "champion_id": "tft19:unit:DA_Seraphine19_Indie",
+      "name": "Seraphine (Superstar)",
+      "cost": 2,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Seraphine19_SuperstarTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[85].extraAbilities[\"DA_SeraphineSuperstar19\"]",
+        "form_source_key": "DA_SeraphineSuperstar19"
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Sett19",
+      "unit_id": "tft19:unit:DA_Sett19",
+      "champion_id": "tft19:unit:DA_Sett19",
+      "name": "Sett",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Frontman19",
+        "tft19:trait:DA_Heartsteel19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[86]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Shyvana19",
+      "unit_id": "tft19:unit:DA_Shyvana19",
+      "champion_id": "tft19:unit:DA_Shyvana19",
+      "name": "Shyvana",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Frontman19",
+        "tft19:trait:DA_IonicSpark19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[87]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Smeech19",
+      "unit_id": "tft19:unit:DA_Smeech19",
+      "champion_id": "tft19:unit:DA_Smeech19",
+      "name": "Smeech",
+      "cost": 7,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Jazz19",
+        "tft19:trait:DA_Mosher19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[89]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Sona19:form:DA_Sona19_Heartsteel",
+      "unit_id": "tft19:unit:DA_Sona19",
+      "champion_id": "tft19:unit:DA_Sona19",
+      "name": "Sona (Heartsteel)",
+      "cost": 7,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Collab19",
+        "tft19:trait:DA_Heartsteel19",
+        "tft19:trait:DA_Sona19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[90].extraAbilities[\"DA_Sona19_Heartsteel\"]",
+        "form_source_key": "DA_Sona19_Heartsteel"
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Sona19:form:DA_Sona19_IonicSpark",
+      "unit_id": "tft19:unit:DA_Sona19",
+      "champion_id": "tft19:unit:DA_Sona19",
+      "name": "Sona (Ionic Spark)",
+      "cost": 7,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Collab19",
+        "tft19:trait:DA_IonicSpark19",
+        "tft19:trait:DA_Sona19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[90].extraAbilities[\"DA_Sona19_IonicSpark\"]",
+        "form_source_key": "DA_Sona19_IonicSpark"
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Sona19:form:DA_Sona19_KDA",
+      "unit_id": "tft19:unit:DA_Sona19",
+      "champion_id": "tft19:unit:DA_Sona19",
+      "name": "Sona (K/DA)",
+      "cost": 7,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Collab19",
+        "tft19:trait:DA_KDA19",
+        "tft19:trait:DA_Sona19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[90].extraAbilities[\"DA_Sona19_KDA\"]",
+        "form_source_key": "DA_Sona19_KDA"
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Sona19:form:DA_Sona19_Pentakill",
+      "unit_id": "tft19:unit:DA_Sona19",
+      "champion_id": "tft19:unit:DA_Sona19",
+      "name": "Sona (Pentakill)",
+      "cost": 7,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Collab19",
+        "tft19:trait:DA_Pentakill19",
+        "tft19:trait:DA_Sona19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[90].extraAbilities[\"DA_Sona19_Pentakill\"]",
+        "form_source_key": "DA_Sona19_Pentakill"
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Sona19:form:DA_Sona19_TrueDamage",
+      "unit_id": "tft19:unit:DA_Sona19",
+      "champion_id": "tft19:unit:DA_Sona19",
+      "name": "Sona (True Damage)",
+      "cost": 7,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Collab19",
+        "tft19:trait:DA_Sona19_UniqueTrait",
+        "tft19:trait:DA_TrueDamage19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[90].extraAbilities[\"DA_Sona19_TrueDamage\"]",
+        "form_source_key": "DA_Sona19_TrueDamage"
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Swain19",
+      "unit_id": "tft19:unit:DA_Swain19",
+      "champion_id": "tft19:unit:DA_Swain19",
+      "name": "Swain",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Arcanist19",
+        "tft19:trait:DA_DemonVision19",
+        "tft19:trait:DA_Frontman19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[92]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Syndra19",
+      "unit_id": "tft19:unit:DA_Syndra19",
+      "champion_id": "tft19:unit:DA_Syndra19",
+      "name": "Syndra",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Choreographer19",
+        "tft19:trait:DA_OceanSong19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[93]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Taliyah19",
+      "unit_id": "tft19:unit:DA_Taliyah19",
+      "champion_id": "tft19:unit:DA_Taliyah19",
+      "name": "Taliyah",
+      "cost": 5,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Encore19",
+        "tft19:trait:DA_OceanSong19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[94]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Taric19",
+      "unit_id": "tft19:unit:DA_Taric19",
+      "champion_id": "tft19:unit:DA_Taric19",
+      "name": "Taric",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Juggernaut19",
+        "tft19:trait:DA_OceanSong19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[95]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Teemo19",
+      "unit_id": "tft19:unit:DA_Teemo19",
+      "champion_id": "tft19:unit:DA_Teemo19",
+      "name": "Teemo",
+      "cost": 5,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_GlitterBomb19",
+        "tft19:trait:DA_Teemo19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[96]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Thresh19",
+      "unit_id": "tft19:unit:DA_Thresh19",
+      "champion_id": "tft19:unit:DA_Thresh19",
+      "name": "Thresh",
+      "cost": 4,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Frontman19",
+        "tft19:trait:DA_Virtuosos19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[97]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Tibbers19",
+      "unit_id": "tft19:unit:DA_Tibbers19",
+      "champion_id": "tft19:unit:DA_Tibbers19",
+      "name": "Tibbers",
+      "cost": 3,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Bodyguard19",
+        "tft19:trait:DA_IonicSpark19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[98]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Tristana19",
+      "unit_id": "tft19:unit:DA_Tristana19",
+      "champion_id": "tft19:unit:DA_Tristana19",
+      "name": "Tristana",
+      "cost": 2,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_GlitterBomb19",
+        "tft19:trait:DA_Hitmaker19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[99]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_TwistedFate19",
+      "unit_id": "tft19:unit:DA_TwistedFate19",
+      "champion_id": "tft19:unit:DA_TwistedFate19",
+      "name": "Twisted Fate",
+      "cost": 5,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Trickshot19",
+        "tft19:trait:DA_TwistedFate19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[100]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Varus19",
+      "unit_id": "tft19:unit:DA_Varus19",
+      "champion_id": "tft19:unit:DA_Varus19",
+      "name": "Varus",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_DemonVision19",
+        "tft19:trait:DA_Encore19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[101]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Vayne19",
+      "unit_id": "tft19:unit:DA_Vayne19",
+      "champion_id": "tft19:unit:DA_Vayne19",
+      "name": "Vayne",
+      "cost": 4,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_DemonVision19",
+        "tft19:trait:DA_Trickshot19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[102]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Vi19",
+      "unit_id": "tft19:unit:DA_Vi19",
+      "champion_id": "tft19:unit:DA_Vi19",
+      "name": "Vi",
+      "cost": 5,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_EDM19",
+        "tft19:trait:DA_Juggernaut19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[103]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Viego19",
+      "unit_id": "tft19:unit:DA_Viego19",
+      "champion_id": "tft19:unit:DA_Viego19",
+      "name": "Viego",
+      "cost": 3,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Choreographer19",
+        "tft19:trait:DA_Mosher19",
+        "tft19:trait:DA_Pentakill19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[104]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Vladimir19",
+      "unit_id": "tft19:unit:DA_Vladimir19",
+      "champion_id": "tft19:unit:DA_Vladimir19",
+      "name": "Vladimir",
+      "cost": 5,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Arcanist19",
+        "tft19:trait:DA_Virtuosos19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[105]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Wukong19",
+      "unit_id": "tft19:unit:DA_Wukong19",
+      "champion_id": "tft19:unit:DA_Wukong19",
+      "name": "Wukong",
+      "cost": 4,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Heavenscale19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[106]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Xayah19",
+      "unit_id": "tft19:unit:DA_Xayah19",
+      "champion_id": "tft19:unit:DA_Xayah19",
+      "name": "Xayah",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Heavenscale19",
+        "tft19:trait:DA_Hitmaker19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[107]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Yasuo19",
+      "unit_id": "tft19:unit:DA_Yasuo19",
+      "champion_id": "tft19:unit:DA_Yasuo19",
+      "name": "Yasuo",
+      "cost": 4,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Mosher19",
+        "tft19:trait:DA_TrueDamage19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[108]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Yone19",
+      "unit_id": "tft19:unit:DA_Yone19",
+      "champion_id": "tft19:unit:DA_Yone19",
+      "name": "Yone",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Heartsteel19",
+        "tft19:trait:DA_Mosher19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[109]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Yorick19",
+      "unit_id": "tft19:unit:DA_Yorick19",
+      "champion_id": "tft19:unit:DA_Yorick19",
+      "name": "Yorick",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Juggernaut19",
+        "tft19:trait:DA_Pentakill19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[110]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Yunara19",
+      "unit_id": "tft19:unit:DA_Yunara19",
+      "champion_id": "tft19:unit:DA_Yunara19",
+      "name": "Yunara",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_IonicSpark19",
+        "tft19:trait:DA_Swiftstriker19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[111]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Yuumi19",
+      "unit_id": "tft19:unit:DA_Yuumi19",
+      "champion_id": "tft19:unit:DA_Yuumi19",
+      "name": "Yuumi",
+      "cost": 4,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Encore19",
+        "tft19:trait:DA_Illbeats19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[112]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Zac19",
+      "unit_id": "tft19:unit:DA_Zac19",
+      "champion_id": "tft19:unit:DA_Zac19",
+      "name": "Zac",
+      "cost": 4,
+      "slots": 1,
+      "locked": true,
+      "traits": [
+        "tft19:trait:DA_Juggernaut19",
+        "tft19:trait:DA_OceanSong19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[113]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Zeri19",
+      "unit_id": "tft19:unit:DA_Zeri19",
+      "champion_id": "tft19:unit:DA_Zeri19",
+      "name": "Zeri",
+      "cost": 5,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Swiftstriker19",
+        "tft19:trait:DA_Zeri19_UniqueTrait"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[114]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Ziggs19",
+      "unit_id": "tft19:unit:DA_Ziggs19",
+      "champion_id": "tft19:unit:DA_Ziggs19",
+      "name": "Ziggs",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Arcanist19",
+        "tft19:trait:DA_GlitterBomb19",
+        "tft19:trait:DA_Swiftstriker19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[115]",
+        "form_source_key": null
+      }
+    },
+    {
+      "form_id": "tft19:unit:DA_Zoe19",
+      "unit_id": "tft19:unit:DA_Zoe19",
+      "champion_id": "tft19:unit:DA_Zoe19",
+      "name": "Zoe",
+      "cost": 1,
+      "slots": 1,
+      "locked": false,
+      "traits": [
+        "tft19:trait:DA_Arcanist19",
+        "tft19:trait:DA_OceanSong19"
+      ],
+      "applicability": "active",
+      "slot_assumption": true,
+      "slot_evidence": null,
+      "identity_evidence": null,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.units[116]",
+        "form_source_key": null
+      }
+    }
+  ],
+  "traits": [
+    {
+      "trait_id": "tft19:trait:DA_Akali_TrueDamage19_UniqueTrait",
+      "name": "Freestyle",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Akali_TrueDamage19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[0].effects[0]",
+            "entity_id": "tft19:trait:DA_Akali_TrueDamage19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[0]",
+        "entity_id": "tft19:trait:DA_Akali_TrueDamage19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Alistar19_UniqueTrait",
+      "name": "Country",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Alistar19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "unknown",
+          "reason": "Additional activation conditions are not established by this final-board model.",
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[1].effects[0]",
+            "entity_id": "tft19:trait:DA_Alistar19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[1]",
+        "entity_id": "tft19:trait:DA_Alistar19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Amumu19_UniqueTrait",
+      "name": "Emo",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Amumu19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "unknown",
+          "reason": "Additional activation conditions are not established by this final-board model.",
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[2].effects[0]",
+            "entity_id": "tft19:trait:DA_Amumu19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[2]",
+        "entity_id": "tft19:trait:DA_Amumu19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Arcanist19",
+      "name": "Arcanist",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Arcanist19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[21].effects[0]",
+            "entity_id": "tft19:trait:DA_Arcanist19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Arcanist19:tier:2",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[21].effects[1]",
+            "entity_id": "tft19:trait:DA_Arcanist19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Arcanist19:tier:3",
+          "minimum": 6,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[21].effects[2]",
+            "entity_id": "tft19:trait:DA_Arcanist19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[21]",
+        "entity_id": "tft19:trait:DA_Arcanist19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_BaronNashor19_UniqueTrait",
+      "name": "One Monster Band",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_BaronNashor19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[3].effects[0]",
+            "entity_id": "tft19:trait:DA_BaronNashor19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[3]",
+        "entity_id": "tft19:trait:DA_BaronNashor19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Bodyguard19",
+      "name": "Bodyguard",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Bodyguard19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[22].effects[0]",
+            "entity_id": "tft19:trait:DA_Bodyguard19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Bodyguard19:tier:2",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[22].effects[1]",
+            "entity_id": "tft19:trait:DA_Bodyguard19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Bodyguard19:tier:3",
+          "minimum": 6,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[22].effects[2]",
+            "entity_id": "tft19:trait:DA_Bodyguard19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[22]",
+        "entity_id": "tft19:trait:DA_Bodyguard19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Choreographer19",
+      "name": "Choreographer",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Choreographer19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[23].effects[0]",
+            "entity_id": "tft19:trait:DA_Choreographer19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Choreographer19:tier:2",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[23].effects[1]",
+            "entity_id": "tft19:trait:DA_Choreographer19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Choreographer19:tier:3",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[23].effects[2]",
+            "entity_id": "tft19:trait:DA_Choreographer19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Choreographer19:tier:4",
+          "minimum": 5,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[23].effects[3]",
+            "entity_id": "tft19:trait:DA_Choreographer19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[23]",
+        "entity_id": "tft19:trait:DA_Choreographer19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Collab19",
+      "name": "Collab",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Collab19:tier:1",
+          "minimum": 3,
+          "status": "unknown",
+          "reason": "Additional activation conditions are not established by this final-board model.",
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[24].effects[0]",
+            "entity_id": "tft19:trait:DA_Collab19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Collab19:tier:2",
+          "minimum": 5,
+          "status": "unknown",
+          "reason": "Additional activation conditions are not established by this final-board model.",
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[24].effects[1]",
+            "entity_id": "tft19:trait:DA_Collab19"
+          }
+        }
+      ],
+      "random_membership": true,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[24]",
+        "entity_id": "tft19:trait:DA_Collab19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_DemonVision19",
+      "name": "Rock",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_DemonVision19:tier:1",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[25].effects[0]",
+            "entity_id": "tft19:trait:DA_DemonVision19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_DemonVision19:tier:2",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[25].effects[1]",
+            "entity_id": "tft19:trait:DA_DemonVision19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_DemonVision19:tier:3",
+          "minimum": 5,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[25].effects[2]",
+            "entity_id": "tft19:trait:DA_DemonVision19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_DemonVision19:tier:4",
+          "minimum": 7,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[25].effects[3]",
+            "entity_id": "tft19:trait:DA_DemonVision19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[25]",
+        "entity_id": "tft19:trait:DA_DemonVision19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_DrMundo19_UniqueTrait",
+      "name": "Record Mogul",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_DrMundo19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[4].effects[0]",
+            "entity_id": "tft19:trait:DA_DrMundo19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[4]",
+        "entity_id": "tft19:trait:DA_DrMundo19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_EDM19",
+      "name": "EDM",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_EDM19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[26].effects[0]",
+            "entity_id": "tft19:trait:DA_EDM19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[26]",
+        "entity_id": "tft19:trait:DA_EDM19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Encore19",
+      "name": "Encore",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Encore19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[27].effects[0]",
+            "entity_id": "tft19:trait:DA_Encore19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Encore19:tier:2",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[27].effects[1]",
+            "entity_id": "tft19:trait:DA_Encore19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[27]",
+        "entity_id": "tft19:trait:DA_Encore19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Frontman19",
+      "name": "Frontman",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Frontman19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[28].effects[0]",
+            "entity_id": "tft19:trait:DA_Frontman19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Frontman19:tier:2",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[28].effects[1]",
+            "entity_id": "tft19:trait:DA_Frontman19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Frontman19:tier:3",
+          "minimum": 6,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[28].effects[2]",
+            "entity_id": "tft19:trait:DA_Frontman19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[28]",
+        "entity_id": "tft19:trait:DA_Frontman19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Garen19_UniqueTrait",
+      "name": "Synthwave",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Garen19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[5].effects[0]",
+            "entity_id": "tft19:trait:DA_Garen19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[5]",
+        "entity_id": "tft19:trait:DA_Garen19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_GlitterBomb19",
+      "name": "Hyperpop",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_GlitterBomb19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[29].effects[0]",
+            "entity_id": "tft19:trait:DA_GlitterBomb19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_GlitterBomb19:tier:2",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[29].effects[1]",
+            "entity_id": "tft19:trait:DA_GlitterBomb19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_GlitterBomb19:tier:3",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[29].effects[2]",
+            "entity_id": "tft19:trait:DA_GlitterBomb19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_GlitterBomb19:tier:4",
+          "minimum": 5,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[29].effects[3]",
+            "entity_id": "tft19:trait:DA_GlitterBomb19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[29]",
+        "entity_id": "tft19:trait:DA_GlitterBomb19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Gwen19_UniqueTrait",
+      "name": "Melodic Heart",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Gwen19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[6].effects[0]",
+            "entity_id": "tft19:trait:DA_Gwen19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[6]",
+        "entity_id": "tft19:trait:DA_Gwen19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Heartsteel19",
+      "name": "Heartsteel",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Heartsteel19:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[30].effects[0]",
+            "entity_id": "tft19:trait:DA_Heartsteel19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Heartsteel19:tier:2",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[30].effects[1]",
+            "entity_id": "tft19:trait:DA_Heartsteel19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Heartsteel19:tier:3",
+          "minimum": 5,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[30].effects[2]",
+            "entity_id": "tft19:trait:DA_Heartsteel19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Heartsteel19:tier:4",
+          "minimum": 7,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[30].effects[3]",
+            "entity_id": "tft19:trait:DA_Heartsteel19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Heartsteel19:tier:5",
+          "minimum": 7,
+          "status": "unavailable",
+          "reason": "Quest tiers require external progression excluded by this ruleset.",
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[30].effects[4]",
+            "entity_id": "tft19:trait:DA_Heartsteel19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[30]",
+        "entity_id": "tft19:trait:DA_Heartsteel19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Heavenscale19",
+      "name": "Gu Feng",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Heavenscale19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[31].effects[0]",
+            "entity_id": "tft19:trait:DA_Heavenscale19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Heavenscale19:tier:2",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[31].effects[1]",
+            "entity_id": "tft19:trait:DA_Heavenscale19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Heavenscale19:tier:3",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[31].effects[2]",
+            "entity_id": "tft19:trait:DA_Heavenscale19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[31]",
+        "entity_id": "tft19:trait:DA_Heavenscale19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Hitmaker19",
+      "name": "Hitmaker",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Hitmaker19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[32].effects[0]",
+            "entity_id": "tft19:trait:DA_Hitmaker19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Hitmaker19:tier:2",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[32].effects[1]",
+            "entity_id": "tft19:trait:DA_Hitmaker19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[32]",
+        "entity_id": "tft19:trait:DA_Hitmaker19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Illbeats19",
+      "name": "Illbeats",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Illbeats19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[33].effects[0]",
+            "entity_id": "tft19:trait:DA_Illbeats19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Illbeats19:tier:2",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[33].effects[1]",
+            "entity_id": "tft19:trait:DA_Illbeats19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Illbeats19:tier:3",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[33].effects[2]",
+            "entity_id": "tft19:trait:DA_Illbeats19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[33]",
+        "entity_id": "tft19:trait:DA_Illbeats19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_IonicSpark19",
+      "name": "Ionic Spark",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_IonicSpark19:tier:1",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[34].effects[0]",
+            "entity_id": "tft19:trait:DA_IonicSpark19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_IonicSpark19:tier:2",
+          "minimum": 5,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[34].effects[1]",
+            "entity_id": "tft19:trait:DA_IonicSpark19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_IonicSpark19:tier:3",
+          "minimum": 7,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[34].effects[2]",
+            "entity_id": "tft19:trait:DA_IonicSpark19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_IonicSpark19:tier:4",
+          "minimum": 10,
+          "status": "unavailable",
+          "reason": "Quest tiers require external progression excluded by this ruleset.",
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[34].effects[3]",
+            "entity_id": "tft19:trait:DA_IonicSpark19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[34]",
+        "entity_id": "tft19:trait:DA_IonicSpark19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Janna19_UniqueTrait",
+      "name": "Windblessed",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Janna19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[7].effects[0]",
+            "entity_id": "tft19:trait:DA_Janna19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[7]",
+        "entity_id": "tft19:trait:DA_Janna19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Jazz19",
+      "name": "Jazz",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Jazz19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[35].effects[0]",
+            "entity_id": "tft19:trait:DA_Jazz19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Jazz19:tier:2",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[35].effects[1]",
+            "entity_id": "tft19:trait:DA_Jazz19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Jazz19:tier:3",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[35].effects[2]",
+            "entity_id": "tft19:trait:DA_Jazz19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[35]",
+        "entity_id": "tft19:trait:DA_Jazz19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Juggernaut19",
+      "name": "Juggernaut",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Juggernaut19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[36].effects[0]",
+            "entity_id": "tft19:trait:DA_Juggernaut19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Juggernaut19:tier:2",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[36].effects[1]",
+            "entity_id": "tft19:trait:DA_Juggernaut19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Juggernaut19:tier:3",
+          "minimum": 6,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[36].effects[2]",
+            "entity_id": "tft19:trait:DA_Juggernaut19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[36]",
+        "entity_id": "tft19:trait:DA_Juggernaut19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_KDA19",
+      "name": "K/DA",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_KDA19:tier:1",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[37].effects[0]",
+            "entity_id": "tft19:trait:DA_KDA19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_KDA19:tier:2",
+          "minimum": 5,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[37].effects[1]",
+            "entity_id": "tft19:trait:DA_KDA19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_KDA19:tier:3",
+          "minimum": 7,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[37].effects[2]",
+            "entity_id": "tft19:trait:DA_KDA19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_KDA19:tier:4",
+          "minimum": 10,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[37].effects[3]",
+            "entity_id": "tft19:trait:DA_KDA19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_KDA19:tier:5",
+          "minimum": 13,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[37].effects[4]",
+            "entity_id": "tft19:trait:DA_KDA19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_KDA19:tier:6",
+          "minimum": 15,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[37].effects[5]",
+            "entity_id": "tft19:trait:DA_KDA19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_KDA19:tier:7",
+          "minimum": 21,
+          "status": "unavailable",
+          "reason": "Quest tiers require external progression excluded by this ruleset.",
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[37].effects[6]",
+            "entity_id": "tft19:trait:DA_KDA19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[37]",
+        "entity_id": "tft19:trait:DA_KDA19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Malzahar19_UniqueTrait",
+      "name": "Composer",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Malzahar19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[8].effects[0]",
+            "entity_id": "tft19:trait:DA_Malzahar19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[8]",
+        "entity_id": "tft19:trait:DA_Malzahar19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Manager19",
+      "name": "Manager",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Manager19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[38].effects[0]",
+            "entity_id": "tft19:trait:DA_Manager19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Manager19:tier:2",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[38].effects[1]",
+            "entity_id": "tft19:trait:DA_Manager19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Manager19:tier:3",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[38].effects[2]",
+            "entity_id": "tft19:trait:DA_Manager19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[38]",
+        "entity_id": "tft19:trait:DA_Manager19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_MissFortune19_UniqueTrait",
+      "name": "8-Bit",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_MissFortune19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[9].effects[0]",
+            "entity_id": "tft19:trait:DA_MissFortune19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[9]",
+        "entity_id": "tft19:trait:DA_MissFortune19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Mosher19",
+      "name": "Slayer",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Mosher19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[39].effects[0]",
+            "entity_id": "tft19:trait:DA_Mosher19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Mosher19:tier:2",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[39].effects[1]",
+            "entity_id": "tft19:trait:DA_Mosher19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Mosher19:tier:3",
+          "minimum": 6,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[39].effects[2]",
+            "entity_id": "tft19:trait:DA_Mosher19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[39]",
+        "entity_id": "tft19:trait:DA_Mosher19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_MysticInstrument19",
+      "name": "Mystical Instrument",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_MysticInstrument19:tier:1",
+          "minimum": 0,
+          "status": "unknown",
+          "reason": "Zero or missing source threshold is a placeholder, not automatic activation.",
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[40].effects[0]",
+            "entity_id": "tft19:trait:DA_MysticInstrument19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[40]",
+        "entity_id": "tft19:trait:DA_MysticInstrument19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Nidalee19_UniqueTrait",
+      "name": "Mariachi",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Nidalee19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[10].effects[0]",
+            "entity_id": "tft19:trait:DA_Nidalee19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[10]",
+        "entity_id": "tft19:trait:DA_Nidalee19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Nunu19_UniqueTrait",
+      "name": "Disco",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Nunu19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[11].effects[0]",
+            "entity_id": "tft19:trait:DA_Nunu19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[11]",
+        "entity_id": "tft19:trait:DA_Nunu19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_OceanSong19",
+      "name": "Beach Pop",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_OceanSong19:inferred:3",
+          "minimum": 3,
+          "status": "supported",
+          "inferred": true,
+          "reason": "First instrument threshold used as first activation threshold.",
+          "evidence": {
+            "source_id": "metatft_tables",
+            "source_path": "/mechanics/beachPopVariations/0/instruments/0"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[41]",
+        "entity_id": "tft19:trait:DA_OceanSong19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Pentakill19",
+      "name": "Pentakill",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Pentakill19:tier:1",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[42].effects[0]",
+            "entity_id": "tft19:trait:DA_Pentakill19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Pentakill19:tier:2",
+          "minimum": 5,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[42].effects[1]",
+            "entity_id": "tft19:trait:DA_Pentakill19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Pentakill19:tier:3",
+          "minimum": 7,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[42].effects[2]",
+            "entity_id": "tft19:trait:DA_Pentakill19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Pentakill19:tier:4",
+          "minimum": 7,
+          "status": "unavailable",
+          "reason": "Quest tiers require external progression excluded by this ruleset.",
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[42].effects[3]",
+            "entity_id": "tft19:trait:DA_Pentakill19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[42]",
+        "entity_id": "tft19:trait:DA_Pentakill19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Prodigy19",
+      "name": "Prodigy",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Prodigy19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[43].effects[0]",
+            "entity_id": "tft19:trait:DA_Prodigy19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Prodigy19:tier:2",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[43].effects[1]",
+            "entity_id": "tft19:trait:DA_Prodigy19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Prodigy19:tier:3",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[43].effects[2]",
+            "entity_id": "tft19:trait:DA_Prodigy19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Prodigy19:tier:4",
+          "minimum": 5,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[43].effects[3]",
+            "entity_id": "tft19:trait:DA_Prodigy19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[43]",
+        "entity_id": "tft19:trait:DA_Prodigy19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Rakan19_UniqueTrait",
+      "name": "Boy Band",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Rakan19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[12].effects[0]",
+            "entity_id": "tft19:trait:DA_Rakan19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[12]",
+        "entity_id": "tft19:trait:DA_Rakan19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Rell19_UniqueTrait",
+      "name": "Beat Master",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Rell19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[13].effects[0]",
+            "entity_id": "tft19:trait:DA_Rell19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[13]",
+        "entity_id": "tft19:trait:DA_Rell19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Renegade19",
+      "name": "Renegade",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Renegade19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[44].effects[0]",
+            "entity_id": "tft19:trait:DA_Renegade19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Renegade19:tier:2",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[44].effects[1]",
+            "entity_id": "tft19:trait:DA_Renegade19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Renegade19:tier:3",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[44].effects[2]",
+            "entity_id": "tft19:trait:DA_Renegade19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Renegade19:tier:4",
+          "minimum": 5,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[44].effects[3]",
+            "entity_id": "tft19:trait:DA_Renegade19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[44]",
+        "entity_id": "tft19:trait:DA_Renegade19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_RnB19",
+      "name": "R&B",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_RnB19:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[45].effects[0]",
+            "entity_id": "tft19:trait:DA_RnB19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_RnB19:tier:2",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[45].effects[1]",
+            "entity_id": "tft19:trait:DA_RnB19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[45]",
+        "entity_id": "tft19:trait:DA_RnB19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Seraphine19_IndieTrait",
+      "name": "Indie",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Seraphine19_IndieTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[14].effects[0]",
+            "entity_id": "tft19:trait:DA_Seraphine19_IndieTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[14]",
+        "entity_id": "tft19:trait:DA_Seraphine19_IndieTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Seraphine19_RisingStarTrait",
+      "name": "Rising Star",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Seraphine19_RisingStarTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[15].effects[0]",
+            "entity_id": "tft19:trait:DA_Seraphine19_RisingStarTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[15]",
+        "entity_id": "tft19:trait:DA_Seraphine19_RisingStarTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Seraphine19_SuperstarTrait",
+      "name": "Superstar",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Seraphine19_SuperstarTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[16].effects[0]",
+            "entity_id": "tft19:trait:DA_Seraphine19_SuperstarTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[16]",
+        "entity_id": "tft19:trait:DA_Seraphine19_SuperstarTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Sona19_UniqueTrait",
+      "name": "Producer",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Sona19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[17].effects[0]",
+            "entity_id": "tft19:trait:DA_Sona19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[17]",
+        "entity_id": "tft19:trait:DA_Sona19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Swiftstriker19",
+      "name": "Swiftstriker",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Swiftstriker19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[46].effects[0]",
+            "entity_id": "tft19:trait:DA_Swiftstriker19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Swiftstriker19:tier:2",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[46].effects[1]",
+            "entity_id": "tft19:trait:DA_Swiftstriker19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Swiftstriker19:tier:3",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[46].effects[2]",
+            "entity_id": "tft19:trait:DA_Swiftstriker19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Swiftstriker19:tier:4",
+          "minimum": 5,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[46].effects[3]",
+            "entity_id": "tft19:trait:DA_Swiftstriker19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[46]",
+        "entity_id": "tft19:trait:DA_Swiftstriker19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Teemo19_UniqueTrait",
+      "name": "Hype Man",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Teemo19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "unknown",
+          "reason": "Additional activation conditions are not established by this final-board model.",
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[18].effects[0]",
+            "entity_id": "tft19:trait:DA_Teemo19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[18]",
+        "entity_id": "tft19:trait:DA_Teemo19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Trickshot19",
+      "name": "Trickshot",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Trickshot19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[47].effects[0]",
+            "entity_id": "tft19:trait:DA_Trickshot19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Trickshot19:tier:2",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[47].effects[1]",
+            "entity_id": "tft19:trait:DA_Trickshot19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Trickshot19:tier:3",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[47].effects[2]",
+            "entity_id": "tft19:trait:DA_Trickshot19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[47]",
+        "entity_id": "tft19:trait:DA_Trickshot19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_TrueDamage19",
+      "name": "True Damage",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_TrueDamage19:tier:1",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[48].effects[0]",
+            "entity_id": "tft19:trait:DA_TrueDamage19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_TrueDamage19:tier:2",
+          "minimum": 3,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[48].effects[1]",
+            "entity_id": "tft19:trait:DA_TrueDamage19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_TrueDamage19:tier:3",
+          "minimum": 5,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[48].effects[2]",
+            "entity_id": "tft19:trait:DA_TrueDamage19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_TrueDamage19:tier:4",
+          "minimum": 5,
+          "status": "unavailable",
+          "reason": "Quest tiers require external progression excluded by this ruleset.",
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[48].effects[3]",
+            "entity_id": "tft19:trait:DA_TrueDamage19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_TrueDamage19:tier:5",
+          "minimum": 5,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[48].effects[4]",
+            "entity_id": "tft19:trait:DA_TrueDamage19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_TrueDamage19:tier:6",
+          "minimum": 5,
+          "status": "unavailable",
+          "reason": "Quest tiers require external progression excluded by this ruleset.",
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[48].effects[5]",
+            "entity_id": "tft19:trait:DA_TrueDamage19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[48]",
+        "entity_id": "tft19:trait:DA_TrueDamage19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_TwistedFate19_UniqueTrait",
+      "name": "Tango",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_TwistedFate19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[19].effects[0]",
+            "entity_id": "tft19:trait:DA_TwistedFate19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[19]",
+        "entity_id": "tft19:trait:DA_TwistedFate19_UniqueTrait"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Virtuosos19",
+      "name": "Classical",
+      "unique": false,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Virtuosos19:tier:1",
+          "minimum": 2,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[49].effects[0]",
+            "entity_id": "tft19:trait:DA_Virtuosos19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Virtuosos19:tier:2",
+          "minimum": 4,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[49].effects[1]",
+            "entity_id": "tft19:trait:DA_Virtuosos19"
+          }
+        },
+        {
+          "breakpoint_id": "tft19:trait:DA_Virtuosos19:tier:3",
+          "minimum": 6,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[49].effects[2]",
+            "entity_id": "tft19:trait:DA_Virtuosos19"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[49]",
+        "entity_id": "tft19:trait:DA_Virtuosos19"
+      }
+    },
+    {
+      "trait_id": "tft19:trait:DA_Zeri19_UniqueTrait",
+      "name": "Goth",
+      "unique": true,
+      "breakpoints": [
+        {
+          "breakpoint_id": "tft19:trait:DA_Zeri19_UniqueTrait:tier:1",
+          "minimum": 1,
+          "status": "supported",
+          "reason": null,
+          "evidence": {
+            "source_id": "metatft",
+            "source_path": "$.traits[20].effects[0]",
+            "entity_id": "tft19:trait:DA_Zeri19_UniqueTrait"
+          }
+        }
+      ],
+      "random_membership": false,
+      "evidence": {
+        "source_id": "metatft",
+        "source_path": "$.traits[20]",
+        "entity_id": "tft19:trait:DA_Zeri19_UniqueTrait"
+      }
+    }
+  ],
+  "assumptions": [
+    "Hypothetical final boards; locked champions do not imply completed unlock sequences.",
+    "One star per champion. K/DA contributions therefore equal selected K/DA members.",
+    "One occupied slot where source slot usage is unknown; explicit slot exceptions override this.",
+    "Native memberships only; no emblems, augments, external grants, positioning, or combat simulation.",
+    "Unique traits count once by native membership when activation is supported; effect triggers are not simulated.",
+    "Country, Emo, Hype Man and random Collab activation remain Unknown.",
+    "Quest tiers are unavailable without external progression. Zero placeholders never activate automatically.",
+    "Beach Pop activation is inferred from its first instrument threshold.",
+    "Sona selects one source-defined band. Seraphine selects Indie, Rising Star or Superstar, replacing her unique trait."
+  ],
+  "version": "set19-954068eb43879fb6ea08"
+}

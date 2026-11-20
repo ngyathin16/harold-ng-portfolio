@@ -1,0 +1,294 @@
+{
+  "environment": {
+    "os": "Windows-11-10.0.26300-SP0",
+    "python": "3.14.2",
+    "postgres": "17.11 portable Windows",
+    "logical_cpus": 24,
+    "hosted": false
+  },
+  "general_query": {
+    "query_id": "LoDake-URTpPoMjkuyoLvrRz",
+    "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+    "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+    "worker_wall_seconds": 105.04860270000063,
+    "status": {
+      "query_id": "LoDake-URTpPoMjkuyoLvrRz",
+      "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+      "state": "complete",
+      "query": {
+        "cost": {
+          "max": 4,
+          "min": null
+        },
+        "exclude": [],
+        "include": [
+          "tft19:unit:DA_Jhin19"
+        ],
+        "team_size": {
+          "max": 8,
+          "min": 8
+        },
+        "dataset_id": "tft-set-19",
+        "total_cost": {
+          "max": null,
+          "min": null
+        },
+        "board_slots": 8,
+        "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+        "include_locked": true,
+        "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+        "schema_version": 1,
+        "required_traits": [],
+        "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+        "forbidden_traits": [],
+        "min_active_traits": 8
+      },
+      "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+      "solver_version": "native-dfs-v1",
+      "progress": {
+        "query": {
+          "cost": {
+            "max": 4,
+            "min": null
+          },
+          "exclude": [],
+          "include": [
+            "tft19:unit:DA_Jhin19"
+          ],
+          "team_size": {
+            "max": 8,
+            "min": 8
+          },
+          "dataset_id": "tft-set-19",
+          "total_cost": {
+            "max": null,
+            "min": null
+          },
+          "board_slots": 8,
+          "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+          "include_locked": true,
+          "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+          "schema_version": 1,
+          "required_traits": [],
+          "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+          "forbidden_traits": [],
+          "min_active_traits": 8
+        },
+        "state": "complete",
+        "reason": null,
+        "complete": true,
+        "query_hash": "bf82c67874ad978eed23b8206213bc358f108bbca7bc15f91456a9462799d63e",
+        "visited_nodes": 147086980,
+        "solver_version": "native-dfs-v1",
+        "elapsed_seconds": 104.17492679995485,
+        "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+        "champion_set_count": 211961,
+        "completeness_scope": "All matches under these recorded rules and assumptions",
+        "configuration_count": 280543
+      },
+      "result_count": 280543,
+      "champion_set_count": 211961,
+      "complete": true,
+      "error": null,
+      "created_at": "2026-11-20T04:30:20.807704+00:00",
+      "started_at": "2026-11-20T04:30:20.869699+00:00",
+      "finished_at": "2026-11-20T04:32:05.416618+00:00",
+      "expired": false
+    }
+  },
+  "jazz_query": {
+    "query_id": "RtsededKBFy4Ve7lQleExbjL",
+    "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+    "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+    "worker_wall_seconds": 13.046858999994583,
+    "outside_general_results": 0,
+    "database_size_bytes": 1056921267,
+    "status": {
+      "query_id": "RtsededKBFy4Ve7lQleExbjL",
+      "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+      "state": "complete",
+      "query": {
+        "cost": {
+          "max": 4,
+          "min": null
+        },
+        "exclude": [],
+        "include": [
+          "tft19:unit:DA_Jhin19"
+        ],
+        "team_size": {
+          "max": 8,
+          "min": 8
+        },
+        "dataset_id": "tft-set-19",
+        "total_cost": {
+          "max": null,
+          "min": null
+        },
+        "board_slots": 8,
+        "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+        "include_locked": true,
+        "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+        "schema_version": 1,
+        "required_traits": [
+          {
+            "trait_id": "tft19:trait:DA_Jazz19",
+            "breakpoint_id": "tft19:trait:DA_Jazz19:tier:1"
+          }
+        ],
+        "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+        "forbidden_traits": [],
+        "min_active_traits": 8
+      },
+      "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+      "solver_version": "native-dfs-v1",
+      "progress": {
+        "query": {
+          "cost": {
+            "max": 4,
+            "min": null
+          },
+          "exclude": [],
+          "include": [
+            "tft19:unit:DA_Jhin19"
+          ],
+          "team_size": {
+            "max": 8,
+            "min": 8
+          },
+          "dataset_id": "tft-set-19",
+          "total_cost": {
+            "max": null,
+            "min": null
+          },
+          "board_slots": 8,
+          "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+          "include_locked": true,
+          "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+          "schema_version": 1,
+          "required_traits": [
+            {
+              "trait_id": "tft19:trait:DA_Jazz19",
+              "breakpoint_id": "tft19:trait:DA_Jazz19:tier:1"
+            }
+          ],
+          "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+          "forbidden_traits": [],
+          "min_active_traits": 8
+        },
+        "state": "complete",
+        "reason": null,
+        "complete": true,
+        "query_hash": "c058404afc8e8b616b5a562034b069ef6cef6a315b2bf40bb59be10c9b33188c",
+        "visited_nodes": 10783419,
+        "solver_version": "native-dfs-v1",
+        "elapsed_seconds": 12.423005799995735,
+        "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+        "champion_set_count": 30935,
+        "completeness_scope": "All matches under these recorded rules and assumptions",
+        "configuration_count": 38809
+      },
+      "result_count": 38809,
+      "champion_set_count": 30935,
+      "complete": true,
+      "error": null,
+      "created_at": "2026-11-20T04:33:33.791330+00:00",
+      "started_at": "2026-11-20T04:33:33.846134+00:00",
+      "finished_at": "2026-11-20T04:33:46.638272+00:00",
+      "expired": false
+    }
+  },
+  "general_json_export": {
+    "bytes": 1201692665,
+    "configuration_count": 280543,
+    "sha256": "ac978b7c20784610bf5221310581e38b3b891ba2afcd425a4be79e112a76be00",
+    "seconds": 50.56676169997081,
+    "persisted": false
+  },
+  "database_relations": [
+    {
+      "schema": "research",
+      "heap_bytes": 589324288,
+      "index_bytes": 224534528,
+      "total_bytes": 814432256
+    },
+    {
+      "schema": "research_data",
+      "heap_bytes": 96681984,
+      "index_bytes": 132235264,
+      "total_bytes": 232062976
+    }
+  ],
+  "query_results_storage": {
+    "heap_bytes": 588529664,
+    "index_bytes": 224026624,
+    "total_bytes": 812752896
+  },
+  "source_artifacts": {
+    "files": 123,
+    "bytes": 89671406
+  },
+  "published_scopes": [
+    {
+      "dataset_id": "tft-set-19",
+      "publications": 2
+    }
+  ],
+  "service_tests": {
+    "passed": 16,
+    "command": "python -m pytest service -q (RESEARCH_TEST_DATABASE_URL configured)",
+    "permissions": "Actual SET LOCAL ROLE checks enforce source immutability, worker-only result inserts, anonymous draft invisibility and private query-job restrictions."
+  },
+  "not_verified": [
+    "Hosted 50-reader/two-worker ten-minute workload",
+    "Hosted p95 read latency and Hong Kong cold-network transfer",
+    "Production budget/region/provider credentials"
+  ],
+  "stored_general_exports": {
+    "seconds": 47.68081260006875,
+    "artifacts": [
+      {
+        "run_id": "LoDake-URTpPoMjkuyoLvrRz",
+        "format": "json",
+        "generation_hash": "dd58c7741c09fedb694fe21fe8ff8774d2414e602a4a8f2450714accf7a997bd",
+        "storage_key": "queries/LoDake-URTpPoMjkuyoLvrRz/1c12f3639b8643efc4ed316ab53dc4fdff7a27b2b391d0a37c1032872930efe5.json.gz",
+        "size": 33677324,
+        "sha256": "1c12f3639b8643efc4ed316ab53dc4fdff7a27b2b391d0a37c1032872930efe5",
+        "media_type": "application/gzip",
+        "restored_filename": "query-LoDake-URTpPoMjkuyoLvrRz.json",
+        "restored_sha256": "7bff10b7d73ae8674d82c5376d1fb7a5691f49fbf548c54b836a99b09a8bb4bc"
+      },
+      {
+        "run_id": "LoDake-URTpPoMjkuyoLvrRz",
+        "format": "csv",
+        "generation_hash": "dd58c7741c09fedb694fe21fe8ff8774d2414e602a4a8f2450714accf7a997bd",
+        "storage_key": "queries/LoDake-URTpPoMjkuyoLvrRz/0c22ea9dcc62bd83ef95a8feced2cd5401f1719a91b6195f1e55b8cccb6673fc.csv.gz",
+        "size": 31046110,
+        "sha256": "0c22ea9dcc62bd83ef95a8feced2cd5401f1719a91b6195f1e55b8cccb6673fc",
+        "media_type": "application/gzip",
+        "restored_filename": "query-LoDake-URTpPoMjkuyoLvrRz.csv",
+        "restored_sha256": "36b62db4a2f37ae4caff2f5dd007d82f6daddffe0b9910bb9549ff28538d5cfb"
+      }
+    ]
+  },
+  "stored_export_download_checks": [
+    {
+      "format": "csv",
+      "compressed_bytes": 31046110,
+      "restored_bytes": 1259231164,
+      "configuration_count": 280543,
+      "sha256_verified": true,
+      "restored_sha256_verified": true,
+      "content_disposition": "attachment; filename=\"query-LoDake-URTpPoMjkuyoLvrRz.csv.gz\""
+    },
+    {
+      "format": "json",
+      "compressed_bytes": 33677324,
+      "restored_bytes": 1201774009,
+      "configuration_count": 280543,
+      "sha256_verified": true,
+      "restored_sha256_verified": true,
+      "content_disposition": "attachment; filename=\"query-LoDake-URTpPoMjkuyoLvrRz.json.gz\""
+    }
+  ]
+}

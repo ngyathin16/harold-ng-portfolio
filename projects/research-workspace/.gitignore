@@ -1,0 +1,10 @@
+.local/
+__pycache__/
+*.py[cod]
+*.nbc
+*.nbi
+.env
+.env.*
+!.env.example
+artifacts/
+.pytest_cache/

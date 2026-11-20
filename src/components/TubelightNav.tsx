@@ -1,17 +1,18 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 // Adapted from Serenity UI's MIT-licensed Tubelight Navbar; see docs/COMPONENT-ADOPTION.md.
-type Section = 'work' | 'about' | 'contact';
+type Section = 'work' | 'about' | 'contact' | 'applications';
 
 const tabs: { name: string; section: Section }[] = [
   { name: 'Work', section: 'work' },
+  { name: 'Applications', section: 'applications' },
   { name: 'About', section: 'about' },
   { name: 'Contact', section: 'contact' },
 ];
 
 export default function TubelightNav({ pathname }: { pathname: string }) {
   const [activeTab, setActiveTab] = useState<Section | null>(
-    pathname === '/' || pathname.startsWith('/work/') ? 'work' : null,
+    pathname.startsWith('/applications/') ? 'applications' : pathname === '/' || pathname.startsWith('/work/') ? 'work' : null,
   );
   const navRef = useRef<HTMLElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
@@ -122,12 +123,12 @@ export default function TubelightNav({ pathname }: { pathname: string }) {
         return (
           <a
             key={tab.section}
-            href={`/#${tab.section}`}
+            href={tab.section === 'applications' ? '/applications/' : `/#${tab.section}`}
             data-section={tab.section}
             data-active={isActive ? 'true' : undefined}
             aria-current={isActive ? 'location' : undefined}
             onClick={event => {
-              if (pathname !== '/' || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+              if (tab.section === 'applications' || pathname !== '/' || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
               pendingSection.current = tab.section;
               setActiveTab(tab.section);
             }}

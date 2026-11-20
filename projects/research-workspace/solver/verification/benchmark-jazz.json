@@ -1,0 +1,67 @@
+{
+  "state": "complete",
+  "complete": true,
+  "reason": null,
+  "configuration_count": 38809,
+  "champion_set_count": 30935,
+  "visited_nodes": 10783419,
+  "elapsed_seconds": 10.177341900067404,
+  "query": {
+    "schema_version": 1,
+    "dataset_id": "tft-set-19",
+    "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+    "publication_id": "full",
+    "ruleset_version": "set19-954068eb43879fb6ea08",
+    "team_size": {
+      "min": 8,
+      "max": 8
+    },
+    "board_slots": 8,
+    "min_active_traits": 8,
+    "include_locked": true,
+    "cost": {
+      "min": null,
+      "max": 4
+    },
+    "total_cost": {
+      "min": null,
+      "max": null
+    },
+    "include": [
+      "tft19:unit:DA_Jhin19"
+    ],
+    "exclude": [],
+    "forbidden_traits": [],
+    "required_traits": [
+      {
+        "trait_id": "tft19:trait:DA_Jazz19",
+        "breakpoint_id": "tft19:trait:DA_Jazz19:tier:1"
+      }
+    ]
+  },
+  "query_hash": "4bf3ca20828813591334dc3dce6237b7d0c9c56dc70bc723159779a18da39a81",
+  "ruleset_version": "set19-954068eb43879fb6ea08",
+  "solver_version": "native-dfs-v1",
+  "completeness_scope": "All matches under these recorded rules and assumptions",
+  "measurement": {
+    "runs": 1,
+    "python": "3.14.2",
+    "numpy": "2.3.5",
+    "numba": "0.63.1",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "logical_cpus": 24,
+    "hosted_target_verified": false,
+    "includes": "uncached enumeration and independent recount of every result; Jazz additionally recounted against general query",
+    "excludes": "hosted result persistence, exports, queue wait, network, concurrent load",
+    "source_hashes": {
+      "benchmark.py": "136c9b191533b961c21dc3bd387a2994fdb37129bd4853a613ea763561f0bec6",
+      "native.py": "eb5f05fe3dd472442996afb446c7c18f607c30f66c036f3b8d53636792e548ec",
+      "rules.py": "a868bd3582e2970abfe8449a82ab9c68868c7a842157593c89e70b7e6a8a4a7e",
+      "search.py": "d5ef938ba72407b3be91fe11dad6561764a7209fb601bc76fec8b32e9385d608",
+      "test_solver.py": "3d7077723537c12fbfdb646f046451e2572f531180050b7332e360d085df3937",
+      "__init__.py": "32db53fee8064c900b83b9af2098a0258adc2de383c821c36bbf6ed8bd431ef4",
+      "__main__.py": "80a4e58c6b39c781cccbd602774c7e0ae1208c99ffdd83ece50a3761b8e268b3"
+    }
+  },
+  "independently_recounted_results": 38809
+}

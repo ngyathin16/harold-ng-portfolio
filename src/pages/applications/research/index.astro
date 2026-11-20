@@ -1,0 +1,21 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import '../../../styles/research.css';
+const api = import.meta.env.PUBLIC_RESEARCH_API_URL || '';
+---
+<Layout title="Research workspace — Harold Ng" description="Explore published research snapshots, follow their evidence, and search for teams under explicit rules.">
+  <div class="research shell" id="research-app" data-api={api}>
+    <header class="workspace-heading">
+      <div><a class="back-link" href="/applications/">← Applications</a><h1>Research workspace<span>.</span></h1><p>Explore the data. Keep the evidence in view.</p></div>
+      <span class="workspace-label">A space for inquiry</span>
+    </header>
+    <nav class="workspace-nav" aria-label="Workspace"><a href="?view=home" data-view="home">Home</a><a href="?view=catalog" data-view="catalog">Datasets</a><a href="?view=teams" data-view="teams">Team queries</a></nav>
+    <div id="workspace-status" role="status" aria-live="polite"></div>
+    <div id="workspace-content"><div class="workspace-empty"><p class="eyebrow">Connecting</p><h2>Opening the research index</h2><p>Published datasets and their versions will appear here.</p></div></div>
+    <noscript><p class="notice">Enable JavaScript to browse the hosted database. The rest of this portfolio works without JavaScript.</p></noscript>
+  </div>
+</Layout>
+<script>
+  import { startWorkspace } from '../../../scripts/research/app';
+  startWorkspace();
+</script>

@@ -1,0 +1,10 @@
+.local
+artifacts
+.env
+.env.*
+**/__pycache__
+**/*.pyc
+**/*.nbc
+**/*.nbi
+.git
+solver/verification

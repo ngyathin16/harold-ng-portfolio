@@ -1,0 +1,5082 @@
+{
+  "abilities": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "ability_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "unit_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "variant",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "form_source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "ability_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "units",
+        "unit_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ],
+      [
+        1,
+        0,
+        "entities",
+        "ability_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "ability_values": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "ability_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "variable",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "star_level",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 3
+      },
+      {
+        "name": "value",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "formula_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "ability_id",
+      "variable",
+      "star_level"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "abilities",
+        "ability_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "assertions": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "assertion_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "field_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "value_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "assertion_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "assets": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "asset_type",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "asset_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 3
+      },
+      {
+        "name": "url",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "entity_id",
+      "asset_type",
+      "asset_key"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "augments": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "rarity",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "augment_type",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "rounds_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "round_variants_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "tags_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "quest_related",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "entity_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "change_events": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "change_kind",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "field_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 3
+      },
+      {
+        "name": "before_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "after_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "classification",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "entity_id",
+      "change_kind",
+      "field_path"
+    ],
+    "foreign_keys": []
+  },
+  "collection_inventory": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "collection_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "value_type",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "row_count",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "source_id",
+      "collection_path"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "source_documents",
+        "source_id",
+        "source_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "condition_nodes": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "node_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "rule_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "parent_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "node_order",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "operator",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "required_value",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "milestones_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "milestone_description",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "implementing_ability",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "node_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "condition_nodes",
+        "parent_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ],
+      [
+        1,
+        0,
+        "unlock_rules",
+        "rule_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "condition_predicates": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "node_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "tree_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "subject",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "metric",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "comparison",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "threshold_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "scope",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "qualifiers_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "comparison_certainty",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "negated",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "logical_context_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "node_id",
+      "tree_path"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "condition_nodes",
+        "node_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "coverage_entries": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "category",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "observed",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "expected",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "known_fields",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "applicable_fields",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "explanation",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_ids_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "category"
+    ],
+    "foreign_keys": []
+  },
+  "curated_records": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "record_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "kind",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_locator",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "channel",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "mode",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evidence_origin",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "corroboration_status",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "fields_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "relationships_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "record_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "source_documents",
+        "source_id",
+        "source_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "curated_values": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "record_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "field_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "value_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "record_id",
+      "field_path"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "source_documents",
+        "source_id",
+        "source_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ],
+      [
+        1,
+        0,
+        "curated_records",
+        "record_id",
+        "record_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "discrepancies": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "discrepancy_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "subject",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_ids_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "discrepancy_id"
+    ],
+    "foreign_keys": []
+  },
+  "effect_values": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "collection",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "variable",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 3
+      },
+      {
+        "name": "coordinate",
+        "type": "REAL",
+        "nullable": false,
+        "primary_key_order": 4
+      },
+      {
+        "name": "value",
+        "type": "REAL",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "axis",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "entity_id",
+      "collection",
+      "variable",
+      "coordinate"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "entities": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "kind",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description_raw",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "lifecycle_status",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "variant_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evidence_origin",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "corroboration_status",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "entity_id"
+    ],
+    "foreign_keys": []
+  },
+  "entity_aliases": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "alias",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "alias_kind",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 3
+      }
+    ],
+    "primary_key": [
+      "entity_id",
+      "alias",
+      "alias_kind"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "entity_relationships": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "source_entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "target_entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "relationship",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 3
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "source_entity_id",
+      "target_entity_id",
+      "relationship"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "target_entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ],
+      [
+        1,
+        0,
+        "entities",
+        "source_entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "field_gaps": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "gap_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "field",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "reason",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "detail",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "gap_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "item_recipes": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "result_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "component_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "quantity",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "result_id",
+      "component_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "items",
+        "component_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ],
+      [
+        1,
+        0,
+        "items",
+        "result_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "items": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "category",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unique_item",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "stat_line",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "tags_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "collection",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "entity_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "loot_entries": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "loot_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "entry_index",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "reward_source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "quantity",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "probability",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "loot_id",
+      "entry_index"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "loot_tables",
+        "loot_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "loot_tables": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "owner_source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "drop_table_source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "outcomes_status",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "entity_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "mechanics": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "mechanic_type",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "activation_status",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "tags_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "entity_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "observation_comps": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "comp_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "model_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name_source_keys",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "comp_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "observation_payloads",
+        "source_id",
+        "source_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "observation_item_recommendations": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "comp_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "recommendation_index",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "unit_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "sample_count",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "average_placement",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit_numitems_count",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_score",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "placement_change",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evidence_origin",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "window_status",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "comp_id",
+      "recommendation_index"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "observation_comps",
+        "comp_id",
+        "comp_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "observation_memberships": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "comp_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "member_kind",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "position",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 3
+      },
+      {
+        "name": "source_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "comp_id",
+      "member_kind",
+      "position"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "observation_comps",
+        "comp_id",
+        "comp_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "observation_metrics": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "sample_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "metric",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "value",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "numerator",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "denominator",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evidence_origin",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "formula",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "sample_id",
+      "metric"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "observation_samples",
+        "sample_id",
+        "sample_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "observation_payloads": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "set_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "queue_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "model_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "source_id"
+    ],
+    "foreign_keys": []
+  },
+  "observation_placements": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "sample_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "placement",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "board_count",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "sample_id",
+      "placement"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "observation_samples",
+        "sample_id",
+        "sample_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "observation_recommended_items": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "comp_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "recommendation_index",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "item_position",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 3
+      },
+      {
+        "name": "item_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "comp_id",
+      "recommendation_index",
+      "item_position"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "observation_item_recommendations",
+        "comp_id",
+        "comp_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ],
+      [
+        0,
+        1,
+        "observation_item_recommendations",
+        "recommendation_index",
+        "recommendation_index",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "observation_samples": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "sample_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "record_kind",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "comp_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "sample_count",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "population_unit",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "queue_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "requested_patch",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "requested_window_days",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "exact_window_start",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "exact_window_end",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "rank_filter",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "region",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "client_build",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "window_status",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "sample_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "observation_comps",
+        "comp_id",
+        "comp_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "research_catalog": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "kind",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name",
+        "type": "BLOB",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "locator",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW research_catalog AS\n            SELECT entity_id AS id,kind,name,description,source_id,source_path AS locator FROM entities\n            UNION ALL\n            SELECT record_id,kind,name,description,source_id,source_locator FROM curated_records\n            UNION ALL\n            SELECT 'observation:comp:' || comp_id,'composition',coalesce(name_source_keys,comp_id),\n                'Observed PBE composition. Query v_comp_observations for sample counts, metrics, and window limits.',\n                source_id,source_path FROM observation_comps"
+  },
+  "roles": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "resource_type",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "tags_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "entity_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "snapshots": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "snapshot_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "set_number",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "channel",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "build",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "generated_at",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "schema_version",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "collector_hash",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "completeness",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "exact_build",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "snapshot_id"
+    ],
+    "foreign_keys": []
+  },
+  "source_collections": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "record_count",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "data_type",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "normalized_kind",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "source_path"
+    ],
+    "foreign_keys": []
+  },
+  "source_documents": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "url",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "title",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "retrieved_at",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "published_at",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "sha256",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "media_type",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "error",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evidence_origin",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "capabilities_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "stale",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "source_id"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_armory_choices": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "choice_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "armory_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "choice_index",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "pick_strategy",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "required_tags_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "excluded_tags_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "used_by_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "choice_id"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_armory_items": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "choice_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "item_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "choice_id",
+      "item_key"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "supplemental_armory_choices",
+        "choice_id",
+        "choice_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "supplemental_augment_distribution": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "sequence_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "first_tier",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "second_tier",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "third_tier",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "weight",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "probability",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "sequence_id"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_baron_ensemble": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "api_name",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "cost",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "pool_count",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "api_name"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_beach_pop_instruments": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "variation_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "threshold",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "instrument",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "probability",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "variation_key",
+      "threshold"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_cashouts": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "mechanic",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "tier",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "trait_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "counter",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "threshold_min",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "threshold_max",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "gold_value",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "loot_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "loot_table_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "mechanic",
+      "tier"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_collab_members": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "group_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "unit_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "experimental",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "group_key",
+      "unit_key"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_collections": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "collection_name",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "row_count",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "collection_name"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_curves": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "system",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "row_name",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "point_index",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 3
+      },
+      {
+        "name": "x",
+        "type": "REAL",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "y",
+        "type": "REAL",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "system",
+      "row_name",
+      "point_index"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_encounters": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "api_name",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "champion_hint",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "pick_count",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "probability",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "api_name"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_loot_nodes": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "node_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "parent_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "group_name",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "root_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "api_name",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "node_type",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "strategy",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "quantity",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "pick_count",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "weight",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "probability",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "is_reference",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "is_dynamic",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "filters_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "mode",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "node_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "supplemental_loot_nodes",
+        "parent_id",
+        "node_id",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "supplemental_recommended_items": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "table_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "item_index",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "item_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "table_key",
+      "item_index"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "supplemental_recommended_tables",
+        "table_key",
+        "table_key",
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "supplemental_recommended_tables": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "table_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "table_key"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_rounds": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "round_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "stage",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "round_number",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "round_type",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "round_id"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_shop_pool": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "shop_tier",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "copies_per_unit",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit_count",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "total_copies",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "shop_tier"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_unit_recommendations": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "unit_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "table_key",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "definition_status",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "unit_key"
+    ],
+    "foreign_keys": []
+  },
+  "supplemental_values": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "collection_name",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "value_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "value_number",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "value_text",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "source_path"
+    ],
+    "foreign_keys": []
+  },
+  "trait_breakpoints": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "trait_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "tier",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "min_units",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "max_units",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "style",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description_raw",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "variables_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "trait_id",
+      "tier"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "traits",
+        "trait_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "traits": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "trait_type",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "effects_source",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "entity_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "unit_stats": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "stat",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "star_level",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 3
+      },
+      {
+        "name": "value",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "entity_id",
+      "stat",
+      "star_level"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "units",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "unit_traits": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "unit_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "trait_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 2
+      },
+      {
+        "name": "membership_kind",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 3
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "unit_id",
+      "trait_id",
+      "membership_kind"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "traits",
+        "trait_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ],
+      [
+        1,
+        0,
+        "units",
+        "unit_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "units": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "cost",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "shop_unit",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "shop_tier",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "pool_count",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "pool_cost",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "role",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit_kind",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "locked",
+        "type": "INTEGER",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "board_slots",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "entity_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "entities",
+        "entity_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "unlock_rules": {
+    "kind": "table",
+    "columns": [
+      {
+        "name": "rule_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 1
+      },
+      {
+        "name": "unit_id",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "level_required",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "expression_json",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "parse_status",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evaluation_timing",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "completion_effect",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": false,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [
+      "rule_id"
+    ],
+    "foreign_keys": [
+      [
+        0,
+        0,
+        "units",
+        "unit_id",
+        null,
+        "NO ACTION",
+        "NO ACTION",
+        "NONE"
+      ]
+    ]
+  },
+  "v_abilities": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "kind",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description_raw",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "lifecycle_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "variant_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evidence_origin",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "corroboration_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "variant",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "form_source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_abilities AS SELECT e.*,a.unit_id,a.variant,a.form_source_key FROM abilities a JOIN entities e ON e.entity_id=a.ability_id"
+  },
+  "v_augments": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "kind",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description_raw",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "lifecycle_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "variant_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evidence_origin",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "corroboration_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "rarity",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "augment_type",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "rounds_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "round_variants_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "tags_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "quest_related",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_augments AS SELECT e.*,a.rarity,a.augment_type,a.rounds_json,a.round_variants_json,a.tags_json,a.quest_related FROM entities e JOIN augments a USING(entity_id)"
+  },
+  "v_cashouts": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "mechanic",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "tier",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "trait_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "counter",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "threshold_min",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "threshold_max",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "gold_value",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "loot_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "loot_table_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_cashouts AS SELECT * FROM supplemental_cashouts"
+  },
+  "v_comp_observations": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "sample_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "comp_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name_source_keys",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "sample_count",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "average_placement",
+        "type": "",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "win_rate",
+        "type": "",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "top_four_rate",
+        "type": "",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "population_share",
+        "type": "",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "requested_window_days",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "window_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_comp_observations AS\n        SELECT s.sample_id,s.comp_id,c.name_source_keys,s.sample_count,\n               max(CASE WHEN m.metric='average_placement' THEN m.value END) AS average_placement,\n               max(CASE WHEN m.metric='win_rate' THEN m.value END) AS win_rate,\n               max(CASE WHEN m.metric='top_four_rate' THEN m.value END) AS top_four_rate,\n               max(CASE WHEN m.metric='population_share' THEN m.value END) AS population_share,\n               s.requested_window_days,s.window_status,s.updated_at,s.source_id,s.source_path\n        FROM observation_samples s JOIN observation_comps c USING(comp_id)\n        LEFT JOIN observation_metrics m USING(sample_id)\n        WHERE s.record_kind='composition' GROUP BY s.sample_id"
+  },
+  "v_coverage": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "category",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "observed",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "expected",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "known_fields",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "applicable_fields",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "explanation",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_ids_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "inventory_percent",
+        "type": "",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "basic_field_percent",
+        "type": "",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_coverage AS SELECT *,\n            CASE WHEN expected > 0 THEN round(100.0 * observed / expected,2) END AS inventory_percent,\n            CASE WHEN applicable_fields > 0 THEN round(100.0 * known_fields / applicable_fields,2) END AS basic_field_percent\n            FROM coverage_entries"
+  },
+  "v_effects": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "name",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "kind",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "collection",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "variable",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "coordinate",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "value",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "axis",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_effects AS SELECT e.name,e.kind,v.* FROM effect_values v JOIN entities e USING(entity_id)"
+  },
+  "v_evidence": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "field_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "value_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "url",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "sha256",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "retrieved_at",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_evidence AS\n            SELECT a.entity_id,a.field_path,a.value_json,a.source_id,a.source_path,d.url,d.sha256,d.retrieved_at\n            FROM assertions a JOIN source_documents d ON d.source_id=a.source_id\n            UNION ALL\n            SELECT a.record_id,a.field_path,a.value_json,a.source_id,a.source_path,d.url,d.sha256,d.retrieved_at\n            FROM curated_values a JOIN source_documents d ON d.source_id=a.source_id\n            UNION ALL\n            SELECT a.source_id || ':' || a.source_path,a.source_path,a.value_json,a.source_id,a.source_path,d.url,d.sha256,d.retrieved_at\n            FROM supplemental_values a JOIN source_documents d ON d.source_id=a.source_id\n            UNION ALL\n            SELECT 'observation:comp:' || a.comp_id,'$',a.raw_json,a.source_id,a.source_path,d.url,d.sha256,d.retrieved_at\n            FROM observation_comps a JOIN source_documents d ON d.source_id=a.source_id"
+  },
+  "v_items": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "kind",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description_raw",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "lifecycle_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "variant_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evidence_origin",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "corroboration_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "category",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unique_item",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "stat_line",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "tags_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "collection",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_items AS SELECT e.*,i.category,i.unique_item,i.stat_line,i.tags_json,i.collection FROM entities e JOIN items i USING(entity_id)"
+  },
+  "v_loot": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "kind",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description_raw",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "lifecycle_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "variant_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evidence_origin",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "corroboration_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "owner_source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "drop_table_source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "outcomes_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_loot AS SELECT e.*,l.owner_source_key,l.drop_table_source_key,l.outcomes_status FROM loot_tables l JOIN entities e USING(entity_id)"
+  },
+  "v_loot_outcomes": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "node_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "parent_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "group_name",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "root_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "api_name",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "node_type",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "strategy",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "quantity",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "pick_count",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "weight",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "probability",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "is_reference",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "is_dynamic",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "filters_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "mode",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_loot_outcomes AS SELECT * FROM supplemental_loot_nodes"
+  },
+  "v_observations": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "sample_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "record_kind",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "comp_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "sample_count",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "population_unit",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "queue_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "requested_patch",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "requested_window_days",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "exact_window_start",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "exact_window_end",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "rank_filter",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "region",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "client_build",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "window_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name_source_keys",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_observations AS\n        SELECT s.*,c.name_source_keys FROM observation_samples s LEFT JOIN observation_comps c USING(comp_id)"
+  },
+  "v_recommended_items": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "unit_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "table_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "item_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "item_index",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "definition_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit_source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "item_source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_recommended_items AS\n      SELECT u.unit_key,u.table_key,i.item_key,i.item_index,u.definition_status,\n             u.source_id,u.source_path AS unit_source_path,i.source_path AS item_source_path\n      FROM supplemental_unit_recommendations u\n      LEFT JOIN supplemental_recommended_items i ON u.table_key=i.table_key"
+  },
+  "v_system_curves": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "system",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "row_name",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "point_index",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "x",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "y",
+        "type": "REAL",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_system_curves AS SELECT * FROM supplemental_curves"
+  },
+  "v_traits": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "kind",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description_raw",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "lifecycle_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "variant_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evidence_origin",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "corroboration_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "trait_type",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "effects_source",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_traits AS SELECT e.*,t.trait_type,t.effects_source FROM entities e JOIN traits t USING(entity_id)"
+  },
+  "v_units": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "kind",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description_raw",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "lifecycle_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "raw_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "variant_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evidence_origin",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "corroboration_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "cost",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "shop_unit",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "shop_tier",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "pool_count",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "pool_cost",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "role",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit_kind",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "locked",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "board_slots",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_units AS\n SELECT e.*,u.cost,u.shop_unit,u.shop_tier,u.pool_count,u.pool_cost,u.role,u.unit_kind,u.locked,u.board_slots\n FROM entities e JOIN units u USING(entity_id)"
+  },
+  "v_unlocks": {
+    "kind": "view",
+    "columns": [
+      {
+        "name": "entity_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_key",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "cost",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "rule_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "unit_id",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "level_required",
+        "type": "INTEGER",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "expression_json",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "parse_status",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "evaluation_timing",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "completion_effect",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      },
+      {
+        "name": "source_path",
+        "type": "TEXT",
+        "nullable": true,
+        "primary_key_order": 0
+      }
+    ],
+    "primary_key": [],
+    "sql": "CREATE VIEW v_unlocks AS SELECT e.entity_id,e.source_key,e.name,u.cost,e.source_id,r.* FROM unlock_rules r JOIN units u ON u.entity_id=r.unit_id JOIN entities e ON e.entity_id=r.unit_id"
+  }
+}

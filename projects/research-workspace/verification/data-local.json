@@ -1,0 +1,1832 @@
+{
+  "scope": "Local PostgreSQL verification; not hosted evidence",
+  "reports": {
+    "publication-verification.json": {
+      "sha256": "ba8226f279b382ce9f54e9ec2b75213f2bfddaecaabebdb9753a8b5e2d50426e",
+      "report": {
+        "checks": [
+          "Snapshot 1: all tables/views match; repeated import has no duplicates",
+          "Snapshot 2: all tables/views match; repeated import has no duplicates",
+          "Overlapping IDs in two retained snapshots do not collide or cross-join",
+          "Parity failure rolls back publication and preserves previous latest",
+          "Anonymous reads exclude drafts through tables and views; writes are denied"
+        ],
+        "passed": true,
+        "scope": "Local Postgres; hosted storage and deployment require separate checks"
+      }
+    },
+    "service-role-verification.json": {
+      "sha256": "3ac05acb2a5a6ccea43b9f18e8b2a002f5e3bdc5b59a15109c631fd1d9b7585c",
+      "report": {
+        "passed": true,
+        "api_source_reads": "published only",
+        "source_writes": "denied for API and worker",
+        "rule_writes": "denied",
+        "api_result_insert": "denied",
+        "api_submission": "passed",
+        "worker_result_insert": "passed",
+        "complete_export_count": 1
+      }
+    },
+    "restore-report.json": {
+      "sha256": "8f04f3585bd06f8fd7aa99b3dd30158011b49f5baf327866c65b29b86adbefc4",
+      "report": {
+        "objects_verified": 246,
+        "passed": true,
+        "publications": [
+          {
+            "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+            "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+            "tables_and_views": 75
+          },
+          {
+            "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--bda1ffdb0d18251c",
+            "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+            "tables_and_views": 75
+          }
+        ],
+        "query_definitions_verified": 3,
+        "restoration_performed_by_script": false,
+        "scope": "Logical rows, compressed artifact bytes and frozen query identity; restoration, HTTP routes and recovery timings are separate operator steps."
+      }
+    },
+    "restore-drill.json": {
+      "sha256": "714fbe21efdb0add8d52422c343b9ecf6bdb9e5a2db28c7f5f013020833f4145",
+      "report": {
+        "performed": true,
+        "database_restore": "pg_dump custom archive followed by pg_restore --exit-on-error into separate research_restore_test database",
+        "objects_restore": "independent copy at .local/restored-objects",
+        "archive_sha256": "5e114db4fed1a7822dd256a07803c6acfc5d511db6464491404b059a8b46cccd",
+        "catalog_http_reopened": true,
+        "saved_queries_http_reopened": 3,
+        "hosted_restore_verified": false
+      }
+    },
+    "growth/growth-report.json": {
+      "sha256": "13a51cc41e5e990bc26b4d6f9bd9dd63025bf8079af68ada3099d864b55681fb",
+      "report": {
+        "counts": {
+          "abilities": {
+            "actual": 1440,
+            "expected": 1440
+          },
+          "ability_values": {
+            "actual": 14080,
+            "expected": 14080
+          },
+          "assertions": {
+            "actual": 755960,
+            "expected": 755960
+          },
+          "assets": {
+            "actual": 11590,
+            "expected": 11590
+          },
+          "augments": {
+            "actual": 3710,
+            "expected": 3710
+          },
+          "change_events": {
+            "actual": 0,
+            "expected": 0
+          },
+          "collection_inventory": {
+            "actual": 2450,
+            "expected": 2450
+          },
+          "condition_nodes": {
+            "actual": 660,
+            "expected": 660
+          },
+          "condition_predicates": {
+            "actual": 390,
+            "expected": 390
+          },
+          "coverage_entries": {
+            "actual": 200,
+            "expected": 200
+          },
+          "curated_records": {
+            "actual": 440,
+            "expected": 440
+          },
+          "curated_values": {
+            "actual": 7640,
+            "expected": 7640
+          },
+          "discrepancies": {
+            "actual": 40,
+            "expected": 40
+          },
+          "effect_values": {
+            "actual": 100930,
+            "expected": 100930
+          },
+          "entities": {
+            "actual": 11680,
+            "expected": 11680
+          },
+          "entity_aliases": {
+            "actual": 24800,
+            "expected": 24800
+          },
+          "entity_relationships": {
+            "actual": 4380,
+            "expected": 4380
+          },
+          "field_gaps": {
+            "actual": 8700,
+            "expected": 8700
+          },
+          "item_recipes": {
+            "actual": 1000,
+            "expected": 1000
+          },
+          "items": {
+            "actual": 1830,
+            "expected": 1830
+          },
+          "loot_entries": {
+            "actual": 0,
+            "expected": 0
+          },
+          "loot_tables": {
+            "actual": 1230,
+            "expected": 1230
+          },
+          "mechanics": {
+            "actual": 1410,
+            "expected": 1410
+          },
+          "observation_comps": {
+            "actual": 440,
+            "expected": 440
+          },
+          "observation_item_recommendations": {
+            "actual": 1760,
+            "expected": 1760
+          },
+          "observation_memberships": {
+            "actual": 6650,
+            "expected": 6650
+          },
+          "observation_metrics": {
+            "actual": 1800,
+            "expected": 1800
+          },
+          "observation_payloads": {
+            "actual": 20,
+            "expected": 20
+          },
+          "observation_placements": {
+            "actual": 3600,
+            "expected": 3600
+          },
+          "observation_recommended_items": {
+            "actual": 5250,
+            "expected": 5250
+          },
+          "observation_samples": {
+            "actual": 460,
+            "expected": 460
+          },
+          "roles": {
+            "actual": 300,
+            "expected": 300
+          },
+          "snapshots": {
+            "actual": 10,
+            "expected": 10
+          },
+          "source_collections": {
+            "actual": 180,
+            "expected": 180
+          },
+          "source_documents": {
+            "actual": 220,
+            "expected": 220
+          },
+          "supplemental_armory_choices": {
+            "actual": 310,
+            "expected": 310
+          },
+          "supplemental_armory_items": {
+            "actual": 38560,
+            "expected": 38560
+          },
+          "supplemental_augment_distribution": {
+            "actual": 200,
+            "expected": 200
+          },
+          "supplemental_baron_ensemble": {
+            "actual": 50,
+            "expected": 50
+          },
+          "supplemental_beach_pop_instruments": {
+            "actual": 180,
+            "expected": 180
+          },
+          "supplemental_cashouts": {
+            "actual": 200,
+            "expected": 200
+          },
+          "supplemental_collab_members": {
+            "actual": 2160,
+            "expected": 2160
+          },
+          "supplemental_collections": {
+            "actual": 340,
+            "expected": 340
+          },
+          "supplemental_curves": {
+            "actual": 2040,
+            "expected": 2040
+          },
+          "supplemental_encounters": {
+            "actual": 240,
+            "expected": 240
+          },
+          "supplemental_loot_nodes": {
+            "actual": 59830,
+            "expected": 59830
+          },
+          "supplemental_recommended_items": {
+            "actual": 1440,
+            "expected": 1440
+          },
+          "supplemental_recommended_tables": {
+            "actual": 180,
+            "expected": 180
+          },
+          "supplemental_rounds": {
+            "actual": 530,
+            "expected": 530
+          },
+          "supplemental_shop_pool": {
+            "actual": 50,
+            "expected": 50
+          },
+          "supplemental_unit_recommendations": {
+            "actual": 1170,
+            "expected": 1170
+          },
+          "supplemental_values": {
+            "actual": 465440,
+            "expected": 465440
+          },
+          "trait_breakpoints": {
+            "actual": 1150,
+            "expected": 1150
+          },
+          "traits": {
+            "actual": 500,
+            "expected": 500
+          },
+          "unit_stats": {
+            "actual": 15210,
+            "expected": 15210
+          },
+          "unit_traits": {
+            "actual": 2070,
+            "expected": 2070
+          },
+          "units": {
+            "actual": 1260,
+            "expected": 1260
+          },
+          "unlock_rules": {
+            "actual": 320,
+            "expected": 320
+          }
+        },
+        "database_bytes": 1291433651,
+        "factor": 10,
+        "limitations": [
+          "Isolated relational-volume fixture; synthetic scopes omit duplicate downloads and query workloads.",
+          "Single EXPLAIN ANALYZE per read, after ANALYZE; not a cold-cache, concurrent or hosted latency measurement.",
+          "No production publication or existing database is modified; dedicated test database is retained for inspection."
+        ],
+        "load_seconds": 57.10898919997271,
+        "passed": true,
+        "plans": {
+          "catalog_name": [
+            {
+              "Execution Time": 1.292,
+              "Plan": {
+                "Actual Loops": 1,
+                "Actual Rows": 1,
+                "Actual Startup Time": 1.272,
+                "Actual Total Time": 1.273,
+                "Async Capable": false,
+                "Local Dirtied Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Written Blocks": 0,
+                "Node Type": "Limit",
+                "Parallel Aware": false,
+                "Plan Rows": 3,
+                "Plan Width": 55,
+                "Plans": [
+                  {
+                    "Actual Loops": 1,
+                    "Actual Rows": 1,
+                    "Actual Startup Time": 1.271,
+                    "Actual Total Time": 1.272,
+                    "Async Capable": false,
+                    "Local Dirtied Blocks": 0,
+                    "Local Hit Blocks": 0,
+                    "Local Read Blocks": 0,
+                    "Local Written Blocks": 0,
+                    "Node Type": "Sort",
+                    "Parallel Aware": false,
+                    "Parent Relationship": "Outer",
+                    "Plan Rows": 3,
+                    "Plan Width": 55,
+                    "Plans": [
+                      {
+                        "Actual Loops": 1,
+                        "Actual Rows": 1,
+                        "Actual Startup Time": 0.864,
+                        "Actual Total Time": 1.265,
+                        "Async Capable": false,
+                        "Local Dirtied Blocks": 0,
+                        "Local Hit Blocks": 0,
+                        "Local Read Blocks": 0,
+                        "Local Written Blocks": 0,
+                        "Node Type": "Append",
+                        "Parallel Aware": false,
+                        "Parent Relationship": "Outer",
+                        "Plan Rows": 3,
+                        "Plan Width": 55,
+                        "Plans": [
+                          {
+                            "Actual Loops": 1,
+                            "Actual Rows": 1,
+                            "Actual Startup Time": 0.863,
+                            "Actual Total Time": 0.933,
+                            "Alias": "entities",
+                            "Async Capable": false,
+                            "Filter": "(name ~~* '%Ahri%'::text)",
+                            "Heap Fetches": 1168,
+                            "Index Cond": "(publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text)",
+                            "Index Name": "entities_kind_name",
+                            "Local Dirtied Blocks": 0,
+                            "Local Hit Blocks": 0,
+                            "Local Read Blocks": 0,
+                            "Local Written Blocks": 0,
+                            "Node Type": "Index Only Scan",
+                            "Parallel Aware": false,
+                            "Parent Relationship": "Member",
+                            "Plan Rows": 1,
+                            "Plan Width": 57,
+                            "Relation Name": "entities",
+                            "Rows Removed by Filter": 1167,
+                            "Rows Removed by Index Recheck": 0,
+                            "Scan Direction": "Forward",
+                            "Shared Dirtied Blocks": 0,
+                            "Shared Hit Blocks": 665,
+                            "Shared Read Blocks": 35,
+                            "Shared Written Blocks": 20,
+                            "Startup Cost": 0.41,
+                            "Temp Read Blocks": 0,
+                            "Temp Written Blocks": 0,
+                            "Total Cost": 1798.98
+                          },
+                          {
+                            "Actual Loops": 1,
+                            "Actual Rows": 0,
+                            "Actual Startup Time": 0.216,
+                            "Actual Total Time": 0.217,
+                            "Alias": "curated_records",
+                            "Async Capable": false,
+                            "Filter": "((name ~~* '%Ahri%'::text) AND (publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text))",
+                            "Local Dirtied Blocks": 0,
+                            "Local Hit Blocks": 0,
+                            "Local Read Blocks": 0,
+                            "Local Written Blocks": 0,
+                            "Node Type": "Seq Scan",
+                            "Parallel Aware": false,
+                            "Parent Relationship": "Member",
+                            "Plan Rows": 1,
+                            "Plan Width": 44,
+                            "Relation Name": "curated_records",
+                            "Rows Removed by Filter": 440,
+                            "Shared Dirtied Blocks": 0,
+                            "Shared Hit Blocks": 5,
+                            "Shared Read Blocks": 28,
+                            "Shared Written Blocks": 13,
+                            "Startup Cost": 0.0,
+                            "Temp Read Blocks": 0,
+                            "Temp Written Blocks": 0,
+                            "Total Cost": 39.6
+                          },
+                          {
+                            "Actual Loops": 1,
+                            "Actual Rows": 0,
+                            "Actual Startup Time": 0.113,
+                            "Actual Total Time": 0.113,
+                            "Alias": "observation_comps",
+                            "Async Capable": false,
+                            "Filter": "((COALESCE(name_source_keys, comp_id) ~~* '%Ahri%'::text) AND (publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text))",
+                            "Local Dirtied Blocks": 0,
+                            "Local Hit Blocks": 0,
+                            "Local Read Blocks": 0,
+                            "Local Written Blocks": 0,
+                            "Node Type": "Seq Scan",
+                            "Parallel Aware": false,
+                            "Parent Relationship": "Member",
+                            "Plan Rows": 1,
+                            "Plan Width": 64,
+                            "Relation Name": "observation_comps",
+                            "Rows Removed by Filter": 440,
+                            "Shared Dirtied Blocks": 0,
+                            "Shared Hit Blocks": 36,
+                            "Shared Read Blocks": 0,
+                            "Shared Written Blocks": 0,
+                            "Startup Cost": 0.0,
+                            "Temp Read Blocks": 0,
+                            "Temp Written Blocks": 0,
+                            "Total Cost": 42.6
+                          }
+                        ],
+                        "Shared Dirtied Blocks": 0,
+                        "Shared Hit Blocks": 706,
+                        "Shared Read Blocks": 63,
+                        "Shared Written Blocks": 33,
+                        "Startup Cost": 0.41,
+                        "Subplans Removed": 0,
+                        "Temp Read Blocks": 0,
+                        "Temp Written Blocks": 0,
+                        "Total Cost": 1881.2
+                      }
+                    ],
+                    "Shared Dirtied Blocks": 0,
+                    "Shared Hit Blocks": 706,
+                    "Shared Read Blocks": 63,
+                    "Shared Written Blocks": 33,
+                    "Sort Key": [
+                      "entities.name",
+                      "entities.entity_id"
+                    ],
+                    "Sort Method": "quicksort",
+                    "Sort Space Type": "Memory",
+                    "Sort Space Used": 25,
+                    "Startup Cost": 1881.23,
+                    "Temp Read Blocks": 0,
+                    "Temp Written Blocks": 0,
+                    "Total Cost": 1881.23
+                  }
+                ],
+                "Shared Dirtied Blocks": 0,
+                "Shared Hit Blocks": 706,
+                "Shared Read Blocks": 63,
+                "Shared Written Blocks": 33,
+                "Startup Cost": 1881.23,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0,
+                "Total Cost": 1881.23
+              },
+              "Planning": {
+                "Local Dirtied Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Written Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Hit Blocks": 29,
+                "Shared Read Blocks": 4,
+                "Shared Written Blocks": 1,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning Time": 0.376,
+              "Triggers": []
+            }
+          ],
+          "evidence_page": [
+            {
+              "Execution Time": 158.375,
+              "Plan": {
+                "Actual Loops": 1,
+                "Actual Rows": 50,
+                "Actual Startup Time": 152.322,
+                "Actual Total Time": 158.303,
+                "Async Capable": false,
+                "Local Dirtied Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Written Blocks": 0,
+                "Node Type": "Limit",
+                "Parallel Aware": false,
+                "Plan Rows": 38,
+                "Plan Width": 463,
+                "Plans": [
+                  {
+                    "Actual Loops": 1,
+                    "Actual Rows": 50,
+                    "Actual Startup Time": 152.321,
+                    "Actual Total Time": 158.295,
+                    "Async Capable": false,
+                    "Local Dirtied Blocks": 0,
+                    "Local Hit Blocks": 0,
+                    "Local Read Blocks": 0,
+                    "Local Written Blocks": 0,
+                    "Node Type": "Gather Merge",
+                    "Parallel Aware": false,
+                    "Parent Relationship": "Outer",
+                    "Plan Rows": 38,
+                    "Plan Width": 463,
+                    "Plans": [
+                      {
+                        "Actual Loops": 3,
+                        "Actual Rows": 17,
+                        "Actual Startup Time": 20.126,
+                        "Actual Total Time": 20.131,
+                        "Async Capable": false,
+                        "Local Dirtied Blocks": 0,
+                        "Local Hit Blocks": 0,
+                        "Local Read Blocks": 0,
+                        "Local Written Blocks": 0,
+                        "Node Type": "Sort",
+                        "Parallel Aware": false,
+                        "Parent Relationship": "Outer",
+                        "Plan Rows": 19,
+                        "Plan Width": 463,
+                        "Plans": [
+                          {
+                            "Actual Loops": 3,
+                            "Actual Rows": 86,
+                            "Actual Startup Time": 16.87,
+                            "Actual Total Time": 20.085,
+                            "Async Capable": false,
+                            "Local Dirtied Blocks": 0,
+                            "Local Hit Blocks": 0,
+                            "Local Read Blocks": 0,
+                            "Local Written Blocks": 0,
+                            "Node Type": "Append",
+                            "Parallel Aware": true,
+                            "Parent Relationship": "Outer",
+                            "Plan Rows": 19,
+                            "Plan Width": 463,
+                            "Plans": [
+                              {
+                                "Actual Loops": 1,
+                                "Actual Rows": 257,
+                                "Actual Startup Time": 0.253,
+                                "Actual Total Time": 0.581,
+                                "Async Capable": false,
+                                "Inner Unique": true,
+                                "Join Type": "Inner",
+                                "Local Dirtied Blocks": 0,
+                                "Local Hit Blocks": 0,
+                                "Local Read Blocks": 0,
+                                "Local Written Blocks": 0,
+                                "Node Type": "Nested Loop",
+                                "Parallel Aware": false,
+                                "Parent Relationship": "Member",
+                                "Plan Rows": 22,
+                                "Plan Width": 438,
+                                "Plans": [
+                                  {
+                                    "Actual Loops": 1,
+                                    "Actual Rows": 257,
+                                    "Actual Startup Time": 0.171,
+                                    "Actual Total Time": 0.428,
+                                    "Alias": "a",
+                                    "Async Capable": false,
+                                    "Index Cond": "((publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text) AND (entity_id = 'tft19:unit:DA_Jhin19'::text))",
+                                    "Index Name": "evidence_owner",
+                                    "Local Dirtied Blocks": 0,
+                                    "Local Hit Blocks": 0,
+                                    "Local Read Blocks": 0,
+                                    "Local Written Blocks": 0,
+                                    "Node Type": "Index Scan",
+                                    "Parallel Aware": false,
+                                    "Parent Relationship": "Outer",
+                                    "Plan Rows": 222,
+                                    "Plan Width": 281,
+                                    "Relation Name": "assertions",
+                                    "Rows Removed by Index Recheck": 0,
+                                    "Scan Direction": "Forward",
+                                    "Shared Dirtied Blocks": 0,
+                                    "Shared Hit Blocks": 0,
+                                    "Shared Read Blocks": 24,
+                                    "Shared Written Blocks": 10,
+                                    "Startup Cost": 0.55,
+                                    "Temp Read Blocks": 0,
+                                    "Temp Written Blocks": 0,
+                                    "Total Cost": 436.8,
+                                    "Workers": []
+                                  },
+                                  {
+                                    "Actual Loops": 257,
+                                    "Actual Rows": 1,
+                                    "Actual Startup Time": 0.0,
+                                    "Actual Total Time": 0.0,
+                                    "Async Capable": false,
+                                    "Cache Key": "a.dataset_id, a.snapshot_id, a.source_id",
+                                    "Cache Mode": "logical",
+                                    "Local Dirtied Blocks": 0,
+                                    "Local Hit Blocks": 0,
+                                    "Local Read Blocks": 0,
+                                    "Local Written Blocks": 0,
+                                    "Node Type": "Memoize",
+                                    "Parallel Aware": false,
+                                    "Parent Relationship": "Inner",
+                                    "Plan Rows": 1,
+                                    "Plan Width": 295,
+                                    "Plans": [
+                                      {
+                                        "Actual Loops": 1,
+                                        "Actual Rows": 1,
+                                        "Actual Startup Time": 0.074,
+                                        "Actual Total Time": 0.075,
+                                        "Alias": "d",
+                                        "Async Capable": false,
+                                        "Index Cond": "((publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text) AND (dataset_id = a.dataset_id) AND (snapshot_id = a.snapshot_id) AND (source_id = a.source_id))",
+                                        "Index Name": "source_documents_pkey",
+                                        "Local Dirtied Blocks": 0,
+                                        "Local Hit Blocks": 0,
+                                        "Local Read Blocks": 0,
+                                        "Local Written Blocks": 0,
+                                        "Node Type": "Index Scan",
+                                        "Parallel Aware": false,
+                                        "Parent Relationship": "Outer",
+                                        "Plan Rows": 1,
+                                        "Plan Width": 295,
+                                        "Relation Name": "source_documents",
+                                        "Rows Removed by Index Recheck": 0,
+                                        "Scan Direction": "Forward",
+                                        "Shared Dirtied Blocks": 0,
+                                        "Shared Hit Blocks": 2,
+                                        "Shared Read Blocks": 2,
+                                        "Shared Written Blocks": 1,
+                                        "Startup Cost": 0.27,
+                                        "Temp Read Blocks": 0,
+                                        "Temp Written Blocks": 0,
+                                        "Total Cost": 0.69,
+                                        "Workers": []
+                                      }
+                                    ],
+                                    "Shared Dirtied Blocks": 0,
+                                    "Shared Hit Blocks": 2,
+                                    "Shared Read Blocks": 2,
+                                    "Shared Written Blocks": 1,
+                                    "Startup Cost": 0.28,
+                                    "Temp Read Blocks": 0,
+                                    "Temp Written Blocks": 0,
+                                    "Total Cost": 0.7,
+                                    "Workers": [
+                                      {
+                                        "Cache Evictions": 0,
+                                        "Cache Hits": 256,
+                                        "Cache Misses": 1,
+                                        "Cache Overflows": 0,
+                                        "Peak Memory Usage": 1,
+                                        "Worker Number": 0
+                                      }
+                                    ]
+                                  }
+                                ],
+                                "Shared Dirtied Blocks": 0,
+                                "Shared Hit Blocks": 2,
+                                "Shared Read Blocks": 26,
+                                "Shared Written Blocks": 11,
+                                "Startup Cost": 0.83,
+                                "Temp Read Blocks": 0,
+                                "Temp Written Blocks": 0,
+                                "Total Cost": 449.89,
+                                "Workers": []
+                              },
+                              {
+                                "Actual Loops": 1,
+                                "Actual Rows": 0,
+                                "Actual Startup Time": 0.229,
+                                "Actual Total Time": 0.23,
+                                "Async Capable": false,
+                                "Inner Unique": false,
+                                "Join Type": "Inner",
+                                "Local Dirtied Blocks": 0,
+                                "Local Hit Blocks": 0,
+                                "Local Read Blocks": 0,
+                                "Local Written Blocks": 0,
+                                "Node Type": "Nested Loop",
+                                "Parallel Aware": false,
+                                "Parent Relationship": "Member",
+                                "Plan Rows": 1,
+                                "Plan Width": 385,
+                                "Plans": [
+                                  {
+                                    "Actual Loops": 1,
+                                    "Actual Rows": 22,
+                                    "Actual Startup Time": 0.03,
+                                    "Actual Total Time": 0.098,
+                                    "Alias": "d_1",
+                                    "Async Capable": false,
+                                    "Filter": "(publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text)",
+                                    "Local Dirtied Blocks": 0,
+                                    "Local Hit Blocks": 0,
+                                    "Local Read Blocks": 0,
+                                    "Local Written Blocks": 0,
+                                    "Node Type": "Seq Scan",
+                                    "Parallel Aware": false,
+                                    "Parent Relationship": "Outer",
+                                    "Plan Rows": 22,
+                                    "Plan Width": 295,
+                                    "Relation Name": "source_documents",
+                                    "Rows Removed by Filter": 198,
+                                    "Shared Dirtied Blocks": 0,
+                                    "Shared Hit Blocks": 15,
+                                    "Shared Read Blocks": 0,
+                                    "Shared Written Blocks": 0,
+                                    "Startup Cost": 0.0,
+                                    "Temp Read Blocks": 0,
+                                    "Temp Written Blocks": 0,
+                                    "Total Cost": 17.75,
+                                    "Workers": []
+                                  },
+                                  {
+                                    "Actual Loops": 22,
+                                    "Actual Rows": 0,
+                                    "Actual Startup Time": 0.006,
+                                    "Actual Total Time": 0.006,
+                                    "Async Capable": false,
+                                    "Cache Key": "d_1.dataset_id, d_1.snapshot_id, d_1.source_id",
+                                    "Cache Mode": "logical",
+                                    "Local Dirtied Blocks": 0,
+                                    "Local Hit Blocks": 0,
+                                    "Local Read Blocks": 0,
+                                    "Local Written Blocks": 0,
+                                    "Node Type": "Memoize",
+                                    "Parallel Aware": false,
+                                    "Parent Relationship": "Inner",
+                                    "Plan Rows": 1,
+                                    "Plan Width": 228,
+                                    "Plans": [
+                                      {
+                                        "Actual Loops": 22,
+                                        "Actual Rows": 0,
+                                        "Actual Startup Time": 0.006,
+                                        "Actual Total Time": 0.006,
+                                        "Alias": "a_1",
+                                        "Async Capable": false,
+                                        "Filter": "(d_1.source_id = source_id)",
+                                        "Index Cond": "((publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text) AND (dataset_id = d_1.dataset_id) AND (snapshot_id = d_1.snapshot_id) AND (record_id = 'tft19:unit:DA_Jhin19'::text))",
+                                        "Index Name": "curated_values_pkey",
+                                        "Local Dirtied Blocks": 0,
+                                        "Local Hit Blocks": 0,
+                                        "Local Read Blocks": 0,
+                                        "Local Written Blocks": 0,
+                                        "Node Type": "Index Scan",
+                                        "Parallel Aware": false,
+                                        "Parent Relationship": "Outer",
+                                        "Plan Rows": 1,
+                                        "Plan Width": 228,
+                                        "Relation Name": "curated_values",
+                                        "Rows Removed by Filter": 0,
+                                        "Rows Removed by Index Recheck": 0,
+                                        "Scan Direction": "Forward",
+                                        "Shared Dirtied Blocks": 0,
+                                        "Shared Hit Blocks": 64,
+                                        "Shared Read Blocks": 3,
+                                        "Shared Written Blocks": 2,
+                                        "Startup Cost": 0.41,
+                                        "Temp Read Blocks": 0,
+                                        "Temp Written Blocks": 0,
+                                        "Total Cost": 6.19,
+                                        "Workers": []
+                                      }
+                                    ],
+                                    "Shared Dirtied Blocks": 0,
+                                    "Shared Hit Blocks": 64,
+                                    "Shared Read Blocks": 3,
+                                    "Shared Written Blocks": 2,
+                                    "Startup Cost": 0.42,
+                                    "Temp Read Blocks": 0,
+                                    "Temp Written Blocks": 0,
+                                    "Total Cost": 6.2,
+                                    "Workers": [
+                                      {
+                                        "Cache Evictions": 0,
+                                        "Cache Hits": 0,
+                                        "Cache Misses": 22,
+                                        "Cache Overflows": 0,
+                                        "Peak Memory Usage": 3,
+                                        "Worker Number": 0
+                                      }
+                                    ]
+                                  }
+                                ],
+                                "Shared Dirtied Blocks": 0,
+                                "Shared Hit Blocks": 79,
+                                "Shared Read Blocks": 3,
+                                "Shared Written Blocks": 2,
+                                "Startup Cost": 0.42,
+                                "Temp Read Blocks": 0,
+                                "Temp Written Blocks": 0,
+                                "Total Cost": 107.15,
+                                "Workers": []
+                              },
+                              {
+                                "Actual Loops": 1,
+                                "Actual Rows": 0,
+                                "Actual Startup Time": 0.212,
+                                "Actual Total Time": 0.213,
+                                "Async Capable": false,
+                                "Inner Unique": true,
+                                "Join Type": "Inner",
+                                "Local Dirtied Blocks": 0,
+                                "Local Hit Blocks": 0,
+                                "Local Read Blocks": 0,
+                                "Local Written Blocks": 0,
+                                "Node Type": "Nested Loop",
+                                "Parallel Aware": false,
+                                "Parent Relationship": "Member",
+                                "Plan Rows": 1,
+                                "Plan Width": 792,
+                                "Plans": [
+                                  {
+                                    "Actual Loops": 1,
+                                    "Actual Rows": 0,
+                                    "Actual Startup Time": 0.212,
+                                    "Actual Total Time": 0.212,
+                                    "Alias": "a_2",
+                                    "Async Capable": false,
+                                    "Filter": "((publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text) AND (('observation:comp:'::text || comp_id) = 'tft19:unit:DA_Jhin19'::text))",
+                                    "Local Dirtied Blocks": 0,
+                                    "Local Hit Blocks": 0,
+                                    "Local Read Blocks": 0,
+                                    "Local Written Blocks": 0,
+                                    "Node Type": "Seq Scan",
+                                    "Parallel Aware": false,
+                                    "Parent Relationship": "Outer",
+                                    "Plan Rows": 1,
+                                    "Plan Width": 578,
+                                    "Relation Name": "observation_comps",
+                                    "Rows Removed by Filter": 440,
+                                    "Shared Dirtied Blocks": 0,
+                                    "Shared Hit Blocks": 36,
+                                    "Shared Read Blocks": 0,
+                                    "Shared Written Blocks": 0,
+                                    "Startup Cost": 0.0,
+                                    "Temp Read Blocks": 0,
+                                    "Temp Written Blocks": 0,
+                                    "Total Cost": 43.7,
+                                    "Workers": []
+                                  },
+                                  {
+                                    "Actual Loops": 0,
+                                    "Actual Rows": 0,
+                                    "Actual Startup Time": 0.0,
+                                    "Actual Total Time": 0.0,
+                                    "Alias": "d_2",
+                                    "Async Capable": false,
+                                    "Index Cond": "((publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text) AND (dataset_id = a_2.dataset_id) AND (snapshot_id = a_2.snapshot_id) AND (source_id = a_2.source_id))",
+                                    "Index Name": "source_documents_pkey",
+                                    "Local Dirtied Blocks": 0,
+                                    "Local Hit Blocks": 0,
+                                    "Local Read Blocks": 0,
+                                    "Local Written Blocks": 0,
+                                    "Node Type": "Index Scan",
+                                    "Parallel Aware": false,
+                                    "Parent Relationship": "Inner",
+                                    "Plan Rows": 1,
+                                    "Plan Width": 295,
+                                    "Relation Name": "source_documents",
+                                    "Rows Removed by Index Recheck": 0,
+                                    "Scan Direction": "Forward",
+                                    "Shared Dirtied Blocks": 0,
+                                    "Shared Hit Blocks": 0,
+                                    "Shared Read Blocks": 0,
+                                    "Shared Written Blocks": 0,
+                                    "Startup Cost": 0.27,
+                                    "Temp Read Blocks": 0,
+                                    "Temp Written Blocks": 0,
+                                    "Total Cost": 8.29,
+                                    "Workers": []
+                                  }
+                                ],
+                                "Shared Dirtied Blocks": 0,
+                                "Shared Hit Blocks": 36,
+                                "Shared Read Blocks": 0,
+                                "Shared Written Blocks": 0,
+                                "Startup Cost": 0.27,
+                                "Temp Read Blocks": 0,
+                                "Temp Written Blocks": 0,
+                                "Total Cost": 52.7,
+                                "Workers": []
+                              },
+                              {
+                                "Actual Loops": 2,
+                                "Actual Rows": 0,
+                                "Actual Startup Time": 29.604,
+                                "Actual Total Time": 29.604,
+                                "Async Capable": false,
+                                "Inner Unique": true,
+                                "Join Type": "Inner",
+                                "Local Dirtied Blocks": 0,
+                                "Local Hit Blocks": 0,
+                                "Local Read Blocks": 0,
+                                "Local Written Blocks": 0,
+                                "Node Type": "Nested Loop",
+                                "Parallel Aware": false,
+                                "Parent Relationship": "Member",
+                                "Plan Rows": 10,
+                                "Plan Width": 475,
+                                "Plans": [
+                                  {
+                                    "Actual Loops": 2,
+                                    "Actual Rows": 0,
+                                    "Actual Startup Time": 29.602,
+                                    "Actual Total Time": 29.603,
+                                    "Alias": "a_3",
+                                    "Async Capable": false,
+                                    "Filter": "((publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text) AND (((source_id || ':'::text) || source_path) = 'tft19:unit:DA_Jhin19'::text))",
+                                    "Local Dirtied Blocks": 0,
+                                    "Local Hit Blocks": 0,
+                                    "Local Read Blocks": 0,
+                                    "Local Written Blocks": 0,
+                                    "Node Type": "Seq Scan",
+                                    "Parallel Aware": true,
+                                    "Parent Relationship": "Outer",
+                                    "Plan Rows": 94,
+                                    "Plan Width": 215,
+                                    "Relation Name": "supplemental_values",
+                                    "Rows Removed by Filter": 232720,
+                                    "Shared Dirtied Blocks": 0,
+                                    "Shared Hit Blocks": 971,
+                                    "Shared Read Blocks": 15117,
+                                    "Shared Written Blocks": 31,
+                                    "Startup Cost": 0.0,
+                                    "Temp Read Blocks": 0,
+                                    "Temp Written Blocks": 0,
+                                    "Total Cost": 19966.67,
+                                    "Workers": []
+                                  },
+                                  {
+                                    "Actual Loops": 0,
+                                    "Actual Rows": 0,
+                                    "Actual Startup Time": 0.0,
+                                    "Actual Total Time": 0.0,
+                                    "Async Capable": false,
+                                    "Cache Key": "a_3.dataset_id, a_3.snapshot_id, a_3.source_id",
+                                    "Cache Mode": "logical",
+                                    "Local Dirtied Blocks": 0,
+                                    "Local Hit Blocks": 0,
+                                    "Local Read Blocks": 0,
+                                    "Local Written Blocks": 0,
+                                    "Node Type": "Memoize",
+                                    "Parallel Aware": false,
+                                    "Parent Relationship": "Inner",
+                                    "Plan Rows": 1,
+                                    "Plan Width": 295,
+                                    "Plans": [
+                                      {
+                                        "Actual Loops": 0,
+                                        "Actual Rows": 0,
+                                        "Actual Startup Time": 0.0,
+                                        "Actual Total Time": 0.0,
+                                        "Alias": "d_3",
+                                        "Async Capable": false,
+                                        "Index Cond": "((publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text) AND (dataset_id = a_3.dataset_id) AND (snapshot_id = a_3.snapshot_id) AND (source_id = a_3.source_id))",
+                                        "Index Name": "source_documents_pkey",
+                                        "Local Dirtied Blocks": 0,
+                                        "Local Hit Blocks": 0,
+                                        "Local Read Blocks": 0,
+                                        "Local Written Blocks": 0,
+                                        "Node Type": "Index Scan",
+                                        "Parallel Aware": false,
+                                        "Parent Relationship": "Outer",
+                                        "Plan Rows": 1,
+                                        "Plan Width": 295,
+                                        "Relation Name": "source_documents",
+                                        "Rows Removed by Index Recheck": 0,
+                                        "Scan Direction": "Forward",
+                                        "Shared Dirtied Blocks": 0,
+                                        "Shared Hit Blocks": 0,
+                                        "Shared Read Blocks": 0,
+                                        "Shared Written Blocks": 0,
+                                        "Startup Cost": 0.27,
+                                        "Temp Read Blocks": 0,
+                                        "Temp Written Blocks": 0,
+                                        "Total Cost": 0.68,
+                                        "Workers": []
+                                      }
+                                    ],
+                                    "Shared Dirtied Blocks": 0,
+                                    "Shared Hit Blocks": 0,
+                                    "Shared Read Blocks": 0,
+                                    "Shared Written Blocks": 0,
+                                    "Startup Cost": 0.28,
+                                    "Temp Read Blocks": 0,
+                                    "Temp Written Blocks": 0,
+                                    "Total Cost": 0.69,
+                                    "Workers": []
+                                  }
+                                ],
+                                "Shared Dirtied Blocks": 0,
+                                "Shared Hit Blocks": 971,
+                                "Shared Read Blocks": 15117,
+                                "Shared Written Blocks": 31,
+                                "Startup Cost": 0.28,
+                                "Temp Read Blocks": 0,
+                                "Temp Written Blocks": 0,
+                                "Total Cost": 19976.52,
+                                "Workers": []
+                              }
+                            ],
+                            "Shared Dirtied Blocks": 0,
+                            "Shared Hit Blocks": 1088,
+                            "Shared Read Blocks": 15146,
+                            "Shared Written Blocks": 44,
+                            "Startup Cost": 0.42,
+                            "Subplans Removed": 0,
+                            "Temp Read Blocks": 0,
+                            "Temp Written Blocks": 0,
+                            "Total Cost": 20426.5,
+                            "Workers": []
+                          }
+                        ],
+                        "Shared Dirtied Blocks": 0,
+                        "Shared Hit Blocks": 1104,
+                        "Shared Read Blocks": 15146,
+                        "Shared Written Blocks": 44,
+                        "Sort Key": [
+                          "a.field_path",
+                          "a.source_id",
+                          "a.source_path"
+                        ],
+                        "Sort Method": "quicksort",
+                        "Sort Space Type": "Memory",
+                        "Sort Space Used": 25,
+                        "Startup Cost": 20426.91,
+                        "Temp Read Blocks": 0,
+                        "Temp Written Blocks": 0,
+                        "Total Cost": 20426.96,
+                        "Workers": [
+                          {
+                            "Sort Method": "top-N heapsort",
+                            "Sort Space Type": "Memory",
+                            "Sort Space Used": 59,
+                            "Worker Number": 0
+                          },
+                          {
+                            "Sort Method": "quicksort",
+                            "Sort Space Type": "Memory",
+                            "Sort Space Used": 25,
+                            "Worker Number": 1
+                          }
+                        ]
+                      }
+                    ],
+                    "Shared Dirtied Blocks": 0,
+                    "Shared Hit Blocks": 1104,
+                    "Shared Read Blocks": 15146,
+                    "Shared Written Blocks": 44,
+                    "Startup Cost": 21426.93,
+                    "Temp Read Blocks": 0,
+                    "Temp Written Blocks": 0,
+                    "Total Cost": 21431.37,
+                    "Workers Launched": 2,
+                    "Workers Planned": 2
+                  }
+                ],
+                "Shared Dirtied Blocks": 0,
+                "Shared Hit Blocks": 1104,
+                "Shared Read Blocks": 15146,
+                "Shared Written Blocks": 44,
+                "Startup Cost": 21426.93,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0,
+                "Total Cost": 21431.37
+              },
+              "Planning": {
+                "Local Dirtied Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Written Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Hit Blocks": 125,
+                "Shared Read Blocks": 4,
+                "Shared Written Blocks": 3,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning Time": 0.783,
+              "Triggers": []
+            }
+          ],
+          "large_table_page": [
+            {
+              "Execution Time": 153.583,
+              "Plan": {
+                "Actual Loops": 1,
+                "Actual Rows": 200,
+                "Actual Startup Time": 148.244,
+                "Actual Total Time": 153.558,
+                "Async Capable": false,
+                "Local Dirtied Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Written Blocks": 0,
+                "Node Type": "Limit",
+                "Parallel Aware": false,
+                "Plan Rows": 200,
+                "Plan Width": 87,
+                "Plans": [
+                  {
+                    "Actual Loops": 1,
+                    "Actual Rows": 1200,
+                    "Actual Startup Time": 148.141,
+                    "Actual Total Time": 153.531,
+                    "Async Capable": false,
+                    "Local Dirtied Blocks": 0,
+                    "Local Hit Blocks": 0,
+                    "Local Read Blocks": 0,
+                    "Local Written Blocks": 0,
+                    "Node Type": "Gather Merge",
+                    "Parallel Aware": false,
+                    "Parent Relationship": "Outer",
+                    "Plan Rows": 61646,
+                    "Plan Width": 87,
+                    "Plans": [
+                      {
+                        "Actual Loops": 3,
+                        "Actual Rows": 400,
+                        "Actual Startup Time": 33.266,
+                        "Actual Total Time": 33.281,
+                        "Async Capable": false,
+                        "Local Dirtied Blocks": 0,
+                        "Local Hit Blocks": 0,
+                        "Local Read Blocks": 0,
+                        "Local Written Blocks": 0,
+                        "Node Type": "Sort",
+                        "Parallel Aware": false,
+                        "Parent Relationship": "Outer",
+                        "Plan Rows": 30823,
+                        "Plan Width": 87,
+                        "Plans": [
+                          {
+                            "Actual Loops": 3,
+                            "Actual Rows": 25199,
+                            "Actual Startup Time": 9.65,
+                            "Actual Total Time": 31.897,
+                            "Alias": "assertions",
+                            "Async Capable": false,
+                            "Filter": "(publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text)",
+                            "Local Dirtied Blocks": 0,
+                            "Local Hit Blocks": 0,
+                            "Local Read Blocks": 0,
+                            "Local Written Blocks": 0,
+                            "Node Type": "Seq Scan",
+                            "Parallel Aware": true,
+                            "Parent Relationship": "Outer",
+                            "Plan Rows": 30823,
+                            "Plan Width": 87,
+                            "Relation Name": "assertions",
+                            "Rows Removed by Filter": 226788,
+                            "Shared Dirtied Blocks": 0,
+                            "Shared Hit Blocks": 969,
+                            "Shared Read Blocks": 29774,
+                            "Shared Written Blocks": 15,
+                            "Startup Cost": 0.0,
+                            "Temp Read Blocks": 0,
+                            "Temp Written Blocks": 0,
+                            "Total Cost": 34679.89,
+                            "Workers": []
+                          }
+                        ],
+                        "Shared Dirtied Blocks": 0,
+                        "Shared Hit Blocks": 1043,
+                        "Shared Read Blocks": 29774,
+                        "Shared Written Blocks": 15,
+                        "Sort Key": [
+                          "assertion_id"
+                        ],
+                        "Sort Method": "top-N heapsort",
+                        "Sort Space Type": "Memory",
+                        "Sort Space Used": 302,
+                        "Startup Cost": 36410.41,
+                        "Temp Read Blocks": 0,
+                        "Temp Written Blocks": 0,
+                        "Total Cost": 36487.47,
+                        "Workers": [
+                          {
+                            "Sort Method": "quicksort",
+                            "Sort Space Type": "Memory",
+                            "Sort Space Used": 25,
+                            "Worker Number": 0
+                          },
+                          {
+                            "Sort Method": "quicksort",
+                            "Sort Space Type": "Memory",
+                            "Sort Space Used": 25,
+                            "Worker Number": 1
+                          }
+                        ]
+                      }
+                    ],
+                    "Shared Dirtied Blocks": 0,
+                    "Shared Hit Blocks": 1043,
+                    "Shared Read Blocks": 29774,
+                    "Shared Written Blocks": 15,
+                    "Startup Cost": 37410.44,
+                    "Temp Read Blocks": 0,
+                    "Temp Written Blocks": 0,
+                    "Total Cost": 44602.97,
+                    "Workers Launched": 2,
+                    "Workers Planned": 2
+                  }
+                ],
+                "Shared Dirtied Blocks": 0,
+                "Shared Hit Blocks": 1043,
+                "Shared Read Blocks": 29774,
+                "Shared Written Blocks": 15,
+                "Startup Cost": 37527.11,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0,
+                "Total Cost": 37550.45
+              },
+              "Planning": {
+                "Local Dirtied Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Written Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Hit Blocks": 3,
+                "Shared Read Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning Time": 0.105,
+              "Triggers": []
+            }
+          ],
+          "units_cost": [
+            {
+              "Execution Time": 0.728,
+              "Plan": {
+                "Actual Loops": 1,
+                "Actual Rows": 50,
+                "Actual Startup Time": 0.178,
+                "Actual Total Time": 0.712,
+                "Async Capable": false,
+                "Local Dirtied Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Written Blocks": 0,
+                "Node Type": "Limit",
+                "Parallel Aware": false,
+                "Plan Rows": 50,
+                "Plan Width": 65,
+                "Plans": [
+                  {
+                    "Actual Loops": 1,
+                    "Actual Rows": 50,
+                    "Actual Startup Time": 0.178,
+                    "Actual Total Time": 0.71,
+                    "Async Capable": false,
+                    "Full-sort Groups": {
+                      "Group Count": 2,
+                      "Sort Methods Used": [
+                        "top-N heapsort",
+                        "quicksort"
+                      ],
+                      "Sort Space Memory": {
+                        "Average Sort Space Used": 27,
+                        "Peak Sort Space Used": 27
+                      }
+                    },
+                    "Local Dirtied Blocks": 0,
+                    "Local Hit Blocks": 0,
+                    "Local Read Blocks": 0,
+                    "Local Written Blocks": 0,
+                    "Node Type": "Incremental Sort",
+                    "Parallel Aware": false,
+                    "Parent Relationship": "Outer",
+                    "Plan Rows": 75,
+                    "Plan Width": 65,
+                    "Plans": [
+                      {
+                        "Actual Loops": 1,
+                        "Actual Rows": 71,
+                        "Actual Startup Time": 0.054,
+                        "Actual Total Time": 0.691,
+                        "Async Capable": false,
+                        "Inner Unique": true,
+                        "Join Type": "Inner",
+                        "Local Dirtied Blocks": 0,
+                        "Local Hit Blocks": 0,
+                        "Local Read Blocks": 0,
+                        "Local Written Blocks": 0,
+                        "Node Type": "Nested Loop",
+                        "Parallel Aware": false,
+                        "Parent Relationship": "Outer",
+                        "Plan Rows": 75,
+                        "Plan Width": 65,
+                        "Plans": [
+                          {
+                            "Actual Loops": 1,
+                            "Actual Rows": 71,
+                            "Actual Startup Time": 0.027,
+                            "Actual Total Time": 0.041,
+                            "Alias": "u",
+                            "Async Capable": false,
+                            "Index Cond": "((publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text) AND (cost <= 4) AND (shop_unit = 1))",
+                            "Index Name": "units_filter",
+                            "Local Dirtied Blocks": 0,
+                            "Local Hit Blocks": 0,
+                            "Local Read Blocks": 0,
+                            "Local Written Blocks": 0,
+                            "Node Type": "Index Scan",
+                            "Parallel Aware": false,
+                            "Parent Relationship": "Outer",
+                            "Plan Rows": 75,
+                            "Plan Width": 152,
+                            "Relation Name": "units",
+                            "Rows Removed by Index Recheck": 0,
+                            "Scan Direction": "Forward",
+                            "Shared Dirtied Blocks": 0,
+                            "Shared Hit Blocks": 24,
+                            "Shared Read Blocks": 2,
+                            "Shared Written Blocks": 2,
+                            "Startup Cost": 0.28,
+                            "Temp Read Blocks": 0,
+                            "Temp Written Blocks": 0,
+                            "Total Cost": 79.65
+                          },
+                          {
+                            "Actual Loops": 71,
+                            "Actual Rows": 1,
+                            "Actual Startup Time": 0.009,
+                            "Actual Total Time": 0.009,
+                            "Async Capable": false,
+                            "Cache Evictions": 0,
+                            "Cache Hits": 0,
+                            "Cache Key": "u.dataset_id, u.snapshot_id, u.entity_id",
+                            "Cache Misses": 71,
+                            "Cache Mode": "logical",
+                            "Cache Overflows": 0,
+                            "Local Dirtied Blocks": 0,
+                            "Local Hit Blocks": 0,
+                            "Local Read Blocks": 0,
+                            "Local Written Blocks": 0,
+                            "Node Type": "Memoize",
+                            "Parallel Aware": false,
+                            "Parent Relationship": "Inner",
+                            "Peak Memory Usage": 20,
+                            "Plan Rows": 1,
+                            "Plan Width": 176,
+                            "Plans": [
+                              {
+                                "Actual Loops": 71,
+                                "Actual Rows": 1,
+                                "Actual Startup Time": 0.008,
+                                "Actual Total Time": 0.008,
+                                "Alias": "e",
+                                "Async Capable": false,
+                                "Index Cond": "((publication_id = 'tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5'::text) AND (dataset_id = u.dataset_id) AND (snapshot_id = u.snapshot_id) AND (entity_id = u.entity_id))",
+                                "Index Name": "entities_pkey",
+                                "Local Dirtied Blocks": 0,
+                                "Local Hit Blocks": 0,
+                                "Local Read Blocks": 0,
+                                "Local Written Blocks": 0,
+                                "Node Type": "Index Scan",
+                                "Parallel Aware": false,
+                                "Parent Relationship": "Outer",
+                                "Plan Rows": 1,
+                                "Plan Width": 176,
+                                "Relation Name": "entities",
+                                "Rows Removed by Index Recheck": 0,
+                                "Scan Direction": "Forward",
+                                "Shared Dirtied Blocks": 0,
+                                "Shared Hit Blocks": 278,
+                                "Shared Read Blocks": 6,
+                                "Shared Written Blocks": 3,
+                                "Startup Cost": 0.41,
+                                "Temp Read Blocks": 0,
+                                "Temp Written Blocks": 0,
+                                "Total Cost": 8.12
+                              }
+                            ],
+                            "Shared Dirtied Blocks": 0,
+                            "Shared Hit Blocks": 278,
+                            "Shared Read Blocks": 6,
+                            "Shared Written Blocks": 3,
+                            "Startup Cost": 0.42,
+                            "Temp Read Blocks": 0,
+                            "Temp Written Blocks": 0,
+                            "Total Cost": 8.12
+                          }
+                        ],
+                        "Shared Dirtied Blocks": 0,
+                        "Shared Hit Blocks": 302,
+                        "Shared Read Blocks": 8,
+                        "Shared Written Blocks": 5,
+                        "Startup Cost": 0.7,
+                        "Temp Read Blocks": 0,
+                        "Temp Written Blocks": 0,
+                        "Total Cost": 554.03
+                      }
+                    ],
+                    "Presorted Key": [
+                      "u.cost"
+                    ],
+                    "Shared Dirtied Blocks": 0,
+                    "Shared Hit Blocks": 302,
+                    "Shared Read Blocks": 8,
+                    "Shared Written Blocks": 5,
+                    "Sort Key": [
+                      "u.cost",
+                      "e.entity_id"
+                    ],
+                    "Startup Cost": 79.93,
+                    "Temp Read Blocks": 0,
+                    "Temp Written Blocks": 0,
+                    "Total Cost": 556.39
+                  }
+                ],
+                "Shared Dirtied Blocks": 0,
+                "Shared Hit Blocks": 302,
+                "Shared Read Blocks": 8,
+                "Shared Written Blocks": 5,
+                "Startup Cost": 79.93,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0,
+                "Total Cost": 397.57
+              },
+              "Planning": {
+                "Local Dirtied Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Written Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Hit Blocks": 53,
+                "Shared Read Blocks": 5,
+                "Shared Written Blocks": 1,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning Time": 0.362,
+              "Triggers": []
+            }
+          ]
+        },
+        "publication_scopes": [
+          "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+          "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--growth-1-4d726a4d8520",
+          "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--growth-2-3ec55607838e",
+          "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--growth-3-9242af326d6e",
+          "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--growth-4-7e03177a37fe",
+          "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--growth-5-ab4a333237b8",
+          "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--growth-6-b844521944e9",
+          "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--growth-7-165896e18cb5",
+          "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--growth-8-efd58b6857b2",
+          "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--growth-9-19daadc460d9"
+        ],
+        "relation_bytes": [
+          [
+            "research_data",
+            "assertions",
+            687595520
+          ],
+          [
+            "research_data",
+            "supplemental_values",
+            325664768
+          ],
+          [
+            "research_data",
+            "effect_values",
+            70385664
+          ],
+          [
+            "research_data",
+            "supplemental_loot_nodes",
+            47579136
+          ],
+          [
+            "research_data",
+            "entities",
+            28573696
+          ],
+          [
+            "research_data",
+            "supplemental_armory_items",
+            24690688
+          ],
+          [
+            "research_data",
+            "entity_aliases",
+            18857984
+          ],
+          [
+            "research_data",
+            "ability_values",
+            14090240
+          ],
+          [
+            "research_data",
+            "unit_stats",
+            9101312
+          ],
+          [
+            "research_data",
+            "assets",
+            7069696
+          ],
+          [
+            "research_data",
+            "field_gaps",
+            4775936
+          ],
+          [
+            "research_data",
+            "curated_values",
+            4399104
+          ],
+          [
+            "research_data",
+            "observation_memberships",
+            3235840
+          ],
+          [
+            "research_data",
+            "entity_relationships",
+            2891776
+          ],
+          [
+            "research_data",
+            "observation_recommended_items",
+            2498560
+          ],
+          [
+            "research_data",
+            "augments",
+            2195456
+          ],
+          [
+            "research_data",
+            "supplemental_collections",
+            1572864
+          ],
+          [
+            "research_data",
+            "unit_traits",
+            1531904
+          ],
+          [
+            "research_data",
+            "observation_placements",
+            1507328
+          ],
+          [
+            "research_data",
+            "observation_item_recommendations",
+            1392640
+          ],
+          [
+            "research_data",
+            "supplemental_collab_members",
+            1384448
+          ],
+          [
+            "research_data",
+            "collection_inventory",
+            1269760
+          ],
+          [
+            "research_data",
+            "supplemental_curves",
+            1171456
+          ],
+          [
+            "research_data",
+            "observation_comps",
+            1155072
+          ],
+          [
+            "research_data",
+            "items",
+            1122304
+          ],
+          [
+            "research_data",
+            "observation_metrics",
+            950272
+          ],
+          [
+            "research",
+            "table_definitions",
+            925696
+          ],
+          [
+            "research_data",
+            "supplemental_recommended_items",
+            925696
+          ],
+          [
+            "research_data",
+            "condition_nodes",
+            884736
+          ],
+          [
+            "research_data",
+            "trait_breakpoints",
+            884736
+          ],
+          [
+            "research_data",
+            "units",
+            819200
+          ],
+          [
+            "research_data",
+            "abilities",
+            811008
+          ],
+          [
+            "research_data",
+            "supplemental_armory_choices",
+            745472
+          ],
+          [
+            "research_data",
+            "mechanics",
+            737280
+          ],
+          [
+            "research_data",
+            "loot_tables",
+            720896
+          ],
+          [
+            "research_data",
+            "observation_payloads",
+            720896
+          ],
+          [
+            "research_data",
+            "supplemental_unit_recommendations",
+            720896
+          ],
+          [
+            "research_data",
+            "item_recipes",
+            630784
+          ],
+          [
+            "research_data",
+            "unlock_rules",
+            565248
+          ],
+          [
+            "research_data",
+            "curated_records",
+            401408
+          ],
+          [
+            "research_data",
+            "observation_samples",
+            344064
+          ],
+          [
+            "research_data",
+            "traits",
+            303104
+          ],
+          [
+            "research",
+            "publications",
+            303104
+          ],
+          [
+            "research_data",
+            "condition_predicates",
+            286720
+          ],
+          [
+            "research_data",
+            "supplemental_rounds",
+            270336
+          ],
+          [
+            "research_data",
+            "source_documents",
+            212992
+          ],
+          [
+            "research_data",
+            "roles",
+            204800
+          ],
+          [
+            "research_data",
+            "supplemental_cashouts",
+            204800
+          ],
+          [
+            "research_data",
+            "supplemental_encounters",
+            180224
+          ],
+          [
+            "research_data",
+            "supplemental_recommended_tables",
+            172032
+          ],
+          [
+            "research_data",
+            "coverage_entries",
+            163840
+          ],
+          [
+            "research_data",
+            "supplemental_beach_pop_instruments",
+            155648
+          ],
+          [
+            "research_data",
+            "supplemental_augment_distribution",
+            147456
+          ],
+          [
+            "research",
+            "artifacts",
+            147456
+          ],
+          [
+            "research_data",
+            "source_collections",
+            122880
+          ],
+          [
+            "research_data",
+            "supplemental_baron_ensemble",
+            90112
+          ],
+          [
+            "research",
+            "rulesets",
+            81920
+          ],
+          [
+            "research_data",
+            "discrepancies",
+            73728
+          ],
+          [
+            "research_data",
+            "supplemental_shop_pool",
+            65536
+          ],
+          [
+            "research",
+            "query_results",
+            40960
+          ],
+          [
+            "research",
+            "query_runs",
+            32768
+          ],
+          [
+            "research_data",
+            "snapshots",
+            32768
+          ],
+          [
+            "research",
+            "datasets",
+            32768
+          ],
+          [
+            "research",
+            "query_subscriptions",
+            24576
+          ],
+          [
+            "research",
+            "request_limits",
+            16384
+          ],
+          [
+            "research_data",
+            "loot_entries",
+            16384
+          ],
+          [
+            "research_data",
+            "change_events",
+            16384
+          ],
+          [
+            "research",
+            "query_artifacts",
+            16384
+          ]
+        ]
+      }
+    }
+  }
+}

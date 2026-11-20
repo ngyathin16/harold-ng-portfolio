@@ -41,7 +41,7 @@ try {
   const sitemapText = await sitemapResponse.text();
   const paths = [...sitemapText.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, url]) => new URL(url).pathname);
   const routes = [...new Set(['/', ...paths, missingRoute])];
-  for (const required of ['/work/ifc-gpt/', '/work/relay-desk/']) assert(routes.includes(required), `Sitemap includes ${required}`);
+  for (const required of ['/work/ifc-gpt/', '/work/relay-desk/', '/applications/', '/applications/research/']) assert(routes.includes(required), `Sitemap includes ${required}`);
   for (const route of routes) {
     for (const width of widths) {
       await page.setViewportSize({ width, height: 1000 });

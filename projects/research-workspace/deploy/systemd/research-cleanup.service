@@ -1,0 +1,10 @@
+[Unit]
+Description=Expire research result caches and private object garbage
+Requires=docker.service
+After=docker.service
+OnFailure=research-operation-failed@%n.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/research-workspace/projects/research-workspace/deploy/manage.py cleanup
+UMask=0077

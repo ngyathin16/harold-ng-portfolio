@@ -1,0 +1,94 @@
+{
+  "started_at": "2026-11-23T08:09:22.348073+00:00",
+  "python": "3.12.13",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "architecture": "AMD64",
+  "hosted": false,
+  "publications": [
+    {
+      "id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+      "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+      "tables": {
+        "unit_stats": {
+          "rows": 1521,
+          "pages": 8
+        },
+        "observation_samples": {
+          "rows": 46,
+          "pages": 1
+        },
+        "observation_metrics": {
+          "rows": 180,
+          "pages": 1
+        },
+        "observation_placements": {
+          "rows": 360,
+          "pages": 2
+        }
+      },
+      "metrics_recomputed": 180,
+      "sample_kinds": {
+        "population": 1,
+        "composition": 44,
+        "unclassified": 1
+      },
+      "coverage_counts_match": true
+    },
+    {
+      "id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--bda1ffdb0d18251c",
+      "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+      "tables": {
+        "unit_stats": {
+          "rows": 1521,
+          "pages": 8
+        },
+        "observation_samples": {
+          "rows": 46,
+          "pages": 1
+        },
+        "observation_metrics": {
+          "rows": 180,
+          "pages": 1
+        },
+        "observation_placements": {
+          "rows": 360,
+          "pages": 2
+        }
+      },
+      "metrics_recomputed": 180,
+      "sample_kinds": {
+        "population": 1,
+        "composition": 44,
+        "unclassified": 1
+      },
+      "coverage_counts_match": true
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "LoDake-URTpPoMjkuyoLvrRz",
+      "configurations_recounted": 280543,
+      "champion_sets_recounted": 211961,
+      "state": "complete",
+      "expired": false
+    },
+    {
+      "query_id": "RtsededKBFy4Ve7lQleExbjL",
+      "configurations_recounted": 38809,
+      "champion_sets_recounted": 30935,
+      "state": "complete",
+      "expired": false
+    },
+    {
+      "query_id": "jLmTJ4bhGdmwr7x_1L9PaYbf",
+      "configurations_recounted": 1,
+      "champion_sets_recounted": 1,
+      "state": "complete",
+      "expired": false
+    }
+  ],
+  "postgres": "17.11",
+  "passed": true,
+  "elapsed_seconds": 12.55,
+  "scope": "Read-only API/SQL parity, observation formulas, coverage, all stored team aggregate fields, first/last result pages. Solver semantics and browser presentation are checked separately."
+}

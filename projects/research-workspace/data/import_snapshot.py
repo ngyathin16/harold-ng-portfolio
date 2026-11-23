@@ -119,7 +119,7 @@ def prepare(project, snapshot, output, dataset_id="tft-set-19", name="TFT Set 19
         add(child(export_root, relative), normalized)
     bundle = {"version": 1, "dataset": {"id": dataset_id, "name": name, "adapter": adapter,
               "description": "Versioned research records, evidence, and known coverage gaps.",
-              "capabilities": ["catalog", "tables", "evidence", "downloads"] + (["team_queries"] if adapter == "tft_set19" else [])},
+              "capabilities": ["catalog", "tables", "evidence"] + (["team_queries"] if adapter == "tft_set19" else [])},
               "snapshot_id": snapshot, "manifest": {**manifest, "validation": validation}, "scope": scope,
               "source_sha256": sha(database), "schema_fingerprint": schema.fingerprint(definitions),
               "tables": checks, "artifacts": artifacts}

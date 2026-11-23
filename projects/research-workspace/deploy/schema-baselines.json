@@ -1,0 +1,115 @@
+[
+  {
+    "name": "legacy-v1",
+    "migrations": {
+      "migrations/001_publications.sql": "5efe6ec9eeb50474e08c47202b66ab08b33446fd11c7d06000acd041d1841bbd",
+      "migrations/002_source_tables.sql": "00d75496d6d9766729800b2e4baee33af3b78078b565c38f222bfe3dc16dd787",
+      "migrations/003_source_views.sql": "3a827f3dfe56ac73512d7a67261bd8af146984f4a9d0743300d465b07b43b026",
+      "service/migrations/002_queries.sql": "fa2edfabceea2b35a69d8aa68c70dd063e1ce1934e533bbb5b3d63218d61e2a3",
+      "migrations/005_service_roles.sql": "b32f15357a98f6a5a406aff1a5aa680f67decf1d146c6bd802086df58f8352a6"
+    },
+    "catalog": {
+      "relations": {
+        "count": 87,
+        "sha256": "f9a2d652725a1acd6e0e5781eb0d970aed7305a7cb1907e33b2bede38f0b20b1"
+      },
+      "columns": {
+        "count": 962,
+        "sha256": "5e838c5dd053e3a4f3e02a509dc642e775b03e42ba10d91f90d332ca9b2450dd"
+      },
+      "constraints": {
+        "count": 191,
+        "sha256": "ce63dcfc3647050fdcde30fc5ca12f3652a083c7b13bcd1ac47ad0e271a452df"
+      },
+      "indexes": {
+        "count": 87,
+        "sha256": "b46ebcae1084149c91fa94fa2e1683f18426c7e4e339ecfb3eb695f3d49c3c95"
+      },
+      "policies": {
+        "count": 69,
+        "sha256": "60f63e4052c601bfc7e6bde85dc13f9215297a9737700e4bf570e3d67b5678ef"
+      },
+      "table_grants": {
+        "count": 882,
+        "sha256": "ca51fa883e48a1466cd11dd30c954468cefd9f792c629c9a0df19a4bf50c0c96"
+      },
+      "schema_grants": {
+        "count": 10,
+        "sha256": "ab6aad2300ddde2c12d47b956cdda516a81465d1f93d937c1b6f207285bda2ff"
+      },
+      "functions": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "sequences": {
+        "count": 1,
+        "sha256": "963d987b56702c353e71b554629810b8c62b7ee711f7cd202a83eefa956e46c6"
+      },
+      "triggers": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "types": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    }
+  },
+  {
+    "name": "private-v1",
+    "migrations": {
+      "migrations/001_publications.sql": "5efe6ec9eeb50474e08c47202b66ab08b33446fd11c7d06000acd041d1841bbd",
+      "migrations/002_source_tables.sql": "00d75496d6d9766729800b2e4baee33af3b78078b565c38f222bfe3dc16dd787",
+      "migrations/003_source_views.sql": "3a827f3dfe56ac73512d7a67261bd8af146984f4a9d0743300d465b07b43b026",
+      "service/migrations/002_queries.sql": "fa2edfabceea2b35a69d8aa68c70dd063e1ce1934e533bbb5b3d63218d61e2a3",
+      "migrations/005_service_roles.sql": "b32f15357a98f6a5a406aff1a5aa680f67decf1d146c6bd802086df58f8352a6",
+      "migrations/006_private_artifacts.sql": "4c95c3c900a8ba688d1ea53a8f457fec7f4dd5c173a3043849de31d344a9361b"
+    },
+    "catalog": {
+      "relations": {
+        "count": 87,
+        "sha256": "f9a2d652725a1acd6e0e5781eb0d970aed7305a7cb1907e33b2bede38f0b20b1"
+      },
+      "columns": {
+        "count": 962,
+        "sha256": "5e838c5dd053e3a4f3e02a509dc642e775b03e42ba10d91f90d332ca9b2450dd"
+      },
+      "constraints": {
+        "count": 191,
+        "sha256": "ce63dcfc3647050fdcde30fc5ca12f3652a083c7b13bcd1ac47ad0e271a452df"
+      },
+      "indexes": {
+        "count": 87,
+        "sha256": "b46ebcae1084149c91fa94fa2e1683f18426c7e4e339ecfb3eb695f3d49c3c95"
+      },
+      "policies": {
+        "count": 68,
+        "sha256": "8cc32c21d7030087642d0ac5078a91cc0692602233d35a3278063b092c77b5a0"
+      },
+      "table_grants": {
+        "count": 880,
+        "sha256": "53115ec8b3eba7ffa3773cea7a12be83e48d960d32b851e592caaa242d383214"
+      },
+      "schema_grants": {
+        "count": 10,
+        "sha256": "ab6aad2300ddde2c12d47b956cdda516a81465d1f93d937c1b6f207285bda2ff"
+      },
+      "functions": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "sequences": {
+        "count": 1,
+        "sha256": "963d987b56702c353e71b554629810b8c62b7ee711f7cd202a83eefa956e46c6"
+      },
+      "triggers": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "types": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    }
+  }
+]

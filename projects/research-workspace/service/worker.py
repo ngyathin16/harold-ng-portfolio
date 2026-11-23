@@ -12,7 +12,7 @@ from psycopg.types.json import Jsonb
 from psycopg_pool import ConnectionPool
 
 from .app import canonical
-from .config import Settings
+from .config import Settings, CapacityUnavailable, check_capacity
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from solver import solve, SOLVER_VERSION
@@ -23,6 +23,10 @@ class LeaseLost(Exception):
 
 
 def claim(pool, settings):
+    try:
+        check_capacity(settings)
+    except CapacityUnavailable:
+        return None
     with pool.connection() as conn:
         conn.execute('SELECT pg_advisory_xact_lock(hashtext(%s))',('research-worker-admission',))
         conn.execute("""UPDATE research.query_runs SET state='failed',error='Worker retry limit reached; results are incomplete.',
@@ -56,6 +60,7 @@ def execute(pool, settings, run):
         nonlocal last_check,interrupted
         if not force and time.monotonic()-last_check<1 and len(batch)<1000:
             return
+        check_capacity(settings)
         with pool.connection() as conn:
             owned=conn.execute("""UPDATE research.query_runs SET lease_until=now()+interval '30 seconds',progress=%s
                 WHERE id=%s AND lease_owner=%s AND state='running' AND lease_until>=now() RETURNING id""",
@@ -103,20 +108,12 @@ def execute(pool, settings, run):
                 finished_at=now(),lease_owner=NULL,lease_until=NULL,error=%s,expires_at=now()+(%s*interval '1 day')
                 WHERE id=%s AND state='running' AND lease_owner=%s""",
                 (summary['state'],Jsonb(summary),counts['configurations'],counts['champion_sets'],summary.get('reason'),settings.result_retention_days,run['id'],run['lease_owner']))
-        if summary['complete'] and (settings.artifact_root or settings.supabase_url and settings.supabase_key):
-            began=time.monotonic()
-            with pool.connection() as conn:
-                conn.execute("UPDATE research.query_runs SET progress=progress || %s WHERE id=%s AND started_at=%s AND state='complete'",(Jsonb({'artifact_status':'preparing'}),run['id'],run['started_at']))
-            try:
-                from .export_artifacts import materialize
-                materialize(pool,settings,run['id'])
-            except Exception:
-                status='failed'
-                logging.error('Stored export failed for run %s; complete streaming download remains available',run['id'])
-            else:
-                status='ready'
-            with pool.connection() as conn:
-                conn.execute("UPDATE research.query_runs SET progress=progress || %s WHERE id=%s AND started_at=%s AND state='complete'",(Jsonb({'artifact_status':status,'artifact_seconds':time.monotonic()-began}),run['id'],run['started_at']))
+    except CapacityUnavailable:
+        with pool.connection() as conn:
+            conn.execute("""UPDATE research.query_runs SET state='resource_limited',finished_at=now(),lease_owner=NULL,lease_until=NULL,
+                expires_at=now()+(%s*interval '1 day'),
+                error='Search stopped because disk capacity is unavailable. Results are incomplete; retry after capacity recovers.'
+                WHERE id=%s AND state='running' AND lease_owner=%s""",(settings.result_retention_days,run['id'],run['lease_owner']))
     except LeaseLost:
         return
     except Exception:
@@ -143,16 +140,11 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--once',action='store_true',help='Process at most one job and exit')
     parser.add_argument('--cleanup',action='store_true',help='Remove expired result rows and quota counters')
-    parser.add_argument('--prepare-exports',metavar='QUERY_ID',help='Retry verified object exports for a completed query')
     args=parser.parse_args()
     settings=Settings.from_env()
     if not settings.database_url:
         parser.error('RESEARCH_DATABASE_URL is required')
     with ConnectionPool(settings.database_url,min_size=1,max_size=2,kwargs={'row_factory':dict_row}) as pool:
-        if args.prepare_exports:
-            from .export_artifacts import materialize
-            print(canonical(materialize(pool,settings,args.prepare_exports)))
-            return
         if args.cleanup:
             cleanup(pool,settings)
             return

@@ -1,5 +1,5 @@
 import { list, num, object, optionalObject, records, str, text, type Row } from './api';
-import { button, el, field, input, notice, pretty, select, table } from './dom';
+import { button, el, field, input, notice, pretty, select } from './dom';
 import type { Workspace } from './app';
 
 function chosen(control: HTMLSelectElement): string[] { return [...control.selectedOptions].map(option => option.value); }
@@ -172,12 +172,7 @@ export async function queryResults(ctx: Workspace, signal: AbortSignal): Promise
       if (complete) {
         const sort = select('result_sort', [['active_traits', 'Active trait count'], ['total_cost', 'Total cost'], ['champions', 'Champion names']], ctx.params.get('result_sort') || 'active_traits');
         sort.addEventListener('change', () => ctx.navigate({ result_sort: sort.value, page: null }));
-        section.append(el('div', { class: 'toolbar' }, field('Sort all results', sort), el('a', { class: 'action', href: ctx.api.url(`/v1/queries/${encodeURIComponent(id)}/export?format=json`) }, 'Download all JSON'), el('a', { class: 'action', href: ctx.api.url(`/v1/queries/${encodeURIComponent(id)}/export?format=csv`) }, 'Download all CSV')));
-        const artifacts = records(job.exports || []);
-        const artifactStatus = optionalObject(job.progress).artifact_status;
-        section.append(notice(artifacts.length ? 'Prepared downloads use gzip compression. Extract the original filename and verify the restored checksum below. CSV begins with a provenance row; configuration rows follow. Exact \\N denotes null.' : (artifactStatus === 'preparing' ? 'Compressed exports are being prepared. ' : artifactStatus === 'failed' ? 'Compressed export preparation failed. ' : '') + 'Complete uncompressed downloads remain available with their query provenance; these files can be large.'));
-        if (artifactStatus === 'preparing') section.append(button('Refresh downloads', () => refresh()));
-        if (artifacts.length) section.append(el('details', {}, el('summary', {}, 'Download sizes and checksums'), table(artifacts, ['format', 'size', 'sha256', 'restored_filename', 'restored_sha256'])));
+        section.append(el('div', { class: 'toolbar' }, field('Sort all results', sort)));
       }
       if (num(job.result_count) > 0) {
         const result = await ctx.api.get(`/v1/queries/${encodeURIComponent(id)}/results?page=${ctx.params.get('page') || '1'}&page_size=25&sort=${encodeURIComponent(ctx.params.get('result_sort') || 'active_traits')}`, signal);

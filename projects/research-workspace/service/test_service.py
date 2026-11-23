@@ -1,8 +1,5 @@
 """API boundary tests and optional real PostgreSQL queue integration."""
-from contextlib import contextmanager
-import asyncio
 from dataclasses import replace
-import json
 import os
 from pathlib import Path
 import sys
@@ -11,7 +8,6 @@ import uuid
 import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
-from starlette.requests import Request
 import psycopg
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
@@ -28,6 +24,27 @@ def test_unconfigured_service_is_unavailable_not_empty():
         response=client.get('/v1/datasets')
         assert response.status_code==503
         assert 'detail' in response.json()
+
+
+@pytest.mark.parametrize('method', ['GET', 'HEAD'])
+@pytest.mark.parametrize('path', [
+    '/v1/publications/retained/downloads',
+    '/v1/publications/retained/downloads/database.sqlite.gz',
+    '/v1/publications/retained/downloads/csv/unit_stats.csv',
+    '/v1/queries/retained/export',
+    '/v1/queries/retained/export?format=json',
+    '/v1/queries/retained/export?format=csv',
+])
+def test_retired_downloads_are_closed_without_a_database(method, path, tmp_path):
+    (tmp_path / 'database.sqlite.gz').write_bytes(b'private recovery bytes')
+    with TestClient(create_app(Settings(artifact_root=str(tmp_path)))) as client:
+        response = client.request(method, path, follow_redirects=False)
+        assert response.status_code == 404
+        assert 'location' not in response.headers
+        assert 'content-disposition' not in response.headers
+        assert b'private recovery bytes' not in response.content
+        paths = client.get('/openapi.json').json()['paths']
+        assert not any('/downloads' in route or '/export' in route for route in paths)
 
 
 def test_table_filters_bind_values_and_reject_unknown_identifiers():
@@ -92,7 +109,7 @@ def test_identical_jobs_share_work_but_not_cancellation(service):
     assert client.get('/v1/queries/'+first['query_id']).json()['state']=='cancelled'
 
 
-def test_worker_restart_export_and_expired_cache(service):
+def test_worker_restart_paginated_results_and_expired_cache(service):
     client,pool,settings,pub,rules=service
     submitted=submission(client,pub,min_active_traits=1)
     run=claim(pool,settings)
@@ -108,10 +125,13 @@ def test_worker_restart_export_and_expired_cache(service):
     assert status['complete'] and status['result_count']==3
     results=client.get('/v1/queries/'+run['id']+'/results?page_size=2').json()
     assert results['total']==3 and len(results['rows'])==2
-    exported=client.get('/v1/queries/'+run['id']+'/export').json()
-    assert len(exported['results'])==exported['provenance']['result_count']==3
-    assert len({row['configuration_key'] for row in exported['results']})==3
-    assert client.get('/v1/queries/'+run['id']+'/export?format=csv').text.count('\n')==5
+    second=client.get('/v1/queries/'+run['id']+'/results?page_size=2&page=2').json()
+    assert len(second['rows']) == 1
+    assert len({row['configuration_key'] for row in results['rows'] + second['rows']}) == 3
+    assert status['champion_set_count'] == 3
+    assert all(row['active_trait_count'] == 1 for row in results['rows'] + second['rows'])
+    assert sorted(row['total_cost'] for row in results['rows'] + second['rows']) == [3, 4, 5]
+    assert 'exports' not in status
     with pool.connection() as conn:
         conn.execute("UPDATE research.query_runs SET expires_at=now()-interval '1 second' WHERE id=%s",(run['id'],))
     cleanup(pool)
@@ -150,29 +170,7 @@ def test_unknown_costs_and_resource_limits_remain_explicit(service):
     assert status['state']=='resource_limited' and status['complete'] is False
     result=client.get('/v1/queries/'+run['id']+'/results').json()['rows'][0]
     assert result['total_cost'] is None
-    assert client.get('/v1/queries/'+run['id']+'/export').status_code==409
-
-
-def test_export_snapshot_survives_concurrent_recompute(service):
-    client,pool,settings,pub,rules=service
-    submitted=submission(client,pub)
-    run=claim(pool,settings)
-    execute(pool,settings,run)
-    endpoint=next(route.endpoint for route in client.app.routes if getattr(route,'path','')=='/v1/queries/{query_id}/export')
-    request=Request({'type':'http','method':'GET','path':'/','headers':[],'client':('snapshot-test',123)})
-    response=endpoint(run['id'],request,format='json')
-    with pool.connection() as conn:
-        conn.execute('DELETE FROM research.query_results WHERE run_id=%s',(run['id'],))
-        conn.execute("UPDATE research.query_runs SET state='queued',result_count=0 WHERE id=%s",(run['id'],))
-    async def consume():
-        chunks=[]
-        async for chunk in response.body_iterator:
-            chunks.append(chunk)
-        await response.background()
-        return ''.join(chunks)
-    exported=json.loads(asyncio.run(consume()))
-    assert exported['provenance']['state']=='complete'
-    assert len(exported['results'])==exported['provenance']['result_count']==3
+    assert client.get('/v1/queries/'+run['id']+'/export').status_code==404
 
 
 def test_active_session_quota_does_not_drop_accepted_jobs(service):
@@ -231,3 +229,76 @@ def test_migrated_roles_enforce_source_and_job_permissions(service):
         assert conn.execute('SELECT id FROM research.datasets WHERE id=%s',(pub,)).fetchone() is None
         with pytest.raises(psycopg.errors.InsufficientPrivilege),conn.transaction():
             conn.execute('SELECT * FROM research.query_runs WHERE id=%s',(run_id,))
+
+
+def test_private_artifacts_and_old_progress_never_reappear_in_public_responses(service, tmp_path):
+    client,pool,settings,pub,rules=service
+    posted=submission(client,pub)
+    run=claim(pool,settings)
+    execute(pool,settings,run)
+    with pool.connection() as conn:
+        conn.execute("UPDATE research.datasets SET capabilities='[\"catalog\",\"downloads\"]' WHERE id=%s", (pub,))
+        conn.execute("UPDATE research.query_runs SET progress=progress || %s WHERE id=%s",
+            (Jsonb({'artifact_status': 'ready', 'artifact_seconds': 1}), run['id']))
+        conn.execute('''INSERT INTO research.artifacts(publication_id,id,path,storage_key,sha256,size,media_type)
+            VALUES (%s,'database.gz','database.gz',%s,'fixture',7,'application/gzip')''', (pub,pub+'/database.gz'))
+    (tmp_path / pub).mkdir()
+    (tmp_path / pub / 'database.gz').write_bytes(b'private')
+    with TestClient(create_app(replace(settings,artifact_root=str(tmp_path)),pool=pool)) as stored_client:
+        for method in ('GET','HEAD'):
+            for suffix in ('/downloads','/downloads/database.gz'):
+                assert stored_client.request(method,'/v1/publications/'+pub+suffix).status_code==404
+            for format in ('json','csv'):
+                assert stored_client.request(method,'/v1/queries/'+run['id']+'/export?format='+format).status_code==404
+    row=next(row for row in client.get('/v1/datasets').json()['datasets'] if row['id']==pub)
+    assert row['capabilities']==['catalog']
+    status=client.get('/v1/queries/'+run['id']).json()
+    assert 'exports' not in status and not any(key.startswith('artifact_') for key in status['progress'])
+    assert status['complete'] and status['result_count']==3
+    with pool.connection() as conn,conn.transaction():
+        conn.execute('SET LOCAL ROLE anon')
+        with pytest.raises(psycopg.errors.InsufficientPrivilege),conn.transaction():
+            conn.execute('SELECT storage_key FROM research.artifacts WHERE publication_id=%s',(pub,))
+    assert (tmp_path / pub / 'database.gz').read_bytes()==b'private'
+
+
+def test_query_completion_does_not_touch_configured_export_storage(service, tmp_path):
+    client,pool,settings,pub,rules=service
+    posted=submission(client,pub)
+    run=claim(pool,settings)
+    unavailable=tmp_path/'not-a-directory'
+    unavailable.write_text('not storage')
+    execute(pool,replace(settings,artifact_root=str(unavailable)),run)
+    status=client.get('/v1/queries/'+posted['query_id']).json()
+    assert status['complete'] and status['result_count']==3
+    assert 'artifact_status' not in status['progress']
+    with pool.connection() as conn:
+        assert conn.execute('SELECT count(*) AS n FROM research.query_artifacts WHERE run_id=%s',(run['id'],)).fetchone()['n']==0
+
+
+def test_low_disk_rejects_new_work_but_preserves_accepted_queries_and_reads(service, tmp_path):
+    client,pool,settings,pub,rules=service
+    posted=submission(client,pub)
+    low=replace(settings,capacity_path=str(tmp_path),min_free_bytes=2**63-1)
+    with TestClient(create_app(low,pool=pool)) as limited:
+        response=limited.post('/v1/queries',json={'publication_id':pub,'query':{'team_size':{'min':1,'max':1}}})
+        assert response.status_code==503 and response.headers['retry-after']=='60'
+        assert submission(limited,pub)['query_id']==posted['query_id']
+        assert limited.get('/v1/publications/'+pub).status_code==200
+    assert claim(pool,low) is None
+    assert client.get('/v1/queries/'+posted['query_id']).json()['state']=='queued'
+    run=claim(pool,settings)
+    execute(pool,low,run)
+    status=client.get('/v1/queries/'+posted['query_id']).json()
+    assert status['state']=='resource_limited' and not status['complete']
+    assert status['result_count']==0
+
+
+def test_configured_capacity_path_fails_closed_when_missing(service, tmp_path):
+    client,pool,settings,pub,rules=service
+    missing=replace(settings,capacity_path=str(tmp_path/'missing'))
+    with TestClient(create_app(missing,pool=pool)) as unavailable:
+        response=unavailable.post('/v1/queries',json={'publication_id':pub,'query':{}})
+        assert response.status_code==503
+        assert str(tmp_path) not in response.text
+    assert claim(pool,missing) is None

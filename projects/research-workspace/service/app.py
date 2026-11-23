@@ -1,30 +1,24 @@
 """Bounded, publication-scoped reads and anonymous query subscriptions."""
 from contextlib import asynccontextmanager
-import csv
 import hashlib
 import hmac
-import io
-from itertools import chain
 import json
 from pathlib import Path
 import secrets
 import sys
 from typing import Any, Literal
-from urllib.parse import quote
 
-import httpx
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, StreamingResponse
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 import psycopg
 from psycopg import sql
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 from psycopg_pool import ConnectionPool, PoolTimeout
-from starlette.background import BackgroundTask
 
-from .config import Settings
+from .config import Settings, CapacityUnavailable, check_capacity
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -128,25 +122,11 @@ def rate_limit(conn, key, maximum):
         raise HTTPException(429, 'Request limit reached. Retry in one minute.', headers={'Retry-After': '60'})
 
 
-def storage_response(settings,item):
-    if settings.artifact_root:
-        root=Path(settings.artifact_root).resolve()
-        path=(root/item['storage_key']).resolve()
-        if not path.is_relative_to(root) or not path.is_file():
-            raise HTTPException(404,'The selected artifact is missing from local development storage.')
-        filename=item['restored_filename']+'.gz' if item.get('restored_filename') and item['media_type']=='application/gzip' else Path(item.get('path',item['storage_key'])).name
-        return FileResponse(path,media_type=item['media_type'],filename=filename)
-    if not settings.supabase_url or not settings.supabase_key:
-        raise HTTPException(503,'Download storage is not configured.')
+def require_capacity(settings):
     try:
-        endpoint=settings.supabase_url.rstrip('/')+'/storage/v1/object/sign/'+quote(settings.storage_bucket,safe='')+'/'+quote(item['storage_key'],safe='/')
-        response=httpx.post(endpoint,headers={'apikey':settings.supabase_key,'Authorization':'Bearer '+settings.supabase_key},json={'expiresIn':60},timeout=10)
-        response.raise_for_status()
-        signed=response.json()['signedURL']
-        url=settings.supabase_url.rstrip('/')+'/storage/v1'+signed
-    except (httpx.HTTPError,KeyError,ValueError):
-        raise HTTPException(503,'This artifact is temporarily unavailable. Retry without changing snapshots.') from None
-    return RedirectResponse(url,status_code=307)
+        check_capacity(settings)
+    except CapacityUnavailable as error:
+        raise HTTPException(503, str(error), headers={'Retry-After': '60'}) from None
 
 
 class Submission(BaseModel):
@@ -202,9 +182,12 @@ def create_app(settings=None, pool=None):
 
     @app.get('/v1/datasets')
     def datasets(conn=Depends(connection)):
-        return {'datasets': conn.execute('''SELECT d.*,to_jsonb(latest) AS latest_publication FROM research.datasets d
+        rows = conn.execute('''SELECT d.*,to_jsonb(latest) AS latest_publication FROM research.datasets d
             LEFT JOIN research.publications latest ON latest.id=d.latest_publication_id AND latest.status='published' WHERE EXISTS
-            (SELECT 1 FROM research.publications p WHERE p.dataset_id=d.id AND p.status='published') ORDER BY d.name,d.id''').fetchall()}
+            (SELECT 1 FROM research.publications p WHERE p.dataset_id=d.id AND p.status='published') ORDER BY d.name,d.id''').fetchall()
+        for row in rows:
+            row['capabilities'] = [value for value in row['capabilities'] if value != 'downloads']
+        return {'datasets': rows}
 
     @app.get('/v1/datasets/{dataset_id}/publications')
     def publications(dataset_id: str, conn=Depends(connection)):
@@ -331,22 +314,6 @@ def create_app(settings=None, pool=None):
             result['issue_counts']['field_gaps'] = table_definition(conn,publication_id,'field_gaps')['row_count']
         return result
 
-    @app.get('/v1/publications/{publication_id}/downloads')
-    def downloads(publication_id: str, request: Request, conn=Depends(connection)):
-        require_publication(conn, publication_id)
-        artifacts = conn.execute('SELECT id,path,sha256,size,media_type,restored_sha256 FROM research.artifacts WHERE publication_id=%s ORDER BY path',(publication_id,)).fetchall()
-        for artifact in artifacts:
-            artifact['url'] = str(request.base_url).rstrip('/') + '/v1/publications/' + quote(publication_id,safe='') + '/downloads/' + quote(artifact['id'],safe='')
-        return {'artifacts':artifacts}
-
-    @app.get('/v1/publications/{publication_id}/downloads/{artifact_id:path}')
-    def download(publication_id: str, artifact_id: str, conn=Depends(connection)):
-        require_publication(conn,publication_id)
-        item = conn.execute('SELECT * FROM research.artifacts WHERE publication_id=%s AND id=%s',(publication_id,artifact_id)).fetchone()
-        if not item:
-            raise HTTPException(404,'Artifact missing in this publication. Select another available artifact or contact the operator.')
-        return storage_response(settings,item)
-
     @app.get('/v1/publications/{publication_id}/rules')
     def rules(publication_id: str, version: str | None = None, conn=Depends(connection)):
         require_publication(conn,publication_id)
@@ -391,6 +358,7 @@ def create_app(settings=None, pool=None):
             raise HTTPException(429,'You already have the maximum number of active queries. Wait or cancel a subscription.')
         reusable = existing and (existing['state'] in ('queued','running') or (existing['state']=='complete' and existing['expires_at'] is not None and conn.execute('SELECT %s > now() AS valid',(existing['expires_at'],)).fetchone()['valid']))
         if not reusable:
+            require_capacity(settings)
             queued = conn.execute("SELECT count(*) AS total FROM research.query_runs WHERE state IN ('queued','running')").fetchone()['total']
             if queued >= settings.max_queued:
                 raise HTTPException(503,'Team search is at capacity. Browsing remains available; retry shortly.',headers={'Retry-After':'30'})
@@ -422,11 +390,10 @@ def create_app(settings=None, pool=None):
     @app.get('/v1/queries/{query_id}')
     def query_status(query_id: str, conn=Depends(connection)):
         run = get_run(conn,query_id)
-        from .export_artifacts import generation_hash
         expired = run['expires_at'] is not None and conn.execute('SELECT %s <= now() AS expired',(run['expires_at'],)).fetchone()['expired']
-        exports=conn.execute('SELECT format,size,sha256,media_type,restored_filename,restored_sha256 FROM research.query_artifacts WHERE run_id=%s AND generation_hash=%s ORDER BY format',(query_id,generation_hash(run))).fetchall()
-        return {'query_id':run['id'],'publication_id':run['publication_id'],'state':run['state'],'query':run['definition'],'exports':exports,
-                'ruleset_version':run['ruleset_version'],'solver_version':run['solver_version'],'progress':run['progress'],
+        progress = {key: value for key, value in run['progress'].items() if not key.startswith('artifact_')}
+        return {'query_id':run['id'],'publication_id':run['publication_id'],'state':run['state'],'query':run['definition'],
+                'ruleset_version':run['ruleset_version'],'solver_version':run['solver_version'],'progress':progress,
                 'result_count':run['result_count'],'champion_set_count':run['champion_set_count'],'complete':run['state']=='complete' and not expired,
                 'error':run['error'],'created_at':run['created_at'],'started_at':run['started_at'],'finished_at':run['finished_at'],'expired':expired}
 
@@ -455,57 +422,6 @@ def create_app(settings=None, pool=None):
         if remaining == 0:
             conn.execute("UPDATE research.query_runs SET state='cancelled',finished_at=now(),lease_owner=NULL,lease_until=NULL,expires_at=now()+(%s*interval '1 day'),error='All subscribers cancelled. Results are incomplete.' WHERE id=%s AND state IN ('queued','running')",(settings.result_retention_days,query_id))
         return {'subscription_id':body.subscription_id,'cancelled':True,'other_subscribers_active':remaining>0}
-
-    @app.get('/v1/queries/{query_id}/export')
-    def export(query_id: str,request: Request,format: Literal['json','csv']='json'):
-        if app.state.pool is None:
-            raise HTTPException(503,'Research service has no database configured.')
-        with app.state.pool.connection() as conn:
-            network=capability_hash(request.client.host if request.client else 'unknown',settings.session_secret or 'read-rate-limit')
-            rate_limit(conn,'export-network:'+network,6)
-            run=get_run(conn,query_id)
-            valid=run['state']=='complete' and run['expires_at'] and conn.execute('SELECT %s>now() AS valid',(run['expires_at'],)).fetchone()['valid']
-            if valid:
-                from .export_artifacts import generation_hash
-                artifact=conn.execute('SELECT * FROM research.query_artifacts WHERE run_id=%s AND format=%s AND generation_hash=%s',(query_id,format,generation_hash(run))).fetchone()
-                if artifact:
-                    return storage_response(settings,artifact)
-        def generate():
-            with app.state.pool.connection() as export_conn:
-                export_conn.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY')
-                export_conn.execute("SET LOCAL statement_timeout='5000ms'")
-                run=get_run(export_conn,query_id)
-                if run['state']!='complete':
-                    raise HTTPException(409,'Complete export requires an exhaustive completed run. Partial results remain available in the results browser.')
-                if run['expires_at'] and export_conn.execute('SELECT %s<=now() AS expired',(run['expires_at'],)).fetchone()['expired']:
-                    raise HTTPException(410,'Results expired. Recompute the saved query before exporting.')
-                stored=export_conn.execute('SELECT count(*) AS total FROM research.query_results WHERE run_id=%s',(query_id,)).fetchone()['total']
-                if stored!=run['result_count']:
-                    raise HTTPException(409,'Stored results do not match the completed count. Recompute this saved query.')
-                provenance = {k:run[k] for k in ('id','publication_id','ruleset_version','solver_version','definition','state','result_count','champion_set_count')}
-                provenance['rules']=export_conn.execute('SELECT rules FROM research.rulesets WHERE publication_id=%s AND version=%s',(run['publication_id'],run['ruleset_version'])).fetchone()['rules']
-                with export_conn.cursor(name='research_export') as cursor:
-                    cursor.execute('SELECT result FROM research.query_results WHERE run_id=%s ORDER BY configuration_key',(query_id,))
-                    if format=='json':
-                        yield '{"provenance":'+canonical(provenance)+',"results":['
-                        first=True
-                        for row in cursor:
-                            yield ('' if first else ',')+canonical(row['result']); first=False
-                        yield ']}'
-                    else:
-                        buffer=io.StringIO(newline=''); writer=csv.writer(buffer)
-                        writer.writerow(['record_type','configuration_key','champion_count','board_slots','total_cost','active_trait_count','members_json','traits_json','unknown_traits_json','metadata_json'])
-                        writer.writerow(['provenance']+['\\N']*8+[canonical(provenance).replace('\\','\\\\')])
-                        yield buffer.getvalue(); buffer.seek(0); buffer.truncate(0)
-                        for row in cursor:
-                            result=row['result']
-                            values=['configuration']+[result.get(k) for k in ('configuration_key','champion_count','board_slots','total_cost','active_trait_count')]+[canonical(result.get(k)) for k in ('members','traits','unknown_traits')]+[None]
-                            writer.writerow(['\\N' if value is None else value.replace('\\','\\\\') if isinstance(value,str) else value for value in values])
-                            yield buffer.getvalue(); buffer.seek(0); buffer.truncate(0)
-        stream=generate()
-        first=next(stream)
-        return StreamingResponse(chain([first],stream),media_type='application/json' if format=='json' else 'text/csv',
-            headers={'Content-Disposition':f'attachment; filename="query-{query_id}.{format}"'},background=BackgroundTask(stream.close))
 
     return app
 

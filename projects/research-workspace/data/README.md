@@ -10,8 +10,9 @@ Install the service requirements, then apply these migrations once, in order, us
 4. `service/migrations/002_queries.sql`
 5. `migrations/004_storage.sql` on Supabase only
 6. `migrations/005_service_roles.sql`
+7. `migrations/006_private_artifacts.sql`
 
-Postgres 15 or newer is required for `security_invoker` views. Local Postgres needs `anon`, `authenticated`, and `service_role` roles before migration; Supabase provides them. Never grant visitors writes. The service uses explicit publication checks in addition to these policies. The `research-artifacts` bucket stays private; its read policy matches an artifact row to a published snapshot. Use a direct or session-pool connection for import, with enough headroom for one bounded batch import; the request service uses its own bounded pool.
+Postgres 15 or newer is required for `security_invoker` views. Local Postgres needs `anon`, `authenticated`, and `service_role` roles before migration; Supabase provides them. Never grant visitors writes. The service uses explicit publication checks in addition to these policies. The `research-artifacts` bucket stays private. Migration 006 removes its legacy visitor read policy and anonymous artifact metadata grants; only operators can access recovery objects. Use a direct or session-pool connection for import, with enough headroom for one bounded batch import; the request service uses its own bounded pool.
 
 Prepare a portable, verified bundle without any credentials or network requests:
 
@@ -28,13 +29,13 @@ Publish with `DATABASE_URL`, `SUPABASE_URL`, and `SUPABASE_SECRET_KEY` supplied 
 python data/import_snapshot.py publish .local/bundle
 ```
 
-Before public release, review the source reuse conditions recorded in `tft-set-19/docs/sources.md` and the bundle's source manifest. This adapter publishes the complete source snapshot with attribution. It rejects table exclusions: a reduced public dataset needs a separately validated derivative database and mapping so that the API, roster, evidence and downloads cannot disagree about scope.
+Before public release, review the source reuse conditions recorded in `tft-set-19/docs/sources.md` and the bundle's source manifest. This adapter publishes the complete source snapshot with attribution. It rejects table exclusions: a reduced public dataset needs a separately validated derivative database and mapping so that the API, roster, evidence and private recovery bundles cannot disagree about scope.
 
 For private local integration verification, use `--local-storage .local/objects`. This stores objects on disk and is not a production storage backend. Both storage backends verify immutable bytes after upload. A failed upload prevents publication. Rows load in one transaction, with deferred scoped foreign keys checked before publication. Every Postgres table **and translated view** is read back and compared against its SQLite logical rows. Evidence source references are checked. Only then does the transaction publish the version and advance the dataset pointer. Failure rolls back all rows; an earlier publication stays readable. Repeated imports verify objects and reuse the identical publication without duplicates or moving the latest pointer backwards.
 
 The mapping is deliberately versioned in `schema-v1.json` and the SQL migrations. A changed source schema fails with the affected table names; create and review a new migration instead of accepting unknown columns. `data/schema.py` generates the table migration; the view translations are explicit. Source-table JSON fields are not promoted into an opaque replacement for the relational model.
 
-To test a second dataset through the shared browser, prepare the same schema fixture with `--dataset fixture-two --name 'Fixture dataset' --adapter generic`. It advertises browsing, tables, evidence and downloads, and has no TFT team-query capability. New source schemas require a deliberate mapping and migration.
+To test a second dataset through the shared browser, prepare the same schema fixture with `--dataset fixture-two --name 'Fixture dataset' --adapter generic`. It advertises browsing, tables and evidence, and has no TFT team-query capability. New source schemas require a deliberate mapping and migration.
 
 CSV files retain the collector's encoding: exact `\N` means null; then replace doubled backslashes with one. Empty text remains empty text. Gunzip `tft-set-19.sqlite.gz` to restore `tft-set-19.sqlite`, and compare its SHA-256 to `restored_sha256` before using it. Preserve the source snapshot and publication IDs in citations.
 

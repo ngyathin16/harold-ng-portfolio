@@ -22,7 +22,7 @@ def run(bundle_root, database_url, output, factor):
         if conn.execute("SELECT to_regnamespace('research')").fetchone()[0] is not None:
             raise ValueError("Growth target must have no research schema; use a fresh dedicated database")
         for file in ["migrations/001_publications.sql", "migrations/002_source_tables.sql", "migrations/003_source_views.sql",
-                     "service/migrations/002_queries.sql", "migrations/005_service_roles.sql"]:
+                     "service/migrations/002_queries.sql", "migrations/005_service_roles.sql", "migrations/006_private_artifacts.sql"]:
             conn.execute((app_root / file).read_text(encoding="utf-8"))
     started = time.monotonic()
     source = importer.publish(bundle_root, database_url, importer.LocalStorage(output / "objects"))["publication_id"]

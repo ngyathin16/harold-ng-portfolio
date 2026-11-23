@@ -226,27 +226,27 @@ def delete_expired(pool, settings):
     store = _storage(settings)
     if store is None:
         return 0
+    deleted = 0
     with pool.connection() as conn:
+        conn.execute("SELECT pg_advisory_xact_lock(hashtext('research-backup-objects'))")
         candidates = conn.execute('''SELECT a.storage_key FROM research.query_artifacts a JOIN research.query_runs r ON r.id=a.run_id
             WHERE r.expires_at<=now() UNION SELECT g.storage_key FROM research.query_artifact_gc g WHERE g.delete_after<=now()
             AND NOT EXISTS (SELECT 1 FROM research.query_artifacts a JOIN research.query_runs r ON r.id=a.run_id
                 WHERE a.storage_key=g.storage_key AND (r.expires_at IS NULL OR r.expires_at>now()))''').fetchall()
-    deleted = 0
-    for item in candidates:
-        key = item['storage_key']
-        if not key.startswith('queries/') or '..' in key.split('/'):
-            raise ValueError('Query cleanup cannot delete source-publication artifacts')
-        if settings.artifact_root:
-            root = Path(settings.artifact_root).resolve()
-            path = (root / key).resolve()
-            if not path.is_relative_to(root / 'queries'):
-                raise ValueError('Query cleanup path leaves its storage namespace')
-            path.unlink(missing_ok=True)
-        else:
-            store.delete(key)
-        with pool.connection() as conn:
+        for item in candidates:
+            key = item['storage_key']
+            if not key.startswith('queries/') or '..' in key.split('/'):
+                raise ValueError('Query cleanup cannot delete source-publication artifacts')
+            if settings.artifact_root:
+                root = Path(settings.artifact_root).resolve()
+                path = (root / key).resolve()
+                if not path.is_relative_to(root / 'queries'):
+                    raise ValueError('Query cleanup path leaves its storage namespace')
+                path.unlink(missing_ok=True)
+            else:
+                store.delete(key)
             conn.execute('''DELETE FROM research.query_artifacts a USING research.query_runs r
                 WHERE a.run_id=r.id AND a.storage_key=%s AND r.expires_at<=now()''', (key,))
             conn.execute('DELETE FROM research.query_artifact_gc WHERE storage_key=%s', (key,))
-        deleted += 1
+            deleted += 1
     return deleted

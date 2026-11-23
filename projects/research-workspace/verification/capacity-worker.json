@@ -1,0 +1,246 @@
+{
+  "checked_at": "2026-11-23T07:57:37.460220+00:00",
+  "scope": "Sequential uncached query recovery on local x86 Windows; not hosted concurrency or ARM capacity",
+  "machine": {
+    "os": "Windows-11-10.0.26300-SP0",
+    "architecture": "AMD64",
+    "processor": "Intel64 Family 6 Model 198 Stepping 2, GenuineIntel",
+    "physical_cpus": 24,
+    "logical_cpus": 24,
+    "memory_total_bytes": 33775415296,
+    "memory_available_at_start_bytes": 7063289856
+  },
+  "versions": {
+    "python": "3.12.13",
+    "numpy": "2.3.5",
+    "numba": "0.63.1",
+    "psycopg": "3.3.9",
+    "psutil": "7.2.2",
+    "postgres": "PostgreSQL 17.11 on x86_64-windows, compiled by msvc-19.44.35228, 64-bit"
+  },
+  "source_sha256": {
+    "service\\worker.py": "fc82e80a1fbb2f629b7b90966d08c667174269a82f51657c3b15e177cef9f113",
+    "solver\\search.py": "d5ef938ba72407b3be91fe11dad6561764a7209fb601bc76fec8b32e9385d608",
+    "solver\\native.py": "eb5f05fe3dd472442996afb446c7c18f607c30f66c036f3b8d53636792e548ec"
+  },
+  "settings": {
+    "max_seconds": 120,
+    "max_results": 1000000,
+    "worker_concurrency": 1,
+    "storage_configured": false
+  },
+  "measurement": {
+    "process_peak_rss": "Maximum observed sum of resident sets across the worker launch process and its descendants, sampled every 50 ms. Includes the Windows virtualenv redirector and its actual Python worker. Shared pages can be counted by multiple processes. Excludes PostgreSQL, API, verifier, and filesystem cache.",
+    "process_elapsed": "Worker startup, imports, compilation/cache load, enumeration, independent solver recount, and PostgreSQL persistence.",
+    "solver_elapsed": "Reported by solver; includes callback persistence and compilation after solver timer starts.",
+    "compile_time": "Not isolated by current solver instrumentation. First run starts with an empty dedicated Numba cache; the second uses the populated cache."
+  },
+  "runs": [
+    {
+      "name": "general",
+      "query_id": "LoDake-URTpPoMjkuyoLvrRz",
+      "query": {
+        "cost": {
+          "max": 4,
+          "min": null
+        },
+        "exclude": [],
+        "include": [
+          "tft19:unit:DA_Jhin19"
+        ],
+        "team_size": {
+          "max": 8,
+          "min": 8
+        },
+        "dataset_id": "tft-set-19",
+        "total_cost": {
+          "max": null,
+          "min": null
+        },
+        "board_slots": 8,
+        "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+        "include_locked": true,
+        "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+        "schema_version": 1,
+        "required_traits": [],
+        "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+        "forbidden_traits": [],
+        "min_active_traits": 8
+      },
+      "solver_version": "native-dfs-v1",
+      "cache": "empty result cache; cold Numba cache",
+      "process_exit_code": 0,
+      "process_elapsed_seconds": 115.5,
+      "peak_rss_bytes": 202059776,
+      "largest_individual_process_rss_bytes": 187322368,
+      "observed_worker_processes": 2,
+      "state": "complete",
+      "complete": true,
+      "reported_count": 280543,
+      "reported_champion_sets": 211961,
+      "stored_counts": {
+        "configurations": 280543,
+        "champion_sets": 211961
+      },
+      "expected_count": 280543,
+      "expected_champion_sets": 211961,
+      "progress": {
+        "query": {
+          "cost": {
+            "max": 4,
+            "min": null
+          },
+          "exclude": [],
+          "include": [
+            "tft19:unit:DA_Jhin19"
+          ],
+          "team_size": {
+            "max": 8,
+            "min": 8
+          },
+          "dataset_id": "tft-set-19",
+          "total_cost": {
+            "max": null,
+            "min": null
+          },
+          "board_slots": 8,
+          "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+          "include_locked": true,
+          "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+          "schema_version": 1,
+          "required_traits": [],
+          "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+          "forbidden_traits": [],
+          "min_active_traits": 8
+        },
+        "state": "complete",
+        "reason": null,
+        "complete": true,
+        "query_hash": "bf82c67874ad978eed23b8206213bc358f108bbca7bc15f91456a9462799d63e",
+        "visited_nodes": 147086980,
+        "solver_version": "native-dfs-v1",
+        "elapsed_seconds": 113.375,
+        "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+        "champion_set_count": 211961,
+        "completeness_scope": "All matches under these recorded rules and assumptions",
+        "configuration_count": 280543
+      },
+      "saved_query_id_preserved": true,
+      "export_metadata_absent": true,
+      "query_artifacts": 0,
+      "independently_recounted_rows": 280543,
+      "post_persistence_recount_seconds": 45.35900000005495,
+      "passed": true
+    },
+    {
+      "name": "jazz",
+      "query_id": "RtsededKBFy4Ve7lQleExbjL",
+      "query": {
+        "cost": {
+          "max": 4,
+          "min": null
+        },
+        "exclude": [],
+        "include": [
+          "tft19:unit:DA_Jhin19"
+        ],
+        "team_size": {
+          "max": 8,
+          "min": 8
+        },
+        "dataset_id": "tft-set-19",
+        "total_cost": {
+          "max": null,
+          "min": null
+        },
+        "board_slots": 8,
+        "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+        "include_locked": true,
+        "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+        "schema_version": 1,
+        "required_traits": [
+          {
+            "trait_id": "tft19:trait:DA_Jazz19",
+            "breakpoint_id": "tft19:trait:DA_Jazz19:tier:1"
+          }
+        ],
+        "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+        "forbidden_traits": [],
+        "min_active_traits": 8
+      },
+      "solver_version": "native-dfs-v1",
+      "cache": "empty result cache; populated Numba cache",
+      "process_exit_code": 0,
+      "process_elapsed_seconds": 12.452999999979511,
+      "peak_rss_bytes": 160940032,
+      "largest_individual_process_rss_bytes": 146149376,
+      "observed_worker_processes": 2,
+      "state": "complete",
+      "complete": true,
+      "reported_count": 38809,
+      "reported_champion_sets": 30935,
+      "stored_counts": {
+        "configurations": 38809,
+        "champion_sets": 30935
+      },
+      "expected_count": 38809,
+      "expected_champion_sets": 30935,
+      "progress": {
+        "query": {
+          "cost": {
+            "max": 4,
+            "min": null
+          },
+          "exclude": [],
+          "include": [
+            "tft19:unit:DA_Jhin19"
+          ],
+          "team_size": {
+            "max": 8,
+            "min": 8
+          },
+          "dataset_id": "tft-set-19",
+          "total_cost": {
+            "max": null,
+            "min": null
+          },
+          "board_slots": 8,
+          "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+          "include_locked": true,
+          "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+          "schema_version": 1,
+          "required_traits": [
+            {
+              "trait_id": "tft19:trait:DA_Jazz19",
+              "breakpoint_id": "tft19:trait:DA_Jazz19:tier:1"
+            }
+          ],
+          "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+          "forbidden_traits": [],
+          "min_active_traits": 8
+        },
+        "state": "complete",
+        "reason": null,
+        "complete": true,
+        "query_hash": "c058404afc8e8b616b5a562034b069ef6cef6a315b2bf40bb59be10c9b33188c",
+        "visited_nodes": 10783419,
+        "solver_version": "native-dfs-v1",
+        "elapsed_seconds": 11.422000000020489,
+        "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+        "champion_set_count": 30935,
+        "completeness_scope": "All matches under these recorded rules and assumptions",
+        "configuration_count": 38809
+      },
+      "saved_query_id_preserved": true,
+      "export_metadata_absent": true,
+      "query_artifacts": 0,
+      "independently_recounted_rows": 38809,
+      "post_persistence_recount_seconds": 6.0,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "database": "research_capacity_restore_test",
+  "jazz_not_in_general": 0,
+  "database_bytes_after": 1758582451
+}

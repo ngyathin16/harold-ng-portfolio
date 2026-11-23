@@ -1,0 +1,10 @@
+[Unit]
+Description=Private verified research database backup to R2
+Requires=docker.service
+After=docker.service
+OnFailure=research-operation-failed@%n.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/research-workspace/projects/research-workspace/deploy/manage.py scheduled-backup --notify /etc/research-workspace/notify-failure
+UMask=0077

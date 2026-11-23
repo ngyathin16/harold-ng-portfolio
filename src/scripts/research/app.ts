@@ -1,5 +1,5 @@
 import { Api, date, list, num, object, optionalObject, records, str, text, type Row } from './api';
-import { button, el, evidence, field, input, notice, pretty, safeLink, select, table } from './dom';
+import { button, el, evidence, field, input, notice, pretty, select, table } from './dom';
 import { teamBuilder, queryResults } from './teams';
 
 export interface Workspace {
@@ -47,11 +47,12 @@ export function startWorkspace(): void {
     content.setAttribute('aria-busy', 'true');
     if (!content.children.length) content.append(notice('Loading the selected publication…'));
     const params = new URLSearchParams(location.search);
-    const view = params.get('view') || (params.has('dataset') ? 'catalog' : 'home');
+    const requestedView = params.get('view');
+    const view = requestedView === 'downloads' ? 'catalog' : requestedView || (params.has('dataset') ? 'catalog' : 'home');
     root.querySelectorAll<HTMLAnchorElement>('[data-view]').forEach(anchor => {
       const current = anchor.dataset.view;
       anchor.href = link({ view: current || 'home', record: null, query: null, page: null });
-      if (current === view || current === 'catalog' && ['record', 'tables', 'coverage', 'downloads'].includes(view)) anchor.setAttribute('aria-current', 'page'); else anchor.removeAttribute('aria-current');
+      if (current === view || current === 'catalog' && ['record', 'tables', 'coverage'].includes(view)) anchor.setAttribute('aria-current', 'page'); else anchor.removeAttribute('aria-current');
     });
     try {
       const api = new Api(root.dataset.api || '');
@@ -78,13 +79,12 @@ export function startWorkspace(): void {
       const wrapper = el('div');
       wrapper.append(publicationHeader(ctx, publications));
       const tabs = el('nav', { class: 'dataset-tabs', 'aria-label': 'Dataset' });
-      for (const [id, label] of [['catalog', 'Catalog'], ['tables', 'Tables'], ['coverage', 'Coverage & evidence'], ['downloads', 'Downloads']]) tabs.append(el('a', { href: link({ view: id, record: null, page: null, sort: null }), ...((id === view || id === 'catalog' && view === 'record') ? { 'aria-current': 'page' } : {}) }, label));
+      for (const [id, label] of [['catalog', 'Catalog'], ['tables', 'Tables'], ['coverage', 'Coverage & evidence']]) tabs.append(el('a', { href: link({ view: id, record: null, page: null, sort: null }), ...((id === view || id === 'catalog' && view === 'record') ? { 'aria-current': 'page' } : {}) }, label));
       if (view !== 'teams') wrapper.append(tabs);
       let body: HTMLElement;
       if (view === 'record' || params.has('record') && view === 'catalog') body = await recordPage(ctx, signal);
       else if (view === 'tables') body = await tablesPage(ctx, signal);
       else if (view === 'coverage') body = await coveragePage(ctx, signal);
-      else if (view === 'downloads') body = await downloadsPage(ctx, signal);
       else if (view === 'teams' && !list(dataset.capabilities).includes('team_queries')) body = el('section', { class: 'workspace-empty' }, el('h2', {}, 'Team queries are unavailable for this dataset'), el('p', {}, 'Its published records remain available in the explorer.'), el('a', { class: 'action', href: link({ view: 'home', dataset: null, publication: null, snapshot: null, query: null, definition: null }) }, 'Choose a dataset'));
       else if (view === 'teams' && params.has('query')) {
         const result = await queryResults(ctx, signal); body = result.element; stopPolling = result.stop;
@@ -253,11 +253,4 @@ async function coveragePage(ctx: Workspace, signal: AbortSignal): Promise<HTMLEl
     section.append(el('h3', {}, label), table(records(data[key])), el('a', { class: 'text-link', href: ctx.link({ view: 'tables', table: tableName, page: null, column: null, sort: null }) }, 'Browse the complete table →'));
   }
   section.append(el('h3', {}, 'All field gaps'), pretty(data.issue_counts), el('a', { class: 'action', href: ctx.link({ view: 'tables', table: 'field_gaps', page: null, column: null, sort: null }) }, 'Browse every field gap'), el('h3', {}, 'Published validation'), pretty(data.validation)); return section;
-}
-async function downloadsPage(ctx: Workspace, signal: AbortSignal): Promise<HTMLElement> {
-  const artifacts = records((await ctx.api.get(scoped(ctx) + '/downloads', signal)).artifacts);
-  const section = el('section', {}, el('h2', {}, 'Continue your research'), el('p', { class: 'small muted' }, 'Full artifacts for the selected publication. These downloads do not apply your catalog or table filters.'), notice('Extract the compressed SQLite download to restore its original filename and bytes, then verify the restored SHA-256. In CSV, exact \\N means null; decode it before replacing doubled backslashes with single backslashes. An empty field remains empty text.'));
-  if (!artifacts.length) section.append(notice('No downloadable artifacts are available for this publication. Contact the publisher; your snapshot has not changed.'));
-  for (const artifact of artifacts) section.append(el('article', { class: 'download-entry' }, el('div', {}, el('h3', {}, str(artifact.path ?? artifact.id)), el('p', {}, `${(num(artifact.size) / 1024).toLocaleString(undefined, { maximumFractionDigits: 1 })} KiB · ${str(artifact.media_type)}`), el('p', {}, 'SHA-256: ', el('code', {}, text(artifact.sha256))), ...(artifact.restored_sha256 ? [el('p', {}, 'Restored SQLite SHA-256: ', el('code', {}, text(artifact.restored_sha256)))] : [])), safeLink('Download', artifact.url)));
-  return section;
 }

@@ -9,8 +9,12 @@ from pathlib import Path
 import psycopg
 from psycopg.rows import dict_row
 
-import import_snapshot as importer
-import schema
+if __package__:
+    from . import import_snapshot as importer
+    from . import schema
+else:
+    import import_snapshot as importer
+    import schema
 
 
 def verify(database_url, object_root, publication_id=None):
@@ -50,11 +54,15 @@ def verify(database_url, object_root, publication_id=None):
                 raise ValueError("Restored publication is missing artifact metadata")
             for artifact in artifacts:
                 verify_object(artifact)
-            runs = connection.execute("SELECT r.id,r.definition,r.ruleset_version,s.rules FROM research.query_runs r LEFT JOIN research.rulesets s ON s.publication_id=r.publication_id AND s.version=r.ruleset_version WHERE r.publication_id=%s", (publication["id"],)).fetchall()
+            runs = connection.execute("SELECT r.id,r.definition,r.ruleset_version,r.state,r.result_count,r.champion_set_count,r.expires_at>now() AS retained,s.rules FROM research.query_runs r LEFT JOIN research.rulesets s ON s.publication_id=r.publication_id AND s.version=r.ruleset_version WHERE r.publication_id=%s", (publication["id"],)).fetchall()
             for run in runs:
                 definition = run["definition"]
                 if run["rules"] is None or definition.get("publication_id") != publication["id"] or definition.get("snapshot_id") != publication["snapshot_id"] or definition.get("ruleset_version") != run["ruleset_version"]:
                     raise ValueError("Restored query lost its original version context: " + run["id"])
+                if run["state"] == "complete" and run["retained"]:
+                    counts = connection.execute("SELECT count(*) AS configurations,count(DISTINCT champion_set_key) AS champion_sets FROM research.query_results WHERE run_id=%s", (run["id"],)).fetchone()
+                    if counts["configurations"] != run["result_count"] or counts["champion_sets"] != run["champion_set_count"]:
+                        raise ValueError("Restored complete query counts differ: " + run["id"])
                 query_definitions += 1
             objects = connection.execute("SELECT a.* FROM research.query_artifacts a JOIN research.query_runs r ON r.id=a.run_id WHERE r.publication_id=%s", (publication["id"],)).fetchall()
             for item in objects:
@@ -62,7 +70,7 @@ def verify(database_url, object_root, publication_id=None):
             verified_publications.append({"publication_id": publication["id"], "tables_and_views": len(definitions), "snapshot_id": publication["snapshot_id"]})
     return {"passed": True, "publications": verified_publications, "objects_verified": verified_objects,
             "query_definitions_verified": query_definitions, "restoration_performed_by_script": False,
-            "scope": "Logical rows, compressed artifact bytes and frozen query identity; restoration, HTTP routes and recovery timings are separate operator steps."}
+            "scope": "Logical rows, compressed artifact bytes, frozen query identity, and retained complete-result counts; restoration, full result hashes, HTTP routes and recovery timings are separate operator steps."}
 
 
 def main():

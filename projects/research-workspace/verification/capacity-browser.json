@@ -1,0 +1,18 @@
+{
+  "checked_at": "2026-11-23T07:48:02.842Z",
+  "base": "http://127.0.0.1:4332",
+  "checks": [
+    "catalog search, concrete version URL, unit evidence, reload and Back",
+    "table rows beyond 200, lazy full row, stable pagination",
+    "coverage and validation; old download view resolves to catalog; retired GET/HEAD routes return no artifacts or redirects",
+    "runtime Jhin preset, generic Jazz breakpoint, URL persistence, contradiction rejection",
+    "keyboard, 390px, 1280px, enlarged text and WCAG automated scan",
+    "submitted query resolves persisted complete results, global sort and reload",
+    "network failure preserves version and query form",
+    "completed empty query stays distinct from failure and has no download controls",
+    "untrusted source text stays inert; null, zero, false, empty text and archived evidence stay distinct",
+    "snapshot transfer fixture retains numeric filters and available identities, reports removals, preserves historical rules, and clears form state when choosing a dataset"
+  ],
+  "errors": [],
+  "passed": true
+}

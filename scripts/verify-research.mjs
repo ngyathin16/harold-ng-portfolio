@@ -37,9 +37,22 @@ try {
   report.checks.push('table rows beyond 200, lazy full row, stable pagination');
   await page.getByRole('link', { name: 'Coverage & evidence', exact: true }).click(); await ready();
   assert(await page.getByRole('heading', { name: 'Published validation' }).isVisible());
-  await page.getByRole('link', { name: 'Downloads', exact: true }).click(); await ready();
-  assert(await page.getByRole('link', { name: 'Download ↗', exact: true }).count() > 0);
-  report.checks.push('coverage, validation and publication-specific downloads');
+  assert.equal(await page.locator('#research-app').getByRole('link', { name: /download/i }).count(), 0);
+  const oldDownloadUrl = new URL(page.url());
+  oldDownloadUrl.searchParams.set('view', 'downloads');
+  await page.goto(oldDownloadUrl.href); await ready();
+  assert.equal(new URL(page.url()).searchParams.get('view'), 'catalog');
+  assert(await page.getByLabel('Search this snapshot').isVisible());
+  const retiredApi = await page.locator('#research-app').getAttribute('data-api');
+  const retainedPublication = encodeURIComponent(oldDownloadUrl.searchParams.get('publication'));
+  for (const method of ['GET', 'HEAD']) {
+    for (const path of [`/v1/publications/${retainedPublication}/downloads`, `/v1/publications/${retainedPublication}/downloads/database.sqlite.gz`, '/v1/queries/retained/export?format=json', '/v1/queries/retained/export?format=csv']) {
+      const response = await page.request.fetch(retiredApi + path, { method, maxRedirects: 0 });
+      assert.equal(response.status(), 404, `${method} ${path}`);
+      assert.equal(response.headers()['location'], undefined);
+    }
+  }
+  report.checks.push('coverage and validation; old download view resolves to catalog; retired GET/HEAD routes return no artifacts or redirects');
   await page.getByRole('link', { name: 'Team queries', exact: true }).click(); await ready();
   await page.getByRole('button', { name: 'Use Jhin example' }).click();
   assert.equal(await page.getByLabel('Minimum distinct champions').inputValue(), '8');
@@ -58,6 +71,7 @@ try {
   for (const width of [1280, 390, 640]) {
     await page.setViewportSize({ width, height: 900 });
     if (width === 640) await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+    assert.equal(await page.locator('#research-app').getByRole('link', { name: /download/i }).count(), 0);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `overflow ${width}`);
     const audit = await new AxeBuilder({ page }).include('#research-app').withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
     assert.deepEqual(audit.violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => n.target) })), [], `accessibility ${width}`);
@@ -70,7 +84,7 @@ try {
     await page.getByRole('button', { name: 'Find matching teams' }).click();
     await page.getByRole('heading', { name: 'Matching teams', exact: true }).waitFor({ timeout: 150000 });
     assert(new URL(page.url()).searchParams.get('query'));
-    assert(await page.getByRole('link', { name: 'Download all JSON' }).isVisible());
+    assert.equal(await page.locator('#research-app').getByRole('link', { name: /download/i }).count(), 0);
     assert(await page.locator('.result-entry').count() > 0);
     await page.getByLabel('Sort all results').selectOption('total_cost'); await ready();
     const finishedUrl = page.url(); await page.reload(); await ready();
@@ -84,25 +98,19 @@ try {
   assert.equal(new URL(page.url()).searchParams.get('publication'), before.searchParams.get('publication'));
   await context.setOffline(false);
   report.checks.push('network failure preserves version and query form');
-  let exportsReady = false;
-  const exportUrl = new URL(page.url());
-  exportUrl.searchParams.set('view', 'teams');
-  exportUrl.searchParams.set('query', 'export-ready-fixture');
-  await page.route('**/v1/queries/export-ready-fixture', route => route.fulfill({ json: {
+  const emptyQueryUrl = new URL(page.url());
+  emptyQueryUrl.searchParams.set('view', 'teams');
+  emptyQueryUrl.searchParams.set('query', 'completed-empty-fixture');
+  await page.route('**/v1/queries/completed-empty-fixture', route => route.fulfill({ json: {
     state: 'complete', complete: true, result_count: 0, champion_set_count: 0,
-    query: { publication_id: exportUrl.searchParams.get('publication'), snapshot_id: exportUrl.searchParams.get('snapshot') },
-    ruleset_version: 'fixture-rules', solver_version: 'fixture-solver',
-    progress: { artifact_status: exportsReady ? 'ready' : 'preparing' },
-    exports: exportsReady ? [{ format: 'json', size: 1024, sha256: 'fixture-compressed-checksum', restored_filename: 'query.json', restored_sha256: 'fixture-restored-checksum' }] : [],
+    query: { publication_id: emptyQueryUrl.searchParams.get('publication'), snapshot_id: emptyQueryUrl.searchParams.get('snapshot') },
+    ruleset_version: 'fixture-rules', solver_version: 'fixture-solver', progress: {},
   } }));
-  await page.goto(exportUrl.href); await ready();
-  assert(await page.getByRole('button', { name: 'Refresh downloads', exact: true }).isVisible());
-  exportsReady = true;
-  await page.getByRole('button', { name: 'Refresh downloads', exact: true }).click();
-  await page.getByText('Download sizes and checksums', { exact: true }).click();
-  assert(await page.getByRole('cell', { name: 'fixture-restored-checksum', exact: true }).isVisible());
+  await page.goto(emptyQueryUrl.href); await ready();
+  assert.match(await page.locator('#workspace-content').innerText(), /exhaustive search completed with no matches/);
+  assert.equal(await page.locator('#research-app').getByRole('link', { name: /download/i }).count(), 0);
   assert.equal(await page.getByRole('button', { name: 'Refresh downloads', exact: true }).count(), 0);
-  report.checks.push('completed export preparation fixture refreshes to available sizes and checksums');
+  report.checks.push('completed empty query stays distinct from failure and has no download controls');
   await page.route('**/records/**', route => route.fulfill({ json: {
     record: { id: 'fixture', name: 'Value fixture', kind: 'mechanic', description: '<img src=x onerror="window.sourceExecuted=true">', lifecycle_status: 'unresolved' },
     sections: { values: [{ unknown: null, zero: 0, disabled: false, blank: '' }] },

@@ -1,0 +1,2 @@
+# Optional process-memory measurement for data/verify_worker_recovery.py.
+psutil==7.2.2

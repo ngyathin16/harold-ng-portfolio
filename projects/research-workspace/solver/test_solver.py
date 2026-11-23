@@ -1,6 +1,7 @@
 import copy
 from itertools import combinations
 from pathlib import Path
+import os
 import random
 import json
 import hashlib
@@ -163,7 +164,7 @@ class SolverTests(unittest.TestCase):
         self.assertEqual(summary['configuration_count'], 0)
 
     def test_real_snapshot_rules_preserve_forms_and_explicit_unknowns(self):
-        root = Path(__file__).resolve().parents[2] / 'tft-set-19'
+        root = Path(os.environ.get('RESEARCH_SOURCE_PROJECT', Path(__file__).resolve().parents[2] / 'tft-set-19'))
         if not (root / 'data/latest.json').is_file():
             self.skipTest('Local research snapshot unavailable')
         latest = json.loads((root / 'data/latest.json').read_text())

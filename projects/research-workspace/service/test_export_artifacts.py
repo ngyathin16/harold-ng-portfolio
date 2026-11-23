@@ -9,6 +9,9 @@ from pathlib import Path
 
 import pytest
 import httpx
+import psycopg
+from psycopg.rows import dict_row
+from psycopg_pool import ConnectionPool
 
 from service import export_artifacts
 from service.config import Settings
@@ -166,3 +169,20 @@ def test_remote_redirect_never_forwards_credentials(tmp_path, monkeypatch):
         store.put_verified('queries/run/file.json.gz', source, hashlib.sha256(b'result').hexdigest(), 'application/gzip')
     assert 'synthetic-storage-test' not in str(failure.value)
     assert len(requests) == 1 and requests[0].startswith('https://project.supabase.co/')
+
+
+def test_cleanup_cannot_delete_objects_while_backup_stages_them(service, tmp_path):
+    _,pool,settings,_,_=service
+    identity=completed(service)
+    settings=replace(settings,artifact_root=str(tmp_path))
+    artifacts=export_artifacts.materialize(pool,settings,identity)
+    with pool.connection() as conn:
+        conn.execute("UPDATE research.query_runs SET expires_at=now()-interval '1 second' WHERE id=%s",(identity,))
+    with pool.connection() as guard:
+        guard.execute("SELECT pg_advisory_xact_lock(hashtext('research-backup-objects'))")
+        with ConnectionPool(settings.database_url,min_size=1,max_size=1,
+                kwargs={'row_factory':dict_row,'options':'-c lock_timeout=100ms'}) as cleanup_pool:
+            with pytest.raises(psycopg.errors.LockNotAvailable):
+                export_artifacts.delete_expired(cleanup_pool,settings)
+        assert all((tmp_path / artifact['storage_key']).is_file() for artifact in artifacts)
+    assert export_artifacts.delete_expired(pool,settings)==2

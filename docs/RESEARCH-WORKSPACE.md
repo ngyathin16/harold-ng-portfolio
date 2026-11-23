@@ -1,6 +1,6 @@
 # Research workspace integration
 
-The [capacity-wait PRD](RESEARCH-CAPACITY-WAIT-PRD.md) defines the next work on reproducible deployment, private R2 backup and restore, public download removal, and local application/statistics verification. It supersedes public-download requirements below. Existing download behavior and test results describe the implementation baseline, not the target for this phase.
+The [capacity-wait PRD](RESEARCH-CAPACITY-WAIT-PRD.md) supersedes public-download requirements below. Deployment and private recovery tooling are implemented, public research download routes and controls are removed, and the local R2/browser/statistics checks pass. See the [implementation and verification record](RESEARCH-CAPACITY-IMPLEMENTATION.md) for evidence and the remaining Linux/hosted gates. Historical download results below describe the earlier implementation.
 
 The application uses `/applications/` and `/applications/research/`. It preserves the current portfolio layout and navigation, including the existing component attribution in `COMPONENT-ADOPTION.md`. Research JavaScript is loaded only on the workspace route. The static build does not require a research folder, source database, or secret credentials.
 

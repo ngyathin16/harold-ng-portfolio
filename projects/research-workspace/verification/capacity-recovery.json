@@ -1,0 +1,89 @@
+{
+  "backup": {
+    "backup_id": "20261123T073924Z-c2448075d7fb",
+    "bytes": 295297091,
+    "command": "backup",
+    "completed_at": "2026-11-23T07:42:47.498172+00:00",
+    "duration_seconds": 204.372,
+    "passed": true,
+    "r2_requests": 505,
+    "reported_at": "2026-11-23T07:42:48.571528+00:00",
+    "snapshot_at": "2026-11-23 07:39:24.535919+00:00",
+    "verified_members": 250
+  },
+  "restore": {
+    "api_and_worker_verified": true,
+    "backup_id": "20261123T073924Z-c2448075d7fb",
+    "command": "restore",
+    "completed_at": "2026-11-23T07:45:28.688984+00:00",
+    "duration_seconds": 99.04,
+    "objects_verified": 248,
+    "passed": true,
+    "publications": [
+      {
+        "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+        "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+        "tables_and_views": 75
+      },
+      {
+        "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--bda1ffdb0d18251c",
+        "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+        "tables_and_views": 75
+      }
+    ],
+    "query_definitions_verified": 3,
+    "query_result_hashes_verified": 3,
+    "r2_requests": 254,
+    "reported_at": "2026-11-23T07:45:28.691743+00:00",
+    "restoration_performed_by_script": true,
+    "restore_seconds": 98.667,
+    "scope": "Logical rows, compressed artifact bytes, frozen query identity, and retained complete-result counts; restoration, full result hashes, HTTP routes and recovery timings are separate operator steps.",
+    "snapshot_age_seconds": 364.153076,
+    "snapshot_at": "2026-11-23 07:39:24.535919+00:00",
+    "api_and_worker_evidence": [
+      "capacity-browser.json",
+      "capacity-worker.json",
+      "capacity-statistics.json"
+    ],
+    "end_to_end_verification_confirmed_at": "2026-11-23T08:05:30.114792+00:00",
+    "recovery_upper_bound_seconds": 1300.463,
+    "recovery_timing_scope": "Conservative wall-clock upper bound from R2 restore invocation through confirmed restored browser, full worker recomputation, and statistics checks; includes manual review, unrelated checks and a repeated measurement run. Database/object restoration alone is restore_seconds.",
+    "two_hour_recovery_target_met": true,
+    "twenty_four_hour_loss_target_met": true
+  },
+  "retention_dry_run": {
+    "command": "prune",
+    "delete": [],
+    "duration_seconds": 36.25,
+    "executed": false,
+    "keep": [
+      "20261123T073924Z-c2448075d7fb"
+    ],
+    "newest_verified": true,
+    "passed": true,
+    "r2_requests": 255,
+    "reported_at": "2026-11-23T07:52:44.727536+00:00"
+  },
+  "bucket_privacy": {
+    "r2_dev_enabled": false,
+    "custom_domains": [],
+    "verified_with": "authenticated Wrangler read-only bucket configuration commands"
+  },
+  "anonymous_object_access": {
+    "GET": {
+      "status": 400,
+      "s3_error": "InvalidArgument"
+    },
+    "HEAD": {
+      "status": 400
+    }
+  },
+  "hosted": false,
+  "notes": [
+    "The full backup/restore used existing local PostgreSQL17.11 and actual private R2 storage.",
+    "Restore downloaded into a separate directory and did not read original objects.",
+    "Application browser journeys passed against the restored database on Python3.12.13. Worker recomputation verification is recorded separately.",
+    "R2 request totals count SDK operations; SDK retries may add HTTP requests.",
+    "Native ARM and hosted throughput remain unverified."
+  ]
+}

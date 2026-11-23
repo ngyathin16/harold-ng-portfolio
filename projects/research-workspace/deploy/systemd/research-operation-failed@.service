@@ -1,0 +1,7 @@
+[Unit]
+Description=Notify the operator of a failed research maintenance job
+
+[Service]
+Type=oneshot
+ExecStart=/etc/research-workspace/notify-failure %i
+UMask=0077

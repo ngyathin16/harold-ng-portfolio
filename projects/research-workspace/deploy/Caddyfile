@@ -1,0 +1,15 @@
+{
+	admin off
+}
+
+{$API_HOSTNAME} {
+	request_body {
+		max_size 16KB
+	}
+	@retired path_regexp retired ^/v1/(publications/[^/]+/(downloads|artifacts)(/.*)?|queries/[^/]+/export)/?$
+	respond @retired 410
+	reverse_proxy api:8080 {
+		header_up X-Forwarded-For {remote_host}
+		header_up -X-Real-IP
+	}
+}

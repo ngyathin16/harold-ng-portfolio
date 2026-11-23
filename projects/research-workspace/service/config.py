@@ -1,6 +1,7 @@
 """Trusted service configuration. No privileged values are returned to clients."""
 from dataclasses import dataclass
 import os
+import shutil
 
 
 @dataclass(frozen=True)
@@ -11,6 +12,8 @@ class Settings:
     supabase_key: str = ''
     storage_bucket: str = 'research-artifacts'
     artifact_root: str = ''
+    capacity_path: str = ''
+    min_free_bytes: int = 1073741824
     session_secret: str = ''
     pool_size: int = 8
     max_queued: int = 100
@@ -39,3 +42,18 @@ class Settings:
                     raise ValueError(name + ' must be positive')
             values[field.name] = value
         return cls(**values)
+
+
+class CapacityUnavailable(ValueError):
+    pass
+
+
+def check_capacity(settings):
+    if not settings.capacity_path:
+        return
+    try:
+        available = shutil.disk_usage(settings.capacity_path).free
+    except OSError:
+        raise CapacityUnavailable('Search capacity cannot be checked. Browsing remains available; retry shortly.') from None
+    if available < settings.min_free_bytes:
+        raise CapacityUnavailable('Team search is at disk capacity. Browsing remains available; retry shortly.')

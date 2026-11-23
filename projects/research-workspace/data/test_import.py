@@ -2,6 +2,7 @@ import gzip
 from contextlib import closing
 from concurrent.futures import ThreadPoolExecutor
 import json
+import os
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -110,7 +111,7 @@ class ImportTests(unittest.TestCase):
         self.assertNotIn('FOREIGN KEY ("entity_id")', sql)
 
     def test_real_bundle_checksums_and_compression(self):
-        root = Path(__file__).resolve().parents[1] / ".local/bundle"
+        root = Path(os.environ.get("RESEARCH_BUNDLE_ROOT", Path(__file__).resolve().parents[1] / ".local/bundle"))
         if not root.exists():
             self.skipTest("Prepare the real snapshot bundle first")
         bundle = importer.verify_bundle(root)

@@ -1,0 +1,195 @@
+name: ${COMPOSE_PROJECT_NAME:-research-workspace}
+
+x-service: &service
+  image: research-service:${APP_COMMIT:?Set APP_COMMIT}
+  build:
+    context: ..
+    dockerfile: service/Dockerfile
+    target: app
+    args:
+      APP_COMMIT: ${APP_COMMIT}
+      APP_SOURCE_STATE: ${APP_SOURCE_STATE:-unverified}
+  entrypoint: [python, -m, deploy.runtime]
+  init: true
+  restart: unless-stopped
+  read_only: true
+  tmpfs:
+    - /tmp:uid=10001,gid=10001,mode=1770
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  logging: &logging
+    driver: json-file
+    options: {max-size: 10m, max-file: '3'}
+  environment: &environment
+    PGHOST: db
+    PGDATABASE: ${PGDATABASE:-research}
+    RESEARCH_ALLOWED_ORIGINS: ${RESEARCH_ALLOWED_ORIGINS:?Set exact allowed origins}
+    RESEARCH_POOL_SIZE: ${RESEARCH_POOL_SIZE:-4}
+    RESEARCH_MAX_QUEUED: ${RESEARCH_MAX_QUEUED:-20}
+    RESEARCH_WORKER_CONCURRENCY: ${RESEARCH_WORKER_CONCURRENCY:-1}
+    RESEARCH_MAX_SECONDS: ${RESEARCH_MAX_SECONDS:-120}
+    RESEARCH_MAX_RESULTS: ${RESEARCH_MAX_RESULTS:-1000000}
+    RESEARCH_RESULT_RETENTION_DAYS: ${RESEARCH_RESULT_RETENTION_DAYS:-7}
+    RESEARCH_CAPACITY_PATH: /capacity
+    RESEARCH_MIN_FREE_BYTES: ${RESEARCH_MIN_FREE_BYTES:-2147483648}
+  networks: [database]
+  volumes:
+    - ${STATE_ROOT:?Set STATE_ROOT}/capacity:/capacity:ro
+  depends_on:
+    db: {condition: service_healthy}
+
+services:
+  db:
+    image: postgres:17-bookworm@sha256:837bed18782820fe967067cb5328b02b0d9992c1be9a37ee0c9c492cfc03af3b
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PGDATABASE:-research}
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    secrets: [postgres_password]
+    volumes:
+      - ${STATE_ROOT}/postgres:/var/lib/postgresql/data
+    networks: [database]
+    shm_size: 128mb
+    mem_limit: ${POSTGRES_MEMORY:-2g}
+    cpus: ${POSTGRES_CPUS:-1.0}
+    logging: *logging
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U postgres -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+  api:
+    <<: *service
+    command: [api]
+    secrets: [api_password, session_secret]
+    environment:
+      <<: *environment
+      RESEARCH_PROXY_IP: 172.29.80.2
+    networks: [database, ingress]
+    mem_limit: ${API_MEMORY:-512m}
+    cpus: ${API_CPUS:-0.5}
+    healthcheck:
+      test: [CMD, python, -m, deploy.health, api]
+      interval: 15s
+      timeout: 8s
+      retries: 3
+  worker:
+    <<: *service
+    command: [worker]
+    secrets: [worker_password]
+    mem_limit: ${WORKER_MEMORY:-2g}
+    cpus: ${WORKER_CPUS:-1.0}
+    stop_grace_period: 45s
+    healthcheck:
+      test: [CMD, python, -m, deploy.health, worker]
+      interval: 15s
+      timeout: 8s
+      retries: 3
+      start_period: 30s
+  cleanup:
+    <<: *service
+    profiles: [operations]
+    restart: 'no'
+    command: [cleanup]
+    secrets: [worker_password]
+    environment:
+      <<: *environment
+      RESEARCH_ARTIFACT_ROOT: /objects
+    volumes:
+      - ${STATE_ROOT}/capacity:/capacity:ro
+      - ${STATE_ROOT}/objects:/objects
+  migrate:
+    <<: *service
+    profiles: [operations]
+    restart: 'no'
+    command: [migrate]
+    secrets: [postgres_password, api_password, worker_password, importer_password, backup_password]
+  adopt:
+    <<: *service
+    profiles: [operations]
+    restart: 'no'
+    command: [adopt]
+    secrets: [postgres_password]
+  importer:
+    <<: *service
+    profiles: [operations]
+    restart: 'no'
+    command: [import]
+    secrets: [importer_password]
+    volumes:
+      - ${STATE_ROOT}/bundle:/bundle:ro
+      - ${STATE_ROOT}/objects:/objects
+  backup:
+    <<: *service
+    profiles: [operations]
+    image: research-operator:${APP_COMMIT}
+    build:
+      context: ..
+      dockerfile: service/Dockerfile
+      target: operator
+      args:
+        APP_COMMIT: ${APP_COMMIT}
+        APP_SOURCE_STATE: ${APP_SOURCE_STATE:-unverified}
+    restart: 'no'
+    command: [backup, backup, --work-dir, /backup-work, --report, /backup-work/latest-report.json, --discard-staging]
+    secrets: [backup_password, r2_config]
+    environment:
+      <<: *environment
+      RESEARCH_ARTIFACT_ROOT: /objects
+      RESEARCH_APP_COMMIT: ${APP_COMMIT}
+    networks: [database, operator-egress]
+    volumes:
+      - ${STATE_ROOT}/objects:/objects:ro
+      - ${STATE_ROOT}/backup-work:/backup-work
+  restore:
+    <<: *service
+    profiles: [operations]
+    image: research-operator:${APP_COMMIT}
+    build:
+      context: ..
+      dockerfile: service/Dockerfile
+      target: operator
+      args:
+        APP_COMMIT: ${APP_COMMIT}
+        APP_SOURCE_STATE: ${APP_SOURCE_STATE:-unverified}
+    restart: 'no'
+    command: [restore]
+    secrets: [postgres_password, r2_config]
+    networks: [database, operator-egress]
+    volumes:
+      - ${STATE_ROOT}/restore-work:/restore-work
+  proxy:
+    image: caddy:2-alpine@sha256:003a97808e781aa9f7e75cc2f43d34d461099031faf5e20faefb9f61126836f0
+    restart: unless-stopped
+    environment:
+      API_HOSTNAME: ${API_HOSTNAME:?Set API_HOSTNAME}
+    ports: ['80:80', '443:443']
+    networks:
+      ingress: {ipv4_address: 172.29.80.2}
+      public: {}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${STATE_ROOT}/caddy-data:/data
+      - ${STATE_ROOT}/caddy-config:/config
+    logging: *logging
+    depends_on:
+      api: {condition: service_healthy}
+
+networks:
+  database: {internal: true}
+  ingress:
+    internal: true
+    ipam:
+      config: [{subnet: 172.29.80.0/24}]
+  public: {}
+  operator-egress: {}
+
+secrets:
+  postgres_password: {file: '${SECRET_ROOT:?Set SECRET_ROOT}/postgres_password'}
+  api_password: {file: '${SECRET_ROOT}/api_password'}
+  worker_password: {file: '${SECRET_ROOT}/worker_password'}
+  importer_password: {file: '${SECRET_ROOT}/importer_password'}
+  backup_password: {file: '${SECRET_ROOT}/backup_password'}
+  session_secret: {file: '${SECRET_ROOT}/session_secret'}
+  r2_config: {file: '${SECRET_ROOT}/r2_config'}

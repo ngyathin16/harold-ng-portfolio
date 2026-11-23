@@ -20,7 +20,7 @@ With an imported dataset and API available, `BASE_URL=<local portfolio origin> n
 
 ## Release state
 
-Implementation and local verification are available. Production deployment is pending selection of the Supabase project, worker host, region, budget and source publication scope. No paid resources have been provisioned. The application must not be described as publicly hosted until the final HTTPS journeys, hosted policies, workload and recovery checks pass.
+Implementation and local verification are available. Production deployment is pending a provider account, host, region and source publication scope. The owner requested free or minimal cost on November 23; Supabase is optional. See the [free-first hosting decision](RESEARCH-HOSTING.md) for the proposed single-VM setup and its operational tradeoffs. No paid resources have been provisioned. The application must not be described as publicly hosted until the final HTTPS journeys, hosted policies, workload and recovery checks pass.
 
 Verified locally on November 20, 2026:
 

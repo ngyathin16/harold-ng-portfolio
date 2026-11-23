@@ -2,7 +2,7 @@
 
 This application adds a browser explorer and asynchronous team queries to the existing TFT research snapshots. The Astro interface lives in the portfolio's `/applications/` and `/applications/research/` routes. This directory contains the independent Postgres data service, publication importer, rules, solver and worker. The collector is maintained separately; pass its `tft-set-19` directory with `prepare --project` when importing from this checkout.
 
-The implementation has been exercised against a local Postgres instance with the real source snapshot. Production Supabase, storage, API, worker and the final HTTPS application still require provisioning and hosted verification. A provider account, worker location and monthly operating budget have not been selected. Local success does not establish the PRD's hosted performance, availability or cost targets.
+The implementation has been exercised against a local Postgres instance with the real source snapshot. Production database, storage, API, worker and the final HTTPS application still require provisioning and hosted verification. The owner wants free or minimal cost and does not require Supabase; see the [hosting decision](../../docs/RESEARCH-HOSTING.md). A provider account, worker location and any paid spending ceiling remain unset. Local success does not establish the PRD's hosted performance, availability or cost targets.
 
 ## Local setup
 
@@ -32,7 +32,7 @@ python data/import_snapshot.py prepare --project 'C:/Users/Harold NG/Documents/r
 python data/import_snapshot.py publish .local/bundle --local-storage .local/objects
 ```
 
-`DATABASE_URL` is required for the second command. Local storage is a private development fixture. For Supabase, omit `--local-storage` and supply `SUPABASE_URL` and `SUPABASE_SECRET_KEY`. See [the publication guide](data/README.md) for source reuse review, artifact validation, scoped derivatives, replay and schema compatibility.
+`DATABASE_URL` is required for the second command. The filesystem store supports private local fixtures and a proposed single-VM deployment using a persistent volume. Keep it behind the API publication checks and back it up independently; it is not a public static directory. For Supabase, omit `--local-storage` and supply `SUPABASE_URL` and `SUPABASE_SECRET_KEY`. See [the publication guide](data/README.md) for source reuse review, artifact validation, scoped derivatives, replay and schema compatibility.
 
 Start the API and worker in separate terminals with their environment variables set:
 

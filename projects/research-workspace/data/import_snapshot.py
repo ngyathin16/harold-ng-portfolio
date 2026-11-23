@@ -148,7 +148,7 @@ def verify_bundle(directory):
 
 
 class LocalStorage:
-    """Private local object store for integration tests; never used by a public deployment."""
+    """Private filesystem objects published atomically without replacing existing bytes."""
     def __init__(self, directory):
         self.directory = Path(directory).resolve()
 
@@ -157,11 +157,25 @@ class LocalStorage:
         if target.exists():
             if sha(target) != expected:
                 raise ValueError("Immutable object already exists with a different checksum")
-        else:
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(path, target)
-        if sha(target) != expected:
-            raise ValueError("Stored artifact checksum mismatch")
+            return
+        target.parent.mkdir(parents=True, exist_ok=True)
+        descriptor, temporary_name = tempfile.mkstemp(prefix=".upload-", suffix=".tmp", dir=target.parent)
+        temporary = Path(temporary_name)
+        try:
+            with os.fdopen(descriptor, "wb") as destination, path.open("rb") as source:
+                shutil.copyfileobj(source, destination)
+                destination.flush()
+                os.fsync(destination.fileno())
+            if sha(temporary) != expected:
+                raise ValueError("Stored artifact checksum mismatch")
+            try:
+                # An exclusive hard link publishes verified bytes without overwriting a concurrent writer.
+                os.link(temporary, target)
+            except FileExistsError:
+                if sha(target) != expected:
+                    raise ValueError("Immutable object already exists with a different checksum") from None
+        finally:
+            temporary.unlink(missing_ok=True)
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):

@@ -1,0 +1,310 @@
+{
+  "cleanup_passed": true,
+  "commit": "e1bbee24cd2fb1fc68fc1b5e9716099a6ea88eca",
+  "compose_project": "research-rehearsal-f732cfb88ff1",
+  "compose_version": "5.1.3",
+  "container_runtime": {
+    "architecture": "x86_64",
+    "python": "3.12.16"
+  },
+  "containers": {
+    "api": {
+      "configured_image": "research-service:e1bbee24cd2fb1fc68fc1b5e9716099a6ea88eca",
+      "health": "healthy",
+      "image_id": "sha256:6447c9c8da15696aaedfa86b9e765772dc5a25d0f54d6d9e9bf8086c96112187",
+      "port_bindings": {},
+      "running": true
+    },
+    "db": {
+      "configured_image": "postgres:17-bookworm@sha256:837bed18782820fe967067cb5328b02b0d9992c1be9a37ee0c9c492cfc03af3b",
+      "health": "healthy",
+      "image_id": "sha256:837bed18782820fe967067cb5328b02b0d9992c1be9a37ee0c9c492cfc03af3b",
+      "port_bindings": {},
+      "running": true
+    },
+    "proxy": {
+      "configured_image": "caddy:2-alpine@sha256:003a97808e781aa9f7e75cc2f43d34d461099031faf5e20faefb9f61126836f0",
+      "health": null,
+      "image_id": "sha256:003a97808e781aa9f7e75cc2f43d34d461099031faf5e20faefb9f61126836f0",
+      "port_bindings": {
+        "80/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "8879"
+          }
+        ]
+      },
+      "running": true
+    },
+    "worker": {
+      "configured_image": "research-service:e1bbee24cd2fb1fc68fc1b5e9716099a6ea88eca",
+      "health": "healthy",
+      "image_id": "sha256:6447c9c8da15696aaedfa86b9e765772dc5a25d0f54d6d9e9bf8086c96112187",
+      "port_bindings": {},
+      "running": true
+    }
+  },
+  "docker": {
+    "Client": {
+      "ApiVersion": "1.54",
+      "Arch": "amd64",
+      "BuildTime": "Fri May  1 10:24:04 2026",
+      "Context": "default",
+      "DefaultAPIVersion": "1.54",
+      "GitCommit": "055a478",
+      "GoVersion": "go1.26.2",
+      "Os": "linux",
+      "Platform": {
+        "Name": "Docker Engine - Community"
+      },
+      "Version": "29.4.2"
+    },
+    "Server": {
+      "ApiVersion": "1.54",
+      "Arch": "amd64",
+      "BuildTime": "2026-05-01T10:24:04.000000000+00:00",
+      "Components": [
+        {
+          "Details": {
+            "ApiVersion": "1.54",
+            "Arch": "amd64",
+            "BuildTime": "Fri May  1 10:24:04 2026",
+            "Experimental": "false",
+            "GitCommit": "d329809",
+            "GoVersion": "go1.26.2",
+            "KernelVersion": "7.0.0-1016-aws",
+            "MinAPIVersion": "1.40",
+            "Module": "github.com/moby/moby/v2",
+            "ModuleVersion": "v2.0.0+unknown",
+            "Os": "linux"
+          },
+          "Name": "Engine",
+          "Version": "29.4.2"
+        },
+        {
+          "Details": {
+            "GitCommit": "b7a25261e029d68978bbf290df0a62fc819b3c51"
+          },
+          "Name": "containerd",
+          "Version": "v2.4.2"
+        },
+        {
+          "Details": {
+            "GitCommit": "v1.5.3-0-g46365c62"
+          },
+          "Name": "runc",
+          "Version": "1.5.3"
+        },
+        {
+          "Details": {
+            "GitCommit": "de40ad0"
+          },
+          "Name": "docker-init",
+          "Version": "0.19.0"
+        }
+      ],
+      "GitCommit": "d329809",
+      "GoVersion": "go1.26.2",
+      "KernelVersion": "7.0.0-1016-aws",
+      "MinAPIVersion": "1.40",
+      "Os": "linux",
+      "Platform": {
+        "Name": "Docker Engine - Community"
+      },
+      "Version": "29.4.2"
+    }
+  },
+  "duration_seconds": 104.918,
+  "finished_at": "2026-11-23T08:16:08.673811+00:00",
+  "fixture": {
+    "publication_id": "linux-fixture-dae24afb5cdc",
+    "snapshot_id": "synthetic-linux-v1",
+    "source_import_verified": false,
+    "synthetic": true
+  },
+  "host_architecture": "x86_64",
+  "migration_ledger": [
+    "migrations/001_publications.sql:5efe6ec9eeb50474e08c47202b66ab08b33446fd11c7d06000acd041d1841bbd",
+    "migrations/002_source_tables.sql:00d75496d6d9766729800b2e4baee33af3b78078b565c38f222bfe3dc16dd787",
+    "migrations/003_source_views.sql:3a827f3dfe56ac73512d7a67261bd8af146984f4a9d0743300d465b07b43b026",
+    "migrations/005_service_roles.sql:b32f15357a98f6a5a406aff1a5aa680f67decf1d146c6bd802086df58f8352a6",
+    "migrations/006_private_artifacts.sql:4c95c3c900a8ba688d1ea53a8f457fec7f4dd5c173a3043849de31d344a9361b",
+    "service/migrations/002_queries.sql:fa2edfabceea2b35a69d8aa68c70dd063e1ce1934e533bbb5b3d63218d61e2a3"
+  ],
+  "passed": true,
+  "postgres_version": "17.12 (Debian 17.12-1.pgdg12+1)",
+  "query_after_restart": {
+    "champion_set_count": 3,
+    "query_id": "HF7cdh27R6OsLrcO42vKwGYj",
+    "result_count": 3,
+    "ruleset_version": "fixture-rules-v1",
+    "snapshot_id": "synthetic-linux-v1"
+  },
+  "query_before_restart": {
+    "champion_set_count": 3,
+    "query_id": "HF7cdh27R6OsLrcO42vKwGYj",
+    "result_count": 3,
+    "ruleset_version": "fixture-rules-v1",
+    "snapshot_id": "synthetic-linux-v1"
+  },
+  "record_after_restart": {
+    "record_id": "fixture-unit-0",
+    "statistic_values": [
+      0,
+      null,
+      50
+    ]
+  },
+  "record_before_restart": {
+    "record_id": "fixture-unit-0",
+    "statistic_values": [
+      0,
+      null,
+      50
+    ]
+  },
+  "scope": "Synthetic local Linux deployment and persistence; not a source import, R2 drill, hosted HTTPS or ARM performance test",
+  "services_kept": false,
+  "source_dirty": false,
+  "started_at": "2026-11-23T08:14:23.756077+00:00",
+  "steps": [
+    {
+      "exit_code": 0,
+      "name": "Record source commit",
+      "passed": true,
+      "seconds": 0.001
+    },
+    {
+      "exit_code": 0,
+      "name": "Record source changes",
+      "passed": true,
+      "seconds": 0.036
+    },
+    {
+      "exit_code": 0,
+      "name": "Docker versions",
+      "passed": true,
+      "seconds": 0.834
+    },
+    {
+      "exit_code": 0,
+      "name": "Compose version",
+      "passed": true,
+      "seconds": 0.682
+    },
+    {
+      "exit_code": 0,
+      "name": "manage init",
+      "passed": true,
+      "seconds": 0.047
+    },
+    {
+      "exit_code": 0,
+      "name": "manage check",
+      "passed": true,
+      "seconds": 0.116
+    },
+    {
+      "exit_code": 0,
+      "name": "manage up",
+      "passed": true,
+      "seconds": 62.592
+    },
+    {
+      "name": "HTTP health through proxy",
+      "passed": true,
+      "seconds": 0.012
+    },
+    {
+      "exit_code": 0,
+      "name": "Capture migration ledger",
+      "passed": true,
+      "seconds": 0.08
+    },
+    {
+      "exit_code": 0,
+      "name": "manage up",
+      "passed": true,
+      "seconds": 21.592
+    },
+    {
+      "exit_code": 0,
+      "name": "Repeat migration ledger",
+      "passed": true,
+      "seconds": 0.082
+    },
+    {
+      "exit_code": 0,
+      "name": "Seed explicit synthetic fixture",
+      "passed": true,
+      "seconds": 0.084
+    },
+    {
+      "name": "Read record and statistics",
+      "passed": true,
+      "seconds": 0.011
+    },
+    {
+      "name": "Actual worker completes uncached fixture",
+      "passed": true,
+      "seconds": 2.008
+    },
+    {
+      "name": "Check complete counts and result pages",
+      "passed": true,
+      "seconds": 0.009
+    },
+    {
+      "name": "GET and HEAD public exports denied at proxy",
+      "passed": true,
+      "seconds": 0.006
+    },
+    {
+      "exit_code": 0,
+      "name": "manage restart",
+      "passed": true,
+      "seconds": 16.445
+    },
+    {
+      "name": "Record and statistics survive restart",
+      "passed": true,
+      "seconds": 0.014
+    },
+    {
+      "name": "Saved query and frozen rules survive restart",
+      "passed": true,
+      "seconds": 0.009
+    },
+    {
+      "exit_code": 0,
+      "name": "Inspect running containers",
+      "passed": true,
+      "seconds": 0.072
+    },
+    {
+      "exit_code": 0,
+      "name": "Inspect port bindings and image identity",
+      "passed": true,
+      "seconds": 0.011
+    },
+    {
+      "exit_code": 0,
+      "name": "PostgreSQL version",
+      "passed": true,
+      "seconds": 0.078
+    },
+    {
+      "exit_code": 0,
+      "name": "Python runtime and architecture",
+      "passed": true,
+      "seconds": 0.071
+    },
+    {
+      "exit_code": 0,
+      "name": "Stop only the disposable Compose project",
+      "passed": true,
+      "seconds": 0.664
+    }
+  ],
+  "work_directory": "/tmp/research-linux-rehearsal-8oazr6c0"
+}

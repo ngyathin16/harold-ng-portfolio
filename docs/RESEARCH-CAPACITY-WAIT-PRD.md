@@ -2,7 +2,7 @@
 
 Product requirements document. Version 1.0. November 23, 2026, Asia/Hong_Kong.
 
-Status: planned work. This PRD defines implementation and verification requirements; it does not claim that they are complete.
+Status: implemented and verified for the capacity-wait phase on November 23, 2026. See [the implementation record](RESEARCH-CAPACITY-IMPLEMENTATION.md) for evidence and remaining hosted launch checks. This document retains the approved requirements.
 
 ## Purpose
 
@@ -151,7 +151,7 @@ Acceptance: all applicable local journeys and statistics checks pass, failures a
 | 3 | Perform R2 restore and local regression checks on the combined changes. | Restore report, independent integrity results, statistics checks, and browser evidence. |
 | 4 | Rehearse deployment in a fresh local Linux environment and assemble the handoff. | Setup/rollback runbook, pinned release inputs, and a checklist of hosted checks still pending. |
 
-Store reproducible scripts and sanitized reports in the application repository. Keep credentials, dumps, restored objects, and raw private diagnostics outside Git. The PRD is the deliverable of the current request; these implementation stages are subsequent work.
+Store reproducible scripts and sanitized reports in the application repository. Keep credentials, dumps, restored objects, and raw private diagnostics outside Git.
 
 ## Completion and later deployment
 

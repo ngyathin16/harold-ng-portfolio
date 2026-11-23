@@ -2,6 +2,8 @@
 
 Started November 23, 2026, Asia/Hong_Kong. Baseline commit: `3265652`.
 
+The capacity-wait implementation is published on `feature/research-workspace`. [Commit `e1bbee2`](https://github.com/ngyathin16/harold-ng-portfolio/commit/e1bbee24cd2fb1fc68fc1b5e9716099a6ea88eca) passed both the PostgreSQL-backed checks and the fresh Linux container rehearsal in [GitHub Actions](https://github.com/ngyathin16/harold-ng-portfolio/actions/runs/45136975172). This completes the preparation and local recovery work; production deployment remains pending.
+
 ## Execution plan
 
 - [x] Read the workflow principles and inspect the existing implementation and PRD.
@@ -10,14 +12,14 @@ Started November 23, 2026, Asia/Hong_Kong. Baseline commit: `3265652`.
 - [x] Implement private R2 backup, verified restore, inventory, retention, and failure handling.
 - [x] Remove public research downloads in the API, worker, interface, and browser checks.
 - [x] Integrate the changes and verify against local PostgreSQL, a real R2 round trip, and the browser.
-- [ ] Rehearse a fresh Linux deployment and repeat setup/restart checks where the local runtime permits.
-- [ ] Review security and recovery boundaries, align local source copies, and publish validated changes.
+- [x] Rehearse a fresh Linux deployment and repeat setup/restart checks on a disposable CI runner.
+- [x] Review security and recovery boundaries, align local source copies, and publish validated changes.
 
 Completion requires observed behavior against the real services. Unit tests alone do not establish recovery, deployment, or statistics correctness. Hosted HTTPS, Oracle capacity, and native ARM performance remain separate launch checks.
 
 ## Baseline and constraints
 
-The existing checkout is clean. Historical verification covers the previous download-enabled implementation. Docker is installed, but its Linux engine was not running at the first check. Runtime availability is being investigated before selecting the Linux rehearsal environment.
+The checkout was clean at the baseline. Historical verification covered the previous download-enabled implementation. Docker Desktop's Linux engine was unavailable locally, so the fresh Linux rehearsal used the existing public repository's GitHub Actions runner.
 
 The work is split across three independently editable units and one integration/verification stream. Database and backup changes receive failure-case and actual recovery checks because a successful command alone cannot establish recoverability. No paid infrastructure or production deployment is part of this run.
 
@@ -30,7 +32,8 @@ Local verification uses Windows 11 x86, PostgreSQL 17.11, and Python 3.12.13. Th
 | Importer and solver | 9 importer tests and 13 solver tests pass, including the real source bundle and snapshot. `RESEARCH_BUNDLE_ROOT` and `RESEARCH_SOURCE_PROJECT` select those private fixtures explicitly. |
 | API and worker boundaries | 32 PostgreSQL-backed service tests pass, including retired GET/HEAD routes, no export dependency, private artifact access, low-disk admission, and backup/GC exclusion. |
 | Operations | 35 tests pass, including 20 backup failure, integrity, retention, staging-containment, and lock/report cases. The existing capacity-monitor tests remain green. |
-| Deployment logic | Six tests pass on the deployment worker's disposable PostgreSQL cluster. They exercise atomic failure, repeat setup, changed-migration rejection, role permissions, restored NOLOGIN accounts, exact legacy-schema adoption, and configuration. The integrated configuration checks pass; full Linux execution is pending the CI rehearsal. |
+| Deployment logic | Six tests pass on a disposable PostgreSQL cluster and in Linux CI. They exercise atomic failure, repeat setup, changed-migration rejection, role permissions, restored NOLOGIN accounts, exact legacy-schema adoption, and configuration. |
+| Fresh Linux deployment | The complete rehearsal passed in 104.918 seconds on x86_64, including image builds, two setup runs, a real worker query, proxy route denial, and restart persistence. PostgreSQL/API/worker expose no host ports. Only the local proxy binds `127.0.0.1:8879`. The fixture is synthetic; full source import and real R2 recovery were verified separately on Windows. |
 | Real private R2 recovery | 250 members totaling 295,297,091 bytes uploaded and read back for SHA-256 verification. A fresh restore verified 248 objects, 75 relations in each of two publications, three saved definitions, and three full result hashes. Database/object restoration took 98.667 seconds. This is not the full recovery-time measurement. |
 | Recovery target | The conservative elapsed bound through restored-browser, worker, and statistics verification is recorded in `capacity-recovery.json`. It includes manual review and repeated measurement. It is below the proposed two-hour target. Backup age at restoration was below 24 hours. |
 | Bucket privacy and retention | Authenticated bucket checks confirm disabled `r2.dev` access and no custom domains. Unsigned GET/HEAD requests returned HTTP 400 S3 errors, with no backup bytes. A real retention dry run reverified the newest set, retained it, and deleted nothing. |
@@ -40,9 +43,13 @@ Local verification uses Windows 11 x86, PostgreSQL 17.11, and Python 3.12.13. Th
 | Portfolio | 24 page/viewport checks, 60 local links, unrelated downloads, 20 design combinations, five no-JavaScript journeys, and navigation checks pass against the built preview. |
 | Build/release | Build and type checks pass with no errors, warnings, or hints. First-party JavaScript is 84,431 bytes gzip under the 90,000-byte budget. All 21 release tests pass. |
 
-The first worker run used an empty Numba cache; the second used the populated cache. Compilation time is not separately isolated. Memory is sampled process-tree RSS, excludes the database/API, and can count shared pages more than once. See the measurements and methods in [the worker report](../projects/research-workspace/verification/capacity-worker.json).
+The first worker run used an empty Numba cache; the second used the populated cache. Those worker timings include compilation/cache loading and database persistence. Memory is sampled process-tree RSS, excludes the database/API, and can count shared pages more than once. See the measurements and methods in [the worker report](../projects/research-workspace/verification/capacity-worker.json).
 
-Evidence is retained in [the recovery report](../projects/research-workspace/verification/capacity-recovery.json), [statistics report](../projects/research-workspace/verification/capacity-statistics.json), [browser report](../projects/research-workspace/verification/capacity-browser.json), and [decision log](research-capacity-decisions.tsv). Raw dumps, credentials, and private staging remain outside Git.
+A separate read-only diagnostic measured native compilation at 0.599 seconds with an empty cache and the real kernel signature. The unchanged solver then completed the general query in 65.662 seconds with that compiled signature, producing exactly the same 280,543 configuration identities and champion-set count as the recovered database. No further compilation occurred during the run. This single sample excludes database persistence and worker startup; it is not a hosted latency or repeatability benchmark. See [the compilation report](../projects/research-workspace/verification/capacity-compilation.json).
+
+Evidence is retained in [the Linux report](../projects/research-workspace/verification/capacity-linux.json), [recovery report](../projects/research-workspace/verification/capacity-recovery.json), [statistics report](../projects/research-workspace/verification/capacity-statistics.json), [browser report](../projects/research-workspace/verification/capacity-browser.json), and [decision log](research-capacity-decisions.tsv). Raw dumps, credentials, and private staging remain outside Git.
+
+The Linux report records Python 3.12.16 and PostgreSQL 17.12 from the pinned container images, independently of the Windows verification versions. Its source commit, immutable image references, actual image IDs, migration checksums, commands, and per-step timings are retained. The initial rehearsal exposed an API/proxy address collision; assigning distinct addresses fixed it, and the full second rehearsal passed.
 
 ## Reproduce and operate
 
@@ -57,14 +64,17 @@ python -m pytest service -q
 python -m unittest discover -s ops -p test_*.py -v
 python -m unittest deploy.test_deploy -v
 python data/verify_statistics.py --api http://127.0.0.1:8789 --output verification/capacity-statistics.json
+python verification/measure_compilation.py --output verification/capacity-compilation.json
 ```
 
 `data/verify_worker_recovery.py --execute` deliberately expires and recomputes only the two named queries in the isolated restore database. Install `verification/requirements.txt` for its memory measurement. It refuses the original database and requires a loopback API. The ordinary statistics verifier is read-only.
+
+The compilation diagnostic also requires `RESEARCH_RESTORE_DATABASE_URL` pointing to `research_capacity_restore_test`, reads a completed general query in a read-only transaction, and leaves production solver code and stored results unchanged. It creates a dedicated cache under the ignored `.local` directory.
 
 The existing GitHub research-checks workflow now includes backup/deployment tests and a fresh Docker/Linux rehearsal using synthetic data. `verification/verify_linux.py` builds the containers, repeats setup, runs a real query, checks private ports and retired routes, restarts the stack, and reopens the same record/statistics/query. It does not need R2 credentials.
 
 ## Remaining gates
 
-Docker Desktop's Linux engine could not start locally. The owner authorized restarting WSL; its shutdown hung and the service restart failed because this session has no administrator rights. Linux container execution is being verified through the existing public repository's CI runner.
+Docker Desktop's Linux engine could not start locally. The owner authorized restarting WSL; its shutdown hung and the service restart failed because this session has no administrator rights. Linux container execution passed on the CI runner; the local WSL installation remains unresolved.
 
 Native ARM execution, final HTTPS routes, production firewall/storage policies, unattended notification delivery, hosted recovery, concurrent hosted load, capacity, and final publication scope remain launch gates. No Oracle VM or paid resource was provisioned. Do not describe this as a production deployment.

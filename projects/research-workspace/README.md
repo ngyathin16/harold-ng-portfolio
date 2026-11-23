@@ -2,7 +2,7 @@
 
 This application adds a browser explorer and asynchronous team queries to the existing TFT research snapshots. The Astro interface lives in the portfolio's `/applications/` and `/applications/research/` routes. This directory contains the independent Postgres data service, publication importer, rules, solver and worker. The collector is maintained separately; pass its `tft-set-19` directory with `prepare --project` when importing from this checkout.
 
-The implementation has been exercised against a local Postgres instance with the real source snapshot. Production database, storage, API, worker and the final HTTPS application still require provisioning and hosted verification. The owner wants free or minimal cost and does not require Supabase; see the [hosting decision](../../docs/RESEARCH-HOSTING.md). A provider account, worker location and any paid spending ceiling remain unset. Local success does not establish the PRD's hosted performance, availability or cost targets.
+The implementation has been exercised against a local Postgres instance with the real source snapshot. Production database, API, worker and the final HTTPS application still require provisioning and hosted verification. Oracle API and private R2 access passed checks on November 23, but Oracle currently reports no Always Free A1 capacity in the Singapore home region. The owner wants free or minimal cost and does not require Supabase; see the [hosting decision](../../docs/RESEARCH-HOSTING.md). No paid spending ceiling is agreed. Local success does not establish the PRD's hosted performance, availability or cost targets.
 
 ## Local setup
 

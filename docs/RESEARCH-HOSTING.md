@@ -2,7 +2,7 @@
 
 Updated November 23, 2026, Asia/Hong_Kong.
 
-The owner has no Supabase project or container host and wants this passion project to cost nothing, or as little as practical. Supabase is optional. Target additional hosting spend is $0; no paid plan or recurring spending ceiling has been approved. Keep the existing Cloudflare portfolio hosting.
+The owner wants this passion project to cost nothing, or as little as practical. Supabase is optional. Target additional hosting spend is $0; no paid plan or recurring spending ceiling has been approved. Keep the existing Cloudflare portfolio hosting. Oracle and Cloudflare R2 accounts are now configured; the access checks below passed on November 23.
 
 ## Recommended first attempt
 
@@ -33,6 +33,12 @@ The recorded local run retained two publications and the general/Jazz result set
 - Use a filesystem that supports same-directory hard links for exclusive artifact publication, such as ext4 or XFS. Interrupted uploads cannot publish a partial final object. Keep recovery copies for host or disk failure; filesystem atomicity is not a backup.
 - Build and test on the actual CPU architecture, then run the uncached general and Jazz queries, exact recounts, full exports, HTTPS browser journeys, concurrent reads and a backup restoration. Measure first-run Numba compilation as well: cold startup must fit worker lease/deadline behavior before launch. The x86 Windows timing is not an ARM hosting benchmark.
 
-## Next prerequisite
+## Verified access and current blocker
 
-The owner must create the cloud account and complete provider identity/card verification. Then establish access to an eligible VM and confirm the region, allocation and backup destination. No account, paid resource or public deployment was created during this update. If free capacity is unavailable, obtain a concrete paid quote and monthly ceiling before provisioning a fallback.
+Oracle API authentication passed, and the configured region matches the tenancy's home region, `ap-singapore-1`. The initial inventory found no compute instances or child compartments. Credentials remain in the owner's private local configuration outside this repository.
+
+The R2 bucket passed an authenticated list, temporary object upload, byte-for-byte download and deletion. The test object was removed. Its public r2.dev endpoint is disabled and it has no custom domains. This verifies storage access; scheduled backups and a hosted restoration are not implemented by this check.
+
+Oracle's compute capacity report returned `OUT_OF_HOST_CAPACITY` for `VM.Standard.A1.Flex` at both 2 OCPUs/12 GB and 1 OCPU/6 GB in the home region's availability domain. No server or paid resource was created. Recheck capacity before provisioning within Always Free limits. Do not switch to a paid shape or a non-home region as an automatic fallback. A paid alternative still needs an orderable quote and an agreed monthly ceiling.
+
+After capacity becomes available, provision the VM, configure the services and private R2 backups, and complete the hosted workload, HTTPS and recovery checks. Account signup and credential collection do not need to be repeated.

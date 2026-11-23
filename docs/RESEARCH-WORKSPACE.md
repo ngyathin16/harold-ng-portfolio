@@ -20,7 +20,7 @@ With an imported dataset and API available, `BASE_URL=<local portfolio origin> n
 
 ## Release state
 
-Implementation and local verification are available. Production deployment is pending a provider account, host, region and source publication scope. The owner requested free or minimal cost on November 23; Supabase is optional. See the [free-first hosting decision](RESEARCH-HOSTING.md) for the proposed single-VM setup and its operational tradeoffs. No paid resources have been provisioned. The application must not be described as publicly hosted until the final HTTPS journeys, hosted policies, workload and recovery checks pass.
+Implementation and local verification are available. Oracle and private R2 access were verified on November 23. Production deployment is currently blocked on Always Free A1 compute capacity in the Oracle home region, Singapore; service deployment and source publication scope remain pending. The owner requested free or minimal cost; Supabase is optional. See the [free-first hosting decision](RESEARCH-HOSTING.md) for the access results, single-VM setup and operational tradeoffs. No paid resources have been provisioned. The application must not be described as publicly hosted until the final HTTPS journeys, hosted policies, workload and recovery checks pass.
 
 Verified locally on November 20, 2026:
 

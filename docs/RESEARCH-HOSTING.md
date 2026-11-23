@@ -42,3 +42,11 @@ The R2 bucket passed an authenticated list, temporary object upload, byte-for-by
 Oracle's compute capacity report returned `OUT_OF_HOST_CAPACITY` for `VM.Standard.A1.Flex` at both 2 OCPUs/12 GB and 1 OCPU/6 GB in the home region's availability domain. No server or paid resource was created. Recheck capacity before provisioning within Always Free limits. Do not switch to a paid shape or a non-home region as an automatic fallback. A paid alternative still needs an orderable quote and an agreed monthly ceiling.
 
 After capacity becomes available, provision the VM, configure the services and private R2 backups, and complete the hosted workload, HTTPS and recovery checks. Account signup and credential collection do not need to be repeated.
+
+## Bounded capacity monitoring
+
+The owner selected the free-only path. The [Windows capacity monitor](../projects/research-workspace/ops/README.md) checks both A1 sizes every three hours for three days using the existing private credentials. It writes local status/history and attempts a Windows notification on newly observed availability. It does not create servers, reserve capacity, upgrade the account, or select paid alternatives. A deadline check prevents cloud requests after expiry, including delayed runs after sleep.
+
+This is local automation: the PC must be on and the owner signed in. Capacity observations are not reservations. The monitor is independent of the application and does not resolve the remaining deployment or release gates.
+
+Installed and verified on November 23, 2026 at 14:39 Hong Kong time. The first scheduled-task invocation exited successfully and reported both sizes unavailable. The next check is at 17:39; cloud checks end on November 26 at 14:39. The task then records expiry locally. Credentials, schedule state and reports stay outside Git.

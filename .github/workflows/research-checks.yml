@@ -49,5 +49,6 @@ jobs:
                   conn.execute(Path(name).read_text())
           PY
       - run: python -m unittest discover -s data -p test_import.py -v
+      - run: python -m unittest discover -s ops -p test_oracle_capacity.py -v
       - run: python -m unittest solver.test_solver -v
       - run: python -m pytest service -q

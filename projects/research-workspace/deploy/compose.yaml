@@ -66,7 +66,9 @@ services:
     environment:
       <<: *environment
       RESEARCH_PROXY_IP: 172.29.80.2
-    networks: [database, ingress]
+    networks:
+      database: {}
+      ingress: {ipv4_address: 172.29.80.3}
     mem_limit: ${API_MEMORY:-512m}
     cpus: ${API_CPUS:-0.5}
     healthcheck:

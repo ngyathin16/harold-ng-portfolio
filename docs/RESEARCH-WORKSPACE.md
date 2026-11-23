@@ -1,5 +1,7 @@
 # Research workspace integration
 
+The [capacity-wait PRD](RESEARCH-CAPACITY-WAIT-PRD.md) defines the next work on reproducible deployment, private R2 backup and restore, public download removal, and local application/statistics verification. It supersedes public-download requirements below. Existing download behavior and test results describe the implementation baseline, not the target for this phase.
+
 The application uses `/applications/` and `/applications/research/`. It preserves the current portfolio layout and navigation, including the existing component attribution in `COMPONENT-ADOPTION.md`. Research JavaScript is loaded only on the workspace route. The static build does not require a research folder, source database, or secret credentials.
 
 The backend source is in `projects/research-workspace/`. Its importer, Postgres migrations, private storage policies, API, durable queue and compute worker deploy independently of the portfolio. Source collection remains a separate operation. Read the backend README before configuring a hosted service.

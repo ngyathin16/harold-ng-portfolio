@@ -18,7 +18,7 @@ From this directory, run:
 ./install-capacity-checker.ps1
 ```
 
-The installer copies the checker to the private directory and registers **Research Workspace - Oracle free capacity** for the current user without storing a Windows password. It runs immediately, then on a schedule every three hours for three days. One final local run marks the report expired. Reinstalling refuses to replace an existing task or silently extend its deadline.
+The installer copies the checker to the private directory and registers **Research Workspace - Oracle free capacity** for the current user without storing a Windows password. It runs immediately, then on a schedule every 90 minutes for three days. One final local run marks the report expired. Reinstalling refuses to replace an existing task or silently extend its deadline.
 
 The PC must be on and the user signed in; locking the desktop is fine. Missed checks can run after resume, but the checker refuses Oracle calls once its deadline has passed. It does not wake the PC. Runs are limited to five minutes, cannot overlap, and do not loop or retry failed Oracle requests. The expired task is retained for inspection and makes no further Oracle requests.
 

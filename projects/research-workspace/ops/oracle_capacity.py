@@ -174,7 +174,7 @@ def write_status(directory, report):
         lines.append("Last capacity seen (UTC): " + report["last_available_at"])
     lines += ["", "Read-only: no server, reservation or paid resource is created.",
               "Capacity is a snapshot, not a reservation or a billing eligibility check.",
-              "Runs every 3 hours while this PC is on and your account is signed in.",
+              "Runs every 90 minutes while this PC is on and your account is signed in.",
               "Windows notifications are best effort; latest.json and history.jsonl are the record."]
     atomic_write(directory / "STATUS.txt", "\n".join(lines) + "\n")
     with (directory / "history.jsonl").open("a", encoding="utf-8") as history:

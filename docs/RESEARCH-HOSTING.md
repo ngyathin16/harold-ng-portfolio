@@ -1,6 +1,6 @@
 # Free-first hosting decision
 
-Updated November 23, 2026, Asia/Hong_Kong.
+Updated November 24, 2026, Asia/Hong_Kong.
 
 Current implementation: public research downloads are removed. Private R2 backup/restore and a portable deployment package are available; see the [verification record](RESEARCH-CAPACITY-IMPLEMENTATION.md) and [deployment runbook](../projects/research-workspace/deploy/README.md). Historical artifact-serving and public-export checks below are superseded by private recovery and retired-route checks.
 
@@ -47,8 +47,8 @@ After capacity becomes available, provision the VM, configure the services and p
 
 ## Bounded capacity monitoring
 
-The owner selected the free-only path. The [Windows capacity monitor](../projects/research-workspace/ops/README.md) checks both A1 sizes every three hours for three days using the existing private credentials. It writes local status/history and attempts a Windows notification on newly observed availability. It does not create servers, reserve capacity, upgrade the account, or select paid alternatives. A deadline check prevents cloud requests after expiry, including delayed runs after sleep.
+The owner selected the free-only path. The [Windows capacity monitor](../projects/research-workspace/ops/README.md) checks both A1 sizes every 90 minutes using the existing private credentials, within a three-day monitoring window. It writes local status/history and attempts a Windows notification on newly observed availability. It does not create servers, reserve capacity, upgrade the account, or select paid alternatives. A deadline check prevents cloud requests after expiry, including delayed runs after sleep.
 
 This is local automation: the PC must be on and the owner signed in. Capacity observations are not reservations. The monitor is independent of the application and does not resolve the remaining deployment or release gates.
 
-Installed and verified on November 23, 2026 at 14:39 Hong Kong time. The first scheduled-task invocation exited successfully and reported both sizes unavailable. The next check is at 17:39; cloud checks end on November 26 at 14:39. The task then records expiry locally. Credentials, schedule state and reports stay outside Git.
+Installed and verified on November 23, 2026 at 14:39 Hong Kong time. The first scheduled-task invocation exited successfully and reported both sizes unavailable. On November 24, the interval changed from three hours to 90 minutes, preserving the November 26 at 14:39 expiry. The task then records expiry locally. Credentials, schedule state and reports stay outside Git.

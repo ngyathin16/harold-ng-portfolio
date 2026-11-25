@@ -206,6 +206,9 @@ def create_app(settings=None, pool=None, markers=None):
             conn.execute("SET LOCAL statement_timeout='1500ms'")
             conn.execute('SELECT 1')
             if settings.deployment_mode == 'serverless':
+                control = conn.execute('SELECT paused FROM research.dispatch_control WHERE singleton').fetchone()
+                if not control or control['paused']:
+                    return {'status': 'ok', 'search': 'paused' if control else 'unavailable'}
                 stalled = conn.execute("""SELECT EXISTS(SELECT 1 FROM research.query_runs r
                     LEFT JOIN research.dispatch_outbox o ON o.run_id=r.id AND o.generation=r.dispatch_generation
                     WHERE (r.state='queued' AND COALESCE(o.created_at,r.created_at)<now()-interval '15 minutes')

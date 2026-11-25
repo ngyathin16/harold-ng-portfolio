@@ -62,6 +62,14 @@ class LockedStore:
         self.check()
         return self.store.read(key)
 
+    def read_for_copy(self, key):
+        self.check()
+        return self.store.read_for_copy(key)
+
+    def copy(self, key, source):
+        self.check()
+        return self.store.copy(key, source)
+
     def put(self, key, path):
         self.check()
         return self.store.put(key, path)
@@ -257,10 +265,15 @@ def operate(command, work, identity=None):
         store, objects = LockedStore(connection, store), LockedStore(connection, objects)
         if command == "backup":
             identity = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ-") + uuid.uuid4().hex[:12]
+            copy_sources = {}
             manifest = backup.prepare_set(url, None, work / identity, identity, object_store=objects, managed=True,
-                max_staging_bytes=staging, max_dump_bytes=positive("RESEARCH_OPERATOR_MAX_DUMP_BYTES"), connection=connection)
-            manifest = backup.publish_set(store, work / identity, manifest)
-            return {"backup_id": identity, "verified_members": len(manifest["members"]), "bytes": sum(item["size"] for item in manifest["members"])}
+                max_staging_bytes=staging, max_dump_bytes=positive("RESEARCH_OPERATOR_MAX_DUMP_BYTES"), connection=connection,
+                copy_sources=copy_sources)
+            manifest = backup.publish_set(store, work / identity, manifest, copy_sources=copy_sources)
+            return {"backup_id": identity, "verified_members": len(manifest["members"]),
+                    "bytes": sum(item["size"] for item in manifest["members"]),
+                    "server_side_copied_objects": len(copy_sources),
+                    "server_side_copied_bytes": sum(item["size"] for item in manifest["members"] if item["path"] in copy_sources)}
         if command == "cleanup":
             return cleanup(connection, objects)
         return import_bundle(objects, url, work / "import", staging)

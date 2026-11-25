@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 from contextlib import contextmanager, nullcontext
+from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -81,6 +82,14 @@ def require_env(name):
     return value
 
 
+@dataclass(frozen=True)
+class CopySource:
+    endpoint: str
+    bucket: str
+    key: str
+    etag: str
+
+
 class R2Store:
     def __init__(self, env_prefix="", namespace=None):
         import boto3
@@ -92,13 +101,20 @@ class R2Store:
                 or parsed.port not in (None, 443)):
             raise ValueError("R2_ENDPOINT must be an HTTPS R2 S3 endpoint")
         self.bucket = require_env(env_prefix + "R2_BUCKET")
+        self.endpoint = "https://" + parsed.hostname.lower()
         self.prefix = safe_relative((namespace or os.environ.get("RESEARCH_BACKUP_PREFIX", "research-backups")).strip("/"))
         self.client = boto3.client("s3", endpoint_url=endpoint, region_name="auto",
             aws_access_key_id=require_env(env_prefix + "R2_ACCESS_KEY_ID"),
             aws_secret_access_key=require_env(env_prefix + "R2_SECRET_ACCESS_KEY"),
             config=Config(retries={"max_attempts": 3, "mode": "standard"}, connect_timeout=10, read_timeout=60,
                           request_checksum_calculation="when_required", response_checksum_validation="when_required"))
+        # R2's destination condition is an extension, injected before SigV4 signing.
+        self.client.meta.events.register("before-call.s3.CopyObject", self._immutable_copy)
         self.requests = 0
+
+    @staticmethod
+    def _immutable_copy(params, **kwargs):
+        params["headers"]["cf-copy-destination-if-none-match"] = "*"
 
     def key(self, name):
         return self.prefix + "/" + safe_relative(name)
@@ -106,6 +122,27 @@ class R2Store:
     def read(self, name):
         self.requests += 1
         return self.client.get_object(Bucket=self.bucket, Key=self.key(name))["Body"]
+
+    def read_for_copy(self, name):
+        self.requests += 1
+        key = self.key(name)
+        response = self.client.get_object(Bucket=self.bucket, Key=key)
+        etag = response.get("ETag")
+        if not isinstance(etag, str) or not re.fullmatch(r'"[A-Za-z0-9][A-Za-z0-9._-]{0,127}"', etag):
+            response["Body"].close()
+            raise ValueError("Source object requires a strong quoted ETag for conditional copying")
+        return response["Body"], CopySource(self.endpoint, self.bucket, key, etag)
+
+    def copy(self, name, source):
+        key = self.key(name)
+        if not isinstance(source, CopySource) or source.endpoint != self.endpoint:
+            raise ValueError("Backup copies require the same R2 account endpoint")
+        safe_relative(source.key)
+        if source.bucket == self.bucket and source.key == key:
+            raise ValueError("Backup copy destination must differ from its source")
+        self.requests += 1
+        self.client.copy_object(Bucket=self.bucket, Key=key,
+            CopySource={"Bucket": source.bucket, "Key": source.key}, CopySourceIfMatch=source.etag)
 
     def put(self, name, path):
         if Path(path).stat().st_size > MAX_MEMBER_BYTES:
@@ -137,7 +174,7 @@ def read_bytes(store, key, maximum=16 * 1024 * 1024):
     return value
 
 
-def check_stream(store, key, item, destination=None):
+def check_stream(store, key, item, destination=None, *, for_copy=False):
     digest, size = hashlib.sha256(), 0
     output = None
     try:
@@ -145,7 +182,8 @@ def check_stream(store, key, item, destination=None):
             destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
             output = destination.open("xb")
             os.chmod(destination, 0o600)
-        with store.read(key) as stream:
+        stream, source = store.read_for_copy(key) if for_copy else (store.read(key), None)
+        with stream:
             while block := stream.read(1024 * 1024):
                 size += len(block)
                 if size > item["size"]:
@@ -155,6 +193,7 @@ def check_stream(store, key, item, destination=None):
                     output.write(block)
         if size != item["size"] or digest.hexdigest() != item["sha256"]:
             raise ValueError("Backup member size or SHA-256 mismatch")
+        return source
     finally:
         if output:
             output.close()
@@ -207,7 +246,7 @@ def pg_command(tool, url, arguments, *, max_file_bytes=None, timeout=1500):
     supported = {"host": "PGHOST", "hostaddr": "PGHOSTADDR", "port": "PGPORT", "dbname": "PGDATABASE",
                  "user": "PGUSER", "password": "PGPASSWORD", "sslmode": "PGSSLMODE", "sslrootcert": "PGSSLROOTCERT",
                  "sslcert": "PGSSLCERT", "sslkey": "PGSSLKEY", "passfile": "PGPASSFILE", "options": "PGOPTIONS",
-                 "connect_timeout": "PGCONNECT_TIMEOUT", "application_name": "PGAPPNAME"}
+                 "connect_timeout": "PGCONNECT_TIMEOUT", "application_name": "PGAPPNAME", "channel_binding": "PGCHANNELBINDING"}
     if set(connection) - supported.keys():
         raise ValueError("Unsupported libpq connection option for backup subprocess")
     for key in supported.values():
@@ -272,7 +311,9 @@ def table_checks(connection):
 
 
 def prepare_set(url, objects, directory, identity, *, object_store=None, managed=False,
-                max_staging_bytes=None, max_dump_bytes=None, connection=None):
+                max_staging_bytes=None, max_dump_bytes=None, connection=None, copy_sources=None):
+    if copy_sources is not None and (object_store is None or copy_sources):
+        raise ValueError("Backup copy preparation requires an object store and empty receipts")
     commit = require_env("RESEARCH_APP_COMMIT")
     if not re.fullmatch(r"[0-9a-f]{40}", commit):
         raise ValueError("RESEARCH_APP_COMMIT must be a full Git commit ID")
@@ -328,7 +369,10 @@ def prepare_set(url, objects, directory, identity, *, object_store=None, managed
                     destination = child(directory, "objects/" + item["storage_key"])
                     destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
                     if object_store is not None:
-                        check_stream(object_store, item["storage_key"], item, destination)
+                        source = check_stream(object_store, item["storage_key"], item, destination,
+                                              for_copy=copy_sources is not None)
+                        if copy_sources is not None:
+                            copy_sources["objects/" + item["storage_key"]] = source
                     else:
                         source = child(objects, item["storage_key"])
                         shutil.copyfile(source, destination)
@@ -371,13 +415,20 @@ def database_operation_lock(url):
             connection.execute("SELECT pg_advisory_unlock(hashtext(%s))", (LOCK_NAME,))
 
 
-def publish_set(store, directory, manifest):
+def publish_set(store, directory, manifest, *, copy_sources=None):
     identity = manifest["backup_id"]
     if any(item["size"] > MAX_MEMBER_BYTES for item in manifest["members"]):
         raise ValueError("Backup member exceeds the supported single-upload size")
+    if copy_sources is not None:
+        expected = {item["path"] for item in manifest["members"] if item["path"].startswith("objects/")}
+        if set(copy_sources) != expected or any(not isinstance(source, CopySource) for source in copy_sources.values()):
+            raise ValueError("Backup copy receipts must cover exactly the verified object inventory")
     for item in manifest["members"]:
         key = identity + "/" + item["path"]
-        store.put(key, child(directory, item["path"]))
+        if copy_sources is not None and item["path"] in copy_sources:
+            store.copy(key, copy_sources[item["path"]])
+        else:
+            store.put(key, child(directory, item["path"]))
         check_stream(store, key, item)
     manifest["completed_at"] = now()
     write_json(directory / "manifest.json", manifest)

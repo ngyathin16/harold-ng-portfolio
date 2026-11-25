@@ -1,0 +1,121 @@
+{
+  "actual": {
+    "copy_http_attempts": 3,
+    "http_attempts": 19,
+    "objects_created": 7,
+    "sdk_operations_including_head": 19,
+    "stored_synthetic_bytes": 781
+  },
+  "checks": {
+    "copy_publish_with_mandatory_destination_hash_readback": true,
+    "destination_preserved_after_412": true,
+    "every_copy_signed_source_and_destination_conditions": true,
+    "existing_manifest_format_completed": true,
+    "incorrect_expected_hash_rejected_on_live_readback": true,
+    "source_etag_mismatch_412_leaves_destination_absent": true,
+    "source_stream_sha256_and_same_response_etag": true
+  },
+  "existing_objects_modified": false,
+  "http_attempts": [
+    {
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "status": 412
+    },
+    {
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "status": 412
+    },
+    {
+      "method": "HEAD",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "limitations": [
+    "R2 destination-copy conditions remain beta.",
+    "No Cloud Run deployment, database restore, or monthly cost guarantee is established."
+  ],
+  "limits": {
+    "http_attempts": 25,
+    "stored_synthetic_bytes": 4096
+  },
+  "namespace": "staging/copy-qualification-20261125/519acf9bca9944f3b50b8214b63a7d67",
+  "objects_deleted": 0,
+  "observed_at": "2026-11-25T06:27:00.411404+00:00",
+  "passed": true,
+  "scope": "synthetic R2 copy only; no database restore qualification",
+  "source_sha256": {
+    "ops/backup.py": "fe55b4e14d9f857052ceafa64a1cde5d03dd51c27a0c0f8f04cf9d1b2952e97c",
+    "ops/serverless.py": "903e20ee57b72a716c5d3c106d0e57c98219d84f16084f9f4fd192cfae69630f",
+    "ops/test_backup_copy.py": "487c74e0e7b202f70dce7a55763eee470ffb4417743087530c1ed547223132b4"
+  },
+  "tiny_fixture_retained_for_review": true,
+  "versions": {
+    "boto3": "1.44.9",
+    "botocore": "1.44.9",
+    "python": "3.12.13"
+  }
+}

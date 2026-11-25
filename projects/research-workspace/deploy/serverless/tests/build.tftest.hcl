@@ -85,6 +85,14 @@ run "github_build_only_writes_environment_images" {
   }
   assert {
     condition = (
+      google_iam_workload_identity_pool.github_build[0].project == "123456789012" &&
+      google_iam_workload_identity_pool_provider.github_build[0].project == "123456789012" &&
+      google_iam_workload_identity_pool.github_build[0].project != var.project_id
+    )
+    error_message = "Federation must use the canonical project number returned by Google, preserving imported pools and providers without destructive replacement."
+  }
+  assert {
+    condition = (
       google_iam_workload_identity_pool_provider.github_build[0].oidc[0].issuer_uri == "https://token.actions.githubusercontent.com" &&
       google_iam_workload_identity_pool_provider.github_build[0].workload_identity_pool_id == google_iam_workload_identity_pool.github_build[0].workload_identity_pool_id &&
       google_iam_workload_identity_pool.github_build[0].workload_identity_pool_id == "research-staging-build" &&

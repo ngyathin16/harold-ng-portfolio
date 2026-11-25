@@ -1,5 +1,6 @@
 terraform {
   required_version = ">= 1.11, < 2.0"
+  backend "local" {}
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -9,6 +10,8 @@ terraform {
 }
 
 provider "google" {
-  project = var.project_id
-  region  = var.region
+  project               = var.project_id
+  region                = var.region
+  billing_project       = var.project_id
+  user_project_override = true
 }

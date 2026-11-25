@@ -27,6 +27,7 @@ locals {
     }
   )
   common_env = {
+    SSL_CERT_FILE                     = "/usr/local/lib/python3.12/site-packages/certifi/cacert.pem",
     RESEARCH_DEPLOYMENT_MODE          = "serverless", RESEARCH_APP_COMMIT = var.app_commit,
     RESEARCH_MAX_SECONDS              = "120", RESEARCH_MAX_ATTEMPTS = "3", RESEARCH_WORKER_CONCURRENCY = "2", RESEARCH_MAX_QUEUED = "100",
     RESEARCH_CLIENT_IP_MODE           = "shared", RESEARCH_MAX_OUTSTANDING = "2", RESEARCH_MAX_LAUNCHES_PER_MINUTE = "4",
@@ -169,6 +170,7 @@ resource "google_cloud_run_v2_service" "dispatcher" {
       resources {
         limits            = { cpu = "1", memory = "512Mi" }
         startup_cpu_boost = false
+        cpu_idle          = true
       }
       dynamic "env" {
         for_each = merge(local.common_env, local.dispatch_marker_env, { RESEARCH_POOL_SIZE = "2", RESEARCH_DISPATCH_JOB = google_cloud_run_v2_job.search.id })
@@ -218,6 +220,7 @@ resource "google_cloud_run_v2_service" "api" {
       resources {
         limits            = { cpu = "1", memory = "512Mi" }
         startup_cpu_boost = false
+        cpu_idle          = true
       }
       startup_probe {
         http_get { path = "/live" }
@@ -342,6 +345,7 @@ resource "google_cloud_run_v2_job" "operator" {
         }
         dynamic "env" {
           for_each = {
+            SSL_CERT_FILE                    = local.common_env.SSL_CERT_FILE,
             RESEARCH_OPERATOR_ENDPOINT_MODE  = "direct",
             RESEARCH_APP_COMMIT              = var.app_commit, RESEARCH_OPERATOR_MAX_STAGING_BYTES = tostring(var.operator_staging_bytes),
             RESEARCH_OPERATOR_MAX_DUMP_BYTES = tostring(var.operator_dump_bytes), RESEARCH_OPERATOR_TIMEOUT_SECONDS = "1500",

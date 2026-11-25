@@ -29,6 +29,15 @@ variables {
 run "bounded_private_defaults" {
   command = plan
   assert {
+    condition = alltrue([
+      for container in concat(
+        [for service in [google_cloud_run_v2_service.api, google_cloud_run_v2_service.dispatcher] : service.template[0].containers[0]],
+        [for job in concat([google_cloud_run_v2_job.search], values(google_cloud_run_v2_job.operator)) : job.template[0].template[0].containers[0]]
+      ) : one([for env in container.env : env.value if env.name == "SSL_CERT_FILE"]) == "/usr/local/lib/python3.12/site-packages/certifi/cacert.pem"
+    ])
+    error_message = "Every database client must use the CA bundle installed in both Python 3.12 images, including bundled libpq and pg_dump subprocesses."
+  }
+  assert {
     condition     = google_cloud_run_v2_service.api.scaling[0].min_instance_count == 0 && google_cloud_run_v2_service.api.scaling[0].max_instance_count == 2
     error_message = "The API must scale to zero with an explicit instance ceiling."
   }
@@ -82,9 +91,10 @@ run "dispatch_markers_are_private_durable_and_scoped" {
   assert {
     condition = alltrue([
       for service in [google_cloud_run_v2_service.api, google_cloud_run_v2_service.dispatcher] :
-      !service.template[0].containers[0].resources[0].startup_cpu_boost
+      !service.template[0].containers[0].resources[0].startup_cpu_boost &&
+      service.template[0].containers[0].resources[0].cpu_idle
     ])
-    error_message = "The reviewed service CPU allowance excludes startup boost, so both services must disable it."
+    error_message = "The reviewed service CPU allowance requires request billing with idle CPU disabled and no startup boost."
   }
   override_resource {
     target          = google_service_account.identity["api"]

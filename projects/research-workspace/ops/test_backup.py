@@ -4,6 +4,7 @@ from contextlib import redirect_stdout
 import io
 import json
 import os
+import sys
 from pathlib import Path
 import tempfile
 import unittest
@@ -42,6 +43,17 @@ class BackupTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.store = Store()
+
+    def test_database_child_preserves_required_tls_channel_binding(self):
+        url = "host=example.invalid dbname=research user=reader password=private-fixture sslmode=verify-full sslrootcert=system channel_binding=require"
+        child = "import os,sys; assert os.environ['PGCHANNELBINDING']=='require'; assert os.environ['PGSSLMODE']=='verify-full'; assert os.environ['PGSSLROOTCERT']=='system'; assert os.environ['PGPASSWORD']=='private-fixture'; assert all('private-fixture' not in arg for arg in sys.argv); print('verified')"
+        with patch.dict(os.environ, {"PGCHANNELBINDING": "disable"}):
+            self.assertEqual(backup.pg_command(sys.executable, url, ["-c", child]), "verified")
+
+    def test_database_child_does_not_inherit_unrequested_connection_options(self):
+        child = "import os; assert 'PGCHANNELBINDING' not in os.environ; assert 'PGPASSWORD' not in os.environ; print('verified')"
+        with patch.dict(os.environ, {"PGCHANNELBINDING": "require", "PGPASSWORD": "unrelated"}):
+            self.assertEqual(backup.pg_command(sys.executable, "dbname=research", ["-c", child]), "verified")
 
     def publish(self, identity="set1", age_days=0):
         directory = self.root / identity

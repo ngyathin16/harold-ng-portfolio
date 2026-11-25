@@ -29,7 +29,7 @@ resource "google_project_service" "build" {
 
 resource "google_iam_workload_identity_pool" "github_build" {
   count                     = var.enable_github_image_build ? 1 : 0
-  project                   = var.project_id
+  project                   = data.google_project.current.number
   workload_identity_pool_id = "${local.prefix}-build"
   display_name              = "Research ${var.environment} builds"
   depends_on                = [google_project_service.api["iam.googleapis.com"], google_project_service.build]
@@ -37,7 +37,7 @@ resource "google_iam_workload_identity_pool" "github_build" {
 
 resource "google_iam_workload_identity_pool_provider" "github_build" {
   count                              = var.enable_github_image_build ? 1 : 0
-  project                            = var.project_id
+  project                            = data.google_project.current.number
   workload_identity_pool_id          = google_iam_workload_identity_pool.github_build[0].workload_identity_pool_id
   workload_identity_pool_provider_id = "github"
   attribute_mapping = {

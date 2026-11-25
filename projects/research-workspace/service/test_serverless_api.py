@@ -4,6 +4,8 @@ from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
+from psycopg.rows import dict_row
+from psycopg_pool import ConnectionPool
 
 from service.app import create_app, network_identity
 from service.config import Settings
@@ -55,6 +57,34 @@ def test_health_does_not_write_visitor_limits(service):
         assert client.get(route).status_code == 200
     with pool.connection() as conn:
         assert conn.execute('SELECT COALESCE(sum(hits),0) AS n FROM research.request_limits').fetchone()['n'] == before
+
+
+@pytest.mark.parametrize('paused,stalled,expected', [
+    (True, False, 'paused'), (True, True, 'paused'),
+    (False, False, 'available'), (False, True, 'stalled'),
+])
+def test_serverless_readiness_reports_pause_with_api_permissions(service, paused, stalled, expected):
+    vm_client, pool, settings, pub, _ = service
+    run_id = submission(vm_client, pub)['query_id']
+    settings = replace(settings, deployment_mode='serverless', client_ip_mode='shared')
+    with pool.connection() as conn:
+        original = conn.execute('SELECT paused FROM research.dispatch_control WHERE singleton').fetchone()['paused']
+        conn.execute('UPDATE research.dispatch_control SET paused=%s WHERE singleton', (paused,))
+        if stalled:
+            conn.execute("UPDATE research.query_runs SET created_at=now()-interval '16 minutes' WHERE id=%s", (run_id,))
+    try:
+        with ConnectionPool(settings.database_url, min_size=1, max_size=1,
+                            kwargs={'row_factory': dict_row, 'options': '-c role=research_api'}) as api_pool:
+            with TestClient(create_app(settings, api_pool, markers=FakeMarkers())) as client:
+                for route in ('/ready', '/health'):
+                    response = client.get(route)
+                    assert response.status_code == 200
+                    assert response.json() == {'status': 'ok', 'search': expected}
+                assert client.get('/v1/publications/' + pub).status_code == 200
+                assert client.get('/live').json() == {'status': 'ok'}
+    finally:
+        with pool.connection() as conn:
+            conn.execute('UPDATE research.dispatch_control SET paused=%s WHERE singleton', (original,))
 
 
 def test_acceptance_commits_outbox_before_wakeup_and_cache_does_not_dispatch(service):

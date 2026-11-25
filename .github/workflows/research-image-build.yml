@@ -244,8 +244,10 @@ jobs:
           existing_bytes = sum(images.values())
           projected_bytes = existing_bytes + int(os.environ['NEW_IMAGE_BYTES'])
           projected_images = len(images) + 2
-          if projected_bytes > 2147483648 or projected_images > 2:
-              raise SystemExit('Existing registry images plus this pair exceed the reviewed allowance; nothing was pushed. Review existing images before retrying.')
+          if projected_bytes > 2147483648:
+              raise SystemExit('Existing registry bytes plus this uncompressed image pair exceed the reviewed 2 GiB aggregate allowance; nothing was pushed.')
+          if projected_images > 4:
+              raise SystemExit('Existing registry images plus this pair exceed the reviewed two-release, four-digest allowance; nothing was pushed. Review retained releases before retrying.')
           with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
               output.write(f'existing_bytes={existing_bytes}\nexisting_images={len(images)}\nprojected_bytes={projected_bytes}\n')
           PY
@@ -305,7 +307,7 @@ jobs:
                     'maximum_combined_image_bytes': 2147483648,
                     'existing_registry_image_bytes': int(os.environ['EXISTING_IMAGE_BYTES']),
                     'existing_registry_image_count': int(os.environ['EXISTING_IMAGE_COUNT']),
-                    'maximum_retained_image_digests': 2,
+                    'maximum_retained_image_digests': 4,
                     'workflow_run_id': os.environ['GITHUB_RUN_ID'],
                     'workflow_run_attempt': os.environ['GITHUB_RUN_ATTEMPT']}
           Path('image-digests.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')

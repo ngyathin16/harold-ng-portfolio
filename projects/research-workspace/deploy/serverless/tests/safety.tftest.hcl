@@ -79,6 +79,13 @@ run "refuse_unreviewed_spending" {
 
 run "dispatch_markers_are_private_durable_and_scoped" {
   command = plan
+  assert {
+    condition = alltrue([
+      for service in [google_cloud_run_v2_service.api, google_cloud_run_v2_service.dispatcher] :
+      !service.template[0].containers[0].resources[0].startup_cpu_boost
+    ])
+    error_message = "The reviewed service CPU allowance excludes startup boost, so both services must disable it."
+  }
   override_resource {
     target          = google_service_account.identity["api"]
     override_during = plan

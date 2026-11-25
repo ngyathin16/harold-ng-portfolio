@@ -1,0 +1,22 @@
+{
+  "observed_at": "2026-11-25T05:53:47.116913+00:00",
+  "namespace": "staging/objects/",
+  "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+  "bundle_sha256": "6e22b9248587fbc58e4b2aa85649b74464f60e42b23b489db85535e46f5a1365",
+  "verified_objects": 123,
+  "verified_bytes": 89671406,
+  "immutable_conditional_uploads": true,
+  "all_uploaded_objects_read_back_and_sha256_verified": true,
+  "existing_objects_overwritten": false,
+  "nominal_store_calls": 246,
+  "actual_provider_billed_operations": null,
+  "owner_reported_account_before": {
+    "storage_bytes_approx": 295350000,
+    "class_a_operations": 271,
+    "class_b_operations": 785
+  },
+  "maximum_logical_uploads": 200,
+  "maximum_source_bytes": 104857600,
+  "recovery_drill_completed": false,
+  "seconds": 72.318
+}

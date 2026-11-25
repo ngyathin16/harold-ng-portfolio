@@ -1,0 +1,64 @@
+{
+  "checked_at": "2026-11-25T06:02:37.795206+00:00",
+  "project_id": "harold-research-20261125",
+  "project_number": "912856475731",
+  "region": "asia-southeast1",
+  "resources": {
+    "repository": {
+      "name": "projects/harold-research-20261125/locations/asia-southeast1/repositories/research-staging",
+      "format": "DOCKER",
+      "vulnerability_scanning": {
+        "enablementConfig": "DISABLED",
+        "enablementState": "SCANNING_DISABLED",
+        "enablementStateReason": "API containerscanning.googleapis.com is not enabled."
+      },
+      "image_count": 0
+    },
+    "pool": {
+      "name": "projects/912856475731/locations/global/workloadIdentityPools/research-staging-build",
+      "state": "ACTIVE"
+    },
+    "provider": {
+      "name": "projects/912856475731/locations/global/workloadIdentityPools/research-staging-build/providers/github",
+      "state": "ACTIVE",
+      "attribute_condition": "assertion.repository_id == '1459453007' && assertion.repository_owner_id == '115745691' && assertion.repository == 'ngyathin16/harold-ng-portfolio' && assertion.ref == 'refs/heads/feature/research-workspace' && assertion.workflow_ref == 'ngyathin16/harold-ng-portfolio/.github/workflows/research-image-build.yml@refs/heads/feature/research-workspace' && (assertion.event_name == 'push' || assertion.event_name == 'workflow_dispatch')",
+      "attribute_mapping": {
+        "attribute.repository_id": "assertion.repository_id",
+        "google.subject": "assertion.sub"
+      },
+      "oidc": {
+        "issuerUri": "https://token.actions.githubusercontent.com"
+      }
+    },
+    "service_account": {
+      "name": "projects/harold-research-20261125/serviceAccounts/research-staging-build@harold-research-20261125.iam.gserviceaccount.com",
+      "email": "research-staging-build@harold-research-20261125.iam.gserviceaccount.com",
+      "user_managed_keys": 0,
+      "impersonation_role": "roles/iam.workloadIdentityUser",
+      "impersonation_member": "principalSet://iam.googleapis.com/projects/912856475731/locations/global/workloadIdentityPools/research-staging-build/attribute.repository_id/1459453007"
+    },
+    "repository_grant": {
+      "repository": "projects/harold-research-20261125/locations/asia-southeast1/repositories/research-staging",
+      "role": "roles/artifactregistry.writer",
+      "member": "serviceAccount:research-staging-build@harold-research-20261125.iam.gserviceaccount.com"
+    }
+  },
+  "completed": true,
+  "images_published": false,
+  "github_builds_enabled": false,
+  "bootstrap_retries": [
+    "Initial keys.list returned NOT_FOUND immediately after service account creation; retried after re-reading the existing resource."
+  ],
+  "build_apis": [
+    "artifactregistry.googleapis.com",
+    "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "sts.googleapis.com"
+  ],
+  "project_wide_build_grants": [],
+  "github_variables_required": {
+    "RESEARCH_BUILD_WIF_PROVIDER": "projects/912856475731/locations/global/workloadIdentityPools/research-staging-build/providers/github",
+    "RESEARCH_BUILD_SERVICE_ACCOUNT": "research-staging-build@harold-research-20261125.iam.gserviceaccount.com",
+    "RESEARCH_ENABLE_IMAGE_BUILDS": "true only after separate reviewed enablement"
+  }
+}

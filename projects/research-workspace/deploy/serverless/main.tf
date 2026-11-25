@@ -83,7 +83,8 @@ resource "google_artifact_registry_repository" "images" {
   location      = var.region
   repository_id = local.prefix
   format        = "DOCKER"
-  depends_on    = [google_project_service.api]
+  vulnerability_scanning_config { enablement_config = "DISABLED" }
+  depends_on = [google_project_service.api]
 }
 
 resource "google_storage_bucket" "dispatch_markers" {
@@ -166,7 +167,8 @@ resource "google_cloud_run_v2_service" "dispatcher" {
       command = ["python", "-m", "uvicorn"]
       args    = ["service.dispatcher:app", "--host", "0.0.0.0", "--port", "8080", "--no-access-log", "--no-proxy-headers"]
       resources {
-        limits = { cpu = "1", memory = "512Mi" }
+        limits            = { cpu = "1", memory = "512Mi" }
+        startup_cpu_boost = false
       }
       dynamic "env" {
         for_each = merge(local.common_env, local.dispatch_marker_env, { RESEARCH_POOL_SIZE = "2", RESEARCH_DISPATCH_JOB = google_cloud_run_v2_job.search.id })
@@ -214,7 +216,8 @@ resource "google_cloud_run_v2_service" "api" {
       command = ["python", "-m", "uvicorn"]
       args    = ["service.app:app", "--host", "0.0.0.0", "--port", "8080", "--no-access-log", "--no-proxy-headers"]
       resources {
-        limits = { cpu = "1", memory = "512Mi" }
+        limits            = { cpu = "1", memory = "512Mi" }
+        startup_cpu_boost = false
       }
       startup_probe {
         http_get { path = "/live" }

@@ -396,7 +396,13 @@ resource "google_cloud_scheduler_job" "reconcile" {
   time_zone        = "Asia/Hong_Kong"
   paused           = !var.enable_reconciliation
   attempt_deadline = "180s"
-  retry_config { retry_count = 0 }
+  retry_config {
+    retry_count          = 0
+    max_retry_duration   = "0s"
+    min_backoff_duration = "5s"
+    max_backoff_duration = "3600s"
+    max_doublings        = 5
+  }
   http_target {
     http_method = "POST"
     uri         = "${google_cloud_run_v2_service.dispatcher.uri}/dispatch"
@@ -417,7 +423,13 @@ resource "google_cloud_scheduler_job" "operator" {
   time_zone        = "Asia/Hong_Kong"
   paused           = !var.enable_operator_schedules
   attempt_deadline = "60s"
-  retry_config { retry_count = 0 }
+  retry_config {
+    retry_count          = 0
+    max_retry_duration   = "0s"
+    min_backoff_duration = "5s"
+    max_backoff_duration = "3600s"
+    max_doublings        = 5
+  }
   http_target {
     http_method = "POST"
     uri         = "https://run.googleapis.com/v2/${google_cloud_run_v2_job.operator[each.key].id}:run"

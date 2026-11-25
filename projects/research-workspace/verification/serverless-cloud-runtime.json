@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-25T06:48:16.637536+00:00",
+  "project": "harold-research-20261125",
+  "region": "asia-southeast1",
+  "environment": "staging",
+  "source_commit": "607dc996b4a64010d6695f4d197b15a4b5bba6c4",
+  "images": {
+    "service": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/service@sha256:40c209588a204a3a7f8c773ef7de6c65bcdba921023554b675261ba4dd733062",
+    "operator": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/operator@sha256:88ca25ca6c1dd811dec160888dddc31e794ad0cc01ed16f36f73499a6d746b35"
+  },
+  "database_plan": "Neon Free",
+  "public_access": false,
+  "search_admission_paused": true,
+  "service_count": 2,
+  "job_count": 7,
+  "schedules": {
+    "research-staging-reconcile": "PAUSED",
+    "research-staging-prune": "PAUSED",
+    "research-staging-backup": "PAUSED",
+    "research-staging-cleanup": "PAUSED"
+  },
+  "request_billing": true,
+  "active_secret_versions": 18,
+  "secret_payload_readback_verified": true,
+  "terraform_plan_changes_after_apply": 0,
+  "notification_delivery_owner_confirmed": true,
+  "temporary_alert_policy_disabled": true,
+  "github_image_builds_disabled": true,
+  "monthly_budget_ceiling_usd": 4.99,
+  "fixed_and_finite_rehearsal_allocation_usd": 4.72,
+  "allocation_is_not_measured_invoice": true,
+  "api_smoke": {
+    "schema_version": 1,
+    "source_commit": "607dc996b4a64010d6695f4d197b15a4b5bba6c4",
+    "passed": true,
+    "checks": [
+      {
+        "method": "GET",
+        "path": "/live",
+        "authenticated": false,
+        "status": 403,
+        "seconds": 0.437,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/live",
+        "authenticated": true,
+        "status": 200,
+        "seconds": 0.054,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/ready",
+        "authenticated": true,
+        "status": 200,
+        "seconds": 0.173,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/v1/datasets",
+        "authenticated": true,
+        "status": 200,
+        "seconds": 0.129,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+        "authenticated": true,
+        "status": 200,
+        "seconds": 0.1,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/catalog?page_size=5",
+        "authenticated": true,
+        "status": 200,
+        "seconds": 0.182,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/tables",
+        "authenticated": true,
+        "status": 200,
+        "seconds": 0.146,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/coverage",
+        "authenticated": true,
+        "status": 200,
+        "seconds": 0.161,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/rules",
+        "authenticated": true,
+        "status": 200,
+        "seconds": 0.181,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/records/tft19:encounter:DA_19_2CostStart",
+        "authenticated": true,
+        "status": 200,
+        "seconds": 1.691,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/v1/downloads",
+        "authenticated": true,
+        "status": 404,
+        "seconds": 0.054,
+        "passed": true
+      },
+      {
+        "method": "HEAD",
+        "path": "/v1/downloads",
+        "authenticated": true,
+        "status": 404,
+        "seconds": 0.085,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/downloads",
+        "authenticated": true,
+        "status": 404,
+        "seconds": 0.049,
+        "passed": true
+      },
+      {
+        "method": "HEAD",
+        "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/downloads",
+        "authenticated": true,
+        "status": 404,
+        "seconds": 0.054,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/v1/queries/not-a-query/export",
+        "authenticated": true,
+        "status": 404,
+        "seconds": 0.053,
+        "passed": true
+      },
+      {
+        "method": "HEAD",
+        "path": "/v1/queries/not-a-query/export",
+        "authenticated": true,
+        "status": 404,
+        "seconds": 0.052,
+        "passed": true
+      }
+    ],
+    "search_admission_tested": false,
+    "scope": "Private Cloud Run browsing with live Neon Free source; no query admission"
+  },
+  "production_accepted": false,
+  "limitations": [
+    "No full managed search or historical result-cache migration qualified.",
+    "Provider-billed storage and whole-application monthly invoice are not established by this test.",
+    "Managed backup/restore results are recorded separately."
+  ]
+}

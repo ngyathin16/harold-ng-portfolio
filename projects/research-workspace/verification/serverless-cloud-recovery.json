@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-25T07:00:10.748016+00:00",
+  "source_commit": "607dc996b4a64010d6695f4d197b15a4b5bba6c4",
+  "provider": "Neon Free PostgreSQL17",
+  "runtime": "Cloud Run operator Job Singapore",
+  "backup_members": 125,
+  "application_tables": 75,
+  "private_objects": 123,
+  "retained_historical_search_results": false,
+  "all_durable_reports_read_back": true,
+  "reports": {
+    "backup-attempt1": {
+      "operation": "backup",
+      "passed": false,
+      "reported_at": "2026-11-25T06:29:30.968674+00:00",
+      "operation_id": "17c58559abcb496292b7678fafe9784d",
+      "duration_seconds": 38.541,
+      "error_type": "ValueError"
+    },
+    "backup": {
+      "server_side_copied_bytes": 89671406,
+      "operation": "backup",
+      "verified_members": 125,
+      "passed": true,
+      "reported_at": "2026-11-25T06:45:49.141617+00:00",
+      "operation_id": "86b86527e7854e0c926a979ffa7dfe71",
+      "bytes": 92503907,
+      "backup_id": "20261125T064551Z-4b8036348199",
+      "duration_seconds": 117.979,
+      "server_side_copied_objects": 123
+    },
+    "verify": {
+      "operation": "verify",
+      "passed": true,
+      "duration_seconds": 19.133,
+      "operation_id": "ae40084a3c48423aa4ff76532b923228",
+      "verified_members": 125,
+      "reported_at": "2026-11-25T06:49:01.307374+00:00"
+    },
+    "restore": {
+      "operation_id": "25e254d1a18f4ced9db59f6bcb4c86d5",
+      "objects_verified": 123,
+      "application_tables_verified": 75,
+      "duration_seconds": 96.164,
+      "passed": true,
+      "backup_id": "20261125T064551Z-4b8036348199",
+      "api_and_worker_verified": false,
+      "operation": "restore",
+      "reported_at": "2026-11-25T06:51:08.340536+00:00",
+      "query_result_hashes_verified": 0,
+      "logical_verification": "streamed snapshot hashes of every application row",
+      "dispatch_paused": true,
+      "restoration_performed_by_script": true
+    }
+  },
+  "backup_dump_bytes": 2831750,
+  "first_attempt_failure": {
+    "type": "ValueError",
+    "cause": "The original pg_command rejected channel_binding=require; the corrected wrapper preserves PGCHANNELBINDING.",
+    "retried_only_after_fix": true
+  },
+  "dispatch_paused_after_restore": true,
+  "source_and_restore_namespaces_separate": true,
+  "production_accepted": false,
+  "limitations": [
+    "Source-only drill: no hosted exhaustive search or retained historical result caches were present.",
+    "API access against the restored database is recorded separately; it was not exposed as a second Cloud Run API.",
+    "Durations are application wall time and do not equal billed instance time."
+  ]
+}

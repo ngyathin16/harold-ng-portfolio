@@ -1,0 +1,208 @@
+{
+  "observed_at": "2026-11-25T06:59:55.958471+00:00",
+  "passed": true,
+  "read_only": true,
+  "window": {
+    "start": "2026-11-25T06:00:00Z",
+    "requested_end": "2026-11-25T06:59:49.930590Z"
+  },
+  "descriptor_pages": 2,
+  "descriptor_count": 49,
+  "descriptor_catalog_complete": true,
+  "monitoring_http_calls_this_collection": 14,
+  "aggregate_time_series_returned": 12,
+  "maximum_time_series": 100,
+  "aggregation": "60-second ALIGN_SUM, REDUCE_SUM grouped only by resource.type; returned aligned DELTA points summed across time",
+  "metrics": {
+    "container/billable_instance_time": {
+      "unit": "s",
+      "metric_kind": "DELTA",
+      "sample_period": "60s",
+      "ingest_delay": "120s",
+      "by_resource_type": [
+        {
+          "resource_type": "cloud_run_revision",
+          "total": 49.1,
+          "points": 31,
+          "first_interval_start": "2026-11-25T06:28:49.930590Z",
+          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+        },
+        {
+          "resource_type": "cloud_run_job",
+          "total": 212.07623394469846,
+          "points": 21,
+          "first_interval_start": "2026-11-25T06:29:49.930590Z",
+          "latest_interval_end": "2026-11-25T06:58:49.930590Z"
+        }
+      ],
+      "no_data_returned": false
+    },
+    "container/cpu/allocation_time": {
+      "unit": "s{CPU}",
+      "metric_kind": "DELTA",
+      "sample_period": "60s",
+      "ingest_delay": "120s",
+      "by_resource_type": [
+        {
+          "resource_type": "cloud_run_revision",
+          "total": 49.1,
+          "points": 31,
+          "first_interval_start": "2026-11-25T06:28:49.930590Z",
+          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+        },
+        {
+          "resource_type": "cloud_run_job",
+          "total": 286.48899913384884,
+          "points": 21,
+          "first_interval_start": "2026-11-25T06:29:49.930590Z",
+          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+        }
+      ],
+      "no_data_returned": false
+    },
+    "container/memory/allocation_time": {
+      "unit": "GiBy.s",
+      "metric_kind": "DELTA",
+      "sample_period": "60s",
+      "ingest_delay": "120s",
+      "by_resource_type": [
+        {
+          "resource_type": "cloud_run_revision",
+          "total": 24.550009329944952,
+          "points": 31,
+          "first_interval_start": "2026-11-25T06:28:49.930590Z",
+          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+        },
+        {
+          "resource_type": "cloud_run_job",
+          "total": 804.4265674821415,
+          "points": 20,
+          "first_interval_start": "2026-11-25T06:29:49.930590Z",
+          "latest_interval_end": "2026-11-25T06:58:49.930590Z"
+        }
+      ],
+      "no_data_returned": false
+    },
+    "request_count": {
+      "unit": "1",
+      "metric_kind": "DELTA",
+      "sample_period": "60s",
+      "ingest_delay": "120s",
+      "by_resource_type": [
+        {
+          "resource_type": "cloud_run_revision",
+          "total": 33.0,
+          "points": 31,
+          "first_interval_start": "2026-11-25T06:28:49.930590Z",
+          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+        }
+      ],
+      "no_data_returned": false
+    },
+    "container/network/sent_bytes_count": {
+      "unit": "By",
+      "metric_kind": "DELTA",
+      "sample_period": "60s",
+      "ingest_delay": "120s",
+      "by_resource_type": [
+        {
+          "resource_type": "cloud_run_revision",
+          "total": 552883.0,
+          "points": 31,
+          "first_interval_start": "2026-11-25T06:28:49.930590Z",
+          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+        },
+        {
+          "resource_type": "cloud_run_job",
+          "total": 130877804.0,
+          "points": 20,
+          "first_interval_start": "2026-11-25T06:30:49.930590Z",
+          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+        }
+      ],
+      "no_data_returned": false
+    },
+    "container/network/received_bytes_count": {
+      "unit": "By",
+      "metric_kind": "DELTA",
+      "sample_period": "60s",
+      "ingest_delay": "120s",
+      "by_resource_type": [
+        {
+          "resource_type": "cloud_run_revision",
+          "total": 1029882.0,
+          "points": 31,
+          "first_interval_start": "2026-11-25T06:28:49.930590Z",
+          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+        },
+        {
+          "resource_type": "cloud_run_job",
+          "total": 643137249.0,
+          "points": 20,
+          "first_interval_start": "2026-11-25T06:30:49.930590Z",
+          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+        }
+      ],
+      "no_data_returned": false
+    },
+    "job/completed_task_attempt_count": {
+      "unit": "1",
+      "metric_kind": "DELTA",
+      "sample_period": "60s",
+      "ingest_delay": "120s",
+      "by_resource_type": [
+        {
+          "resource_type": "cloud_run_job",
+          "total": 4.0,
+          "points": 19,
+          "first_interval_start": "2026-11-25T06:30:49.930590Z",
+          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+        }
+      ],
+      "no_data_returned": false
+    }
+  },
+  "bounded_ledger_comparison": {
+    "service_cpu_seconds": {
+      "reported_observation": 49.1,
+      "rehearsal_limit": 10000,
+      "reported_fraction_of_limit": 0.00491,
+      "reported_below_limit": true
+    },
+    "service_memory_GiB_seconds": {
+      "reported_observation": 24.550009329944952,
+      "rehearsal_limit": 5000,
+      "reported_fraction_of_limit": 0.00491000186598899,
+      "reported_below_limit": true
+    },
+    "service_request_count": {
+      "reported_observation": 33.0,
+      "rehearsal_limit": 500,
+      "reported_fraction_of_limit": 0.066,
+      "reported_below_limit": true
+    },
+    "all_container_sent_bytes": {
+      "reported_observation": 131430687.0,
+      "rehearsal_limit": 5368709120,
+      "reported_fraction_of_limit": 0.02448087316006422,
+      "reported_below_limit": true
+    }
+  },
+  "assumptions": [
+    "The 10000 CPU-second and 5000 GiB-second limits apply to services; Jobs retain their separately approved execution/time limits.",
+    "Service and Job aggregate resource types are included; cloud_run_instance is excluded to avoid duplicate counting."
+  ],
+  "limitations": [
+    "Monitoring observations are delayed and can be revised; missing series do not prove zero usage.",
+    "Reported interval endpoints are alignment boundaries, not proof of the latest raw sample freshness; partial-window alignment can redistribute observations.",
+    "Allocation and billable-instance metrics are usage evidence, not an invoice or proof of the final charged amount.",
+    "Jobs have separate execution limits and minimum-duration billing; do not infer their invoice from these counters alone.",
+    "Sent-byte totals include all reported container network kinds, not only billable internet egress, and exclude traffic outside these Cloud Run containers.",
+    "Request count excludes requests that do not reach a container; retain the manual request ledger for the 500-request bound.",
+    "This snapshot cannot authorize more work by subtracting delayed observations from the limit."
+  ],
+  "sources": [
+    "https://docs.cloud.google.com/monitoring/api/metrics_gcp_p_z#run",
+    "https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list"
+  ]
+}

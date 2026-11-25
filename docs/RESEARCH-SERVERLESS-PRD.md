@@ -1,8 +1,8 @@
 # Research workspace serverless deployment
 
-Product requirements document. Version 1.2. November 25, 2026, Asia/Hong_Kong.
+Product requirements document. Version 1.3. November 25, 2026, Asia/Hong_Kong.
 
-Status: local implementation delivered; hosted qualification in progress. The completed [capacity-wait implementation](RESEARCH-CAPACITY-IMPLEMENTATION.md) is the starting point. The owner authorized implementation and account setup with total monthly spending strictly below US$5. That authorization does not establish cost feasibility or production acceptance.
+Status: private runtime and managed source recovery verified; result-storage redesign and hosted search qualification in progress. The completed [capacity-wait implementation](RESEARCH-CAPACITY-IMPLEMENTATION.md) is the starting point. The owner authorized implementation and account setup with total monthly spending strictly below US$5. That authorization does not establish cost feasibility or production acceptance.
 
 ## Purpose and outcome
 
@@ -25,6 +25,8 @@ Writing this PRD does not change the existing Oracle monitor or extend its Novem
 | Database | Keep PostgreSQL 17 as the compatibility baseline. Evaluate Neon first for intermittent use and Cloud SQL as a same-cloud alternative. Select one provider and plan from measured compatibility, latency, and total cost. |
 | Recovery | Retain private R2 backups and their verification contract. Adapt operator jobs to managed database permissions and temporary local storage. |
 | Cost | Minimize recurring spend. A free compute allowance is not a promise that the complete application costs nothing. The owner approved setup with total monthly spending strictly below US$5 on November 25; configuration uses US$4.99 as the maximum across all providers, environments and experiments. The current design must be requalified against this ceiling before provisioning. |
+
+On November 25, the owner explicitly authorized redesigning result storage to preserve full search behavior within the same under-US$5 monthly limit. PostgreSQL remains authoritative for query identities, publication metadata, permissions, admission and dispatch; bulky result material may move to private R2 if exact API behavior, historical results, fencing and recovery are preserved. The [design and verification record](RESEARCH-RESULT-STORAGE-DESIGN.md) governs this additional scope. This is not authorization for a paid database upgrade or reduced search functionality.
 
 Moving the database to D1, rewriting the solver for Workers, adopting Cloudflare Containers, adding user accounts, building a new dashboard, collecting new matches, and changing research interpretation are outside this migration. Cloud Run functions are unnecessary for the existing container boundary. These alternatives can be reconsidered if the selected design fails its cost or compatibility review.
 

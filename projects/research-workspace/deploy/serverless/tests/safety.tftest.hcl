@@ -58,6 +58,17 @@ run "bounded_private_defaults" {
     error_message = "Schedules must remain paused until their separate acceptance gates pass."
   }
   assert {
+    condition = alltrue([
+      for schedule in concat([google_cloud_scheduler_job.reconcile], values(google_cloud_scheduler_job.operator)) :
+      schedule.retry_config[0].retry_count == 0 &&
+      schedule.retry_config[0].max_retry_duration == "0s" &&
+      schedule.retry_config[0].min_backoff_duration == "5s" &&
+      schedule.retry_config[0].max_backoff_duration == "3600s" &&
+      schedule.retry_config[0].max_doublings == 5
+    ])
+    error_message = "All four schedules must disable retries with zero count and duration, and preserve explicit backoff defaults across API readback."
+  }
+  assert {
     condition     = alltrue([for grant in local.secret_access : !contains(["api", "dispatcher", "search"], grant.role) || !contains(values(local.r2_env), grant.secret)])
     error_message = "Runtime API, dispatcher and search identities must not receive R2 credentials."
   }

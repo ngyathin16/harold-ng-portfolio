@@ -1,0 +1,78 @@
+{
+  "observed_on": "2026-11-25",
+  "timezone": "UTC",
+  "status": "passed_for_single_empty_marker_dispatch",
+  "environment": "private staging",
+  "source_commit": "4942588116f97d46ebbe41b3df7e956623a53021",
+  "service_image_digest": "sha256:832a0eaa44474120d7125071aa5f5a10d16b69b5b54b5e8a539d17b8bd6c1761",
+  "scope": "API and dispatcher used the same service image; only the dispatcher was invoked for this idle test.",
+  "invocation": {
+    "transport": "One explicitly named Cloud Task in the existing queue",
+    "authentication": "OIDC using the existing task identity and dispatcher URI audience",
+    "dispatcher_ingress": "internal only",
+    "http_method": "POST",
+    "path": "/dispatch",
+    "body": {},
+    "configured_task_max_attempts": 1,
+    "task_dispatch_deadline_seconds": 30,
+    "provider_task_created_at": "2026-11-25T06:38:42Z",
+    "http_request_at": "2026-11-25T06:38:42.374967Z",
+    "http_status": 200,
+    "http_latency_seconds": 0.166683024,
+    "http_user_agent": "Google-Cloud-Tasks",
+    "successful_attempts_in_provider_metric": 1,
+    "task_absent_after_delivery": true,
+    "conservatively_reserved_service_calls": 5
+  },
+  "database_observation": {
+    "provider": "Neon Free",
+    "observer_used_database_connections": false,
+    "measurement_source": "Authenticated provider endpoint API",
+    "before_state": "idle",
+    "after_state": "idle",
+    "post_invocation_snapshots": 4,
+    "observation_window_seconds": 274,
+    "timing_scope": "Helper observation elapsed time including provider reads; snapshots establish idle state and unchanged last_active, not continuous state sampling.",
+    "first_snapshot_started_at": "2026-11-25T06:38:50.761636Z",
+    "final_snapshot_started_at": "2026-11-25T06:43:20.809600Z",
+    "last_active_before_and_after": "2026-11-25T06:28:58Z",
+    "last_active_unchanged": true,
+    "forced_endpoint_suspension": false
+  },
+  "safety_readback": {
+    "paused_schedules_before_and_after": 4,
+    "marker_namespace_empty_before_and_after": true,
+    "scheduler_resumed": false,
+    "extra_task_created": false
+  },
+  "earlier_scheduler_attempt": {
+    "operation": "Force run the existing paused reconciliation job once",
+    "http_status": 400,
+    "provider_status": "FAILED_PRECONDITION",
+    "reason": "Job.state must be ENABLED for RunJob.",
+    "dispatch_occurred": false,
+    "automatically_retried": false,
+    "conservatively_reserved_service_calls": 1
+  },
+  "evidence_correction": {
+    "initial_log_filter_clock": "local observer",
+    "local_attempt_started_at": "2026-11-25T06:38:42.437999Z",
+    "provider_http_log_preceded_local_filter_milliseconds": 63.032,
+    "corrected_log_filter_clock": "provider task createTime",
+    "explanation": "The local lower bound excluded the successful request. Provider creation time recovered the HTTP 200 log; the task was not repeated."
+  },
+  "not_established": [
+    "Scheduled reconciliation delivery while enabled",
+    "Twenty-four-hour idle behavior or monthly billing",
+    "Active search launch, execution or recovery",
+    "Hosted load, cold-start or exhaustive-search performance",
+    "Production acceptance"
+  ],
+  "references": [
+    "https://docs.cloud.google.com/tasks/docs/reference/rest/v2/projects.locations.queues.tasks/create",
+    "https://docs.cloud.google.com/tasks/docs/reference/rest/v2/projects.locations.queues.tasks",
+    "https://docs.cloud.google.com/tasks/docs/monitor",
+    "https://docs.cloud.google.com/scheduler/docs/reference/rest/v1/projects.locations.jobs/run",
+    "https://neon.com/docs/reference/api/endpoints/get-project-endpoint"
+  ]
+}

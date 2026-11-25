@@ -1,0 +1,162 @@
+{
+  "checked_at": "2026-11-25T06:54:20.898266+00:00",
+  "source_commit": "607dc996b4a64010d6695f4d197b15a4b5bba6c4",
+  "scope": "Local FastAPI TestClient against restored Neon; not a hosted restored API deployment",
+  "passed": true,
+  "searches_submitted": 0,
+  "marker_operations": 0,
+  "limited_side_effect": "Normal publication GET requests increment restored-database read-rate counters",
+  "credentials": "Existing restricted API and backup logins; no owner connection, role or secret changes",
+  "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+  "bundle_sha256": "6e22b9248587fbc58e4b2aa85649b74464f60e42b23b489db85535e46f5a1365",
+  "environment_identities_distinct": true,
+  "table_view_metadata_matches": 75,
+  "successful_publication_reads": 10,
+  "api_responses": [
+    {
+      "method": "GET",
+      "path": "/ready",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/datasets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/datasets/tft-set-19/publications",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/tables",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/catalog?page_size=2",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/records/tft19%3Aencounter%3ADA_19_2CostStart",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/tables/entities?page_size=2",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/tables/v_evidence?page_size=2",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/coverage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/rules",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/downloads",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/downloads/database.sqlite.gz",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/downloads/csv/unit_stats.csv",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/v1/queries/retained/export",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/v1/queries/retained/export?format=json",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/v1/queries/retained/export?format=csv",
+      "status": 404
+    },
+    {
+      "method": "HEAD",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/downloads",
+      "status": 404
+    },
+    {
+      "method": "HEAD",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/downloads/database.sqlite.gz",
+      "status": 404
+    },
+    {
+      "method": "HEAD",
+      "path": "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/downloads/csv/unit_stats.csv",
+      "status": 404
+    },
+    {
+      "method": "HEAD",
+      "path": "/v1/queries/retained/export",
+      "status": 404
+    },
+    {
+      "method": "HEAD",
+      "path": "/v1/queries/retained/export?format=json",
+      "status": 404
+    },
+    {
+      "method": "HEAD",
+      "path": "/v1/queries/retained/export?format=csv",
+      "status": 404
+    }
+  ],
+  "api_private_artifact_select_denied": true,
+  "seconds": 12.843,
+  "before": {
+    "query_runs": 0,
+    "query_results": 0,
+    "paused": true,
+    "privileged_role": false,
+    "database_owner": false,
+    "provider_admin": false,
+    "query_run_count_scope": "All rows, verified service_jobs USING(true) policy",
+    "tls_verified": true
+  },
+  "after": {
+    "query_runs": 0,
+    "query_results": 0,
+    "paused": true,
+    "privileged_role": false,
+    "database_owner": false,
+    "provider_admin": false,
+    "query_run_count_scope": "All rows, verified service_jobs USING(true) policy",
+    "tls_verified": true
+  },
+  "qualified_for_production": false,
+  "limitations": [
+    "HTTP requests ran through local FastAPI TestClient against the restored hosted database; no restored Cloud Run service was deployed.",
+    "Table/view metadata was compared with the verified source import. The separate restore report records actual row-hash and object verification.",
+    "Normal publication GET requests updated only their ordinary read-rate counters; no query submission or marker operation occurred.",
+    "Source and restored environment identities were compared through restricted backup-reader connections in read-only transactions.",
+    "No hosted search, load, cold-start, public ingress or monthly billing qualification is established."
+  ]
+}

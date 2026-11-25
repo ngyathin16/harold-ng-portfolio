@@ -11,7 +11,7 @@ images = {
 }
 review = {
   experiment_limit_usd = 0
-  monthly_limit_usd    = 0
+  monthly_limit_usd    = 4.99
   provider_plan        = "pending exact provider qualification"
   database_region      = "pending measured region pair"
   quote_date           = "2026-11-25"

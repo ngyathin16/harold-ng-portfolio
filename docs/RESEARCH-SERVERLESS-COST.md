@@ -1,6 +1,23 @@
 # Serverless feasibility and cost worksheet
 
-Prepared November 25, 2026, Asia/Hong_Kong. Currency USD. This is a dated planning worksheet, not a provider selection or a measured hosted bill. Experiment spending limit and monthly production limit remain **unagreed**. No resources were provisioned. Do not infer permission to spend from the numeric workload examples or test fixtures.
+Updated November 25, 2026, Asia/Hong_Kong. Currency USD. The owner requires **total monthly spending below US$5** and authorizes setup within that limit. Configuration records US$4.99 as the maximum, shared across providers, environments and experiments. This is a ceiling, not a target or a claim that the current design fits. No paid resources were provisioned. The current five-minute reconciliation configuration is over budget and must not be deployed as the production solution.
+
+## Budget decision and next qualification
+
+The existing Neon Launch design costs about US$19.08/month for idle compute alone in a 30-day month. Ten-minute checks still cost US$9.54. Free's 1 GB storage cap is not compatible with the current retained data and admission headroom; reducing retention is not authorized merely to meet this budget. Cloud SQL's displayed Iowa shared-core micro rate alone is US$7.56 per 30 days, before storage; it is not a Singapore quote and does not qualify that option.
+
+Neon **Scale**, despite its name, has no minimum monthly fee and permits one-minute idle suspension. A candidate using 0.25 CU with twelve-minute reconciliation has an idle compute floor of US$3.33 per 30 days, or US$3.441 per 31 days, before startup, useful work, storage, history, Google services and R2. Its US$0.222/CU-hour rate is higher than Launch, but its shorter idle timeout can reduce polling cost. This remains an unqualified candidate: the existing 8 GB planning allocation adds US$2.80 and already breaks the ceiling. Source: [Neon plans](https://neon.com/docs/introduction/plans), [Cloud SQL prices](https://cloud.google.com/sql/pricing).
+
+Next work is to measure a lossless result-storage change and reduce unnecessary database wakeups, then qualify the exact provider and connection limits. Reconciliation cadence is still five minutes in the committed deployment; no timing or feature requirement has been silently changed. A twelve-minute candidate would need to prove the existing fifteen-minute recovery target. No data, saved queries or retained results were removed.
+
+The approved ceiling covers the whole application. Experiments must use a suballocation of that same ceiling; the unqualified example currently allocates zero. An internal operating estimate at or below US$4 would leave some room for billing variation, but is not a guarantee. The current Google budget is an **alert-only, Google-scoped** control and cannot account for Neon/R2; its US$4.99 amount is not an additional allowance to spend that much at each provider.
+
+Current provider controls require careful qualification:
+
+- Google now offers a separate Cloud Run spend-cap budget for one project/service. It uses gross estimated usage, excludes credits, permits delayed/in-flight overages and does not halt fixed persistent-resource charges. The Terraform alert-only resource does not enable it. [Google spend-cap limitations](https://docs.cloud.google.com/billing/docs/how-to/budgets-spend-caps)
+- Neon project consumption quotas can suspend compute; a branch size quota can reject writes while retaining reads. These are approximate per-metric controls, not a dollar invoice cap, and reported metrics may lag. They must be combined with storage/history/network accounting. [Neon consumption limits](https://neon.com/docs/guides/consumption-limits)
+
+Account setup proceeds first through owner authentication, without resource creation or billing linkage. A checksum-verified Google Cloud CLI 594.0.1 is installed locally with isolated configuration. The local `ResearchDeployment/connect-google.ps1` launcher requests browser sign-in only. Existing Oracle/R2 access is retained; it does not need to be recreated. Provider selection, billing ownership and a cost-bounded deployment remain pending.
 
 ## Provider decision pending measured qualification
 
@@ -62,4 +79,4 @@ The two outstanding-execution limit bounds simultaneously live search containers
 
 Record the exact project/billing account, provider plan, region pair, orderable configuration, clean import and billed bytes, measured connection/latency/permissions, all unpriced rows, experiment maximum USD, monthly maximum USD, alert recipient, quote date and approving decision. Terraform requires this review object, but a string reference does not substitute for the underlying evidence. Budget alerts at 50/90/100% are notifications; no hard cap is asserted. Assess any separately offered cap's actual coverage, delay and failure behavior before relying on it. [Google budget behavior](https://docs.cloud.google.com/billing/docs/how-to/budgets).
 
-After a 24-hour no-visitor hosted observation, replace assumptions with execution IDs, billable seconds, database wake periods, connections, R2 requests and available billing data. Label delayed usage and estimated charges separately. Only then reconcile the full cost worksheet and seek the production spending decision.
+After a 24-hour no-visitor hosted observation, replace assumptions with execution IDs, billable seconds, database wake periods, connections, R2 requests and available billing data. Label delayed usage and estimated charges separately. Reconcile the full worksheet against the approved under-US$5 total ceiling before production launch; increase no limit automatically.

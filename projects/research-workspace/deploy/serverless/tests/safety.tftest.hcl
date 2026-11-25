@@ -11,8 +11,8 @@ variables {
     operator = "asia-southeast1-docker.pkg.dev/research-offline-fixture/research-staging/operator@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
   }
   review = {
-    experiment_limit_usd = 5
-    monthly_limit_usd    = 10
+    experiment_limit_usd = 1
+    monthly_limit_usd    = 4.99
     provider_plan        = "OFFLINE TEST ONLY"
     database_region      = "aws-ap-southeast-1"
     quote_date           = "2026-11-25"
@@ -60,6 +60,10 @@ run "bounded_private_defaults" {
     condition     = local.secret_access["restore-source-lock"].role == "restore" && local.secret_access["restore-source-lock"].secret == "backup-db" && contains([for env in google_cloud_run_v2_job.operator["restore"].template[0].template[0].containers[0].env : env.name], "RESEARCH_BACKUP_DATABASE_URL")
     error_message = "Restore must hold the source backup-reader lock while using its distinct target database identity."
   }
+  assert {
+    condition     = google_billing_budget.monthly.amount[0].specified_amount[0].units == "4" && google_billing_budget.monthly.amount[0].specified_amount[0].nanos == 990000000
+    error_message = "The USD 4.99 alert must retain its cents instead of rounding up to USD 5."
+  }
 }
 
 run "refuse_unreviewed_spending" {
@@ -95,4 +99,48 @@ run "refuse_memory_backed_staging_overcommit" {
   command = plan
   variables { operator_staging_bytes = 4294967296 }
   expect_failures = [var.operator_staging_bytes]
+}
+
+run "refuse_exact_five_dollar_ceiling" {
+  command = plan
+  variables {
+    review = {
+      experiment_limit_usd = 1, monthly_limit_usd = 5, provider_plan = "OFFLINE TEST ONLY", database_region = "aws-ap-southeast-1",
+      quote_date           = "2026-11-25", evidence_reference = "fixture: not deployment approval", approved = true
+    }
+  }
+  expect_failures = [var.review]
+}
+
+run "refuse_over_five_dollar_ceiling" {
+  command = plan
+  variables {
+    review = {
+      experiment_limit_usd = 1, monthly_limit_usd = 10, provider_plan = "OFFLINE TEST ONLY", database_region = "aws-ap-southeast-1",
+      quote_date           = "2026-11-25", evidence_reference = "fixture: not deployment approval", approved = true
+    }
+  }
+  expect_failures = [var.review]
+}
+
+run "refuse_experiment_outside_monthly_envelope" {
+  command = plan
+  variables {
+    review = {
+      experiment_limit_usd = 4.99, monthly_limit_usd = 4.50, provider_plan = "OFFLINE TEST ONLY", database_region = "aws-ap-southeast-1",
+      quote_date           = "2026-11-25", evidence_reference = "fixture: not deployment approval", approved = true
+    }
+  }
+  expect_failures = [var.review]
+}
+
+run "refuse_zero_budget_staging_provisioning" {
+  command = plan
+  variables {
+    review = {
+      experiment_limit_usd = 0, monthly_limit_usd = 4.99, provider_plan = "OFFLINE TEST ONLY", database_region = "aws-ap-southeast-1",
+      quote_date           = "2026-11-25", evidence_reference = "fixture: not deployment approval", approved = true
+    }
+  }
+  expect_failures = [google_project_service.api]
 }

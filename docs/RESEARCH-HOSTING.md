@@ -6,7 +6,7 @@ Proposed direction, November 25: the [serverless deployment PRD](RESEARCH-SERVER
 
 Current implementation: public research downloads are removed. Private R2 backup/restore and a portable deployment package are available; see the [verification record](RESEARCH-CAPACITY-IMPLEMENTATION.md) and [deployment runbook](../projects/research-workspace/deploy/README.md). Historical artifact-serving and public-export checks below are superseded by private recovery and retired-route checks.
 
-The owner wants this passion project to cost nothing, or as little as practical. Supabase is optional. Target additional hosting spend is $0; no paid plan or recurring spending ceiling has been approved. Keep the existing Cloudflare portfolio hosting. Oracle and Cloudflare R2 accounts are now configured; the access checks below passed on November 23.
+The owner wants this passion project to cost nothing, or as little as practical. On November 25, the owner authorized setup with total monthly spending strictly below US$5 (US$4.99 configuration maximum across providers and environments). No paid plan has been selected. Supabase is optional. Keep the existing Cloudflare portfolio hosting. Oracle and Cloudflare R2 accounts are configured; the access checks below passed on November 23. The serverless cost worksheet records why the current managed-database configuration exceeds the new ceiling.
 
 ## Recommended first attempt
 

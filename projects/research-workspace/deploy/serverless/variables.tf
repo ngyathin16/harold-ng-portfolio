@@ -34,12 +34,19 @@ variable "review" {
     evidence_reference   = string
     approved             = bool
   })
-  description = "An explicit spending decision and qualified database evidence; budgets are alerts, not caps."
+  description = "Reviewed all-provider monthly ceiling below USD 5; experiments share that ceiling. This module's Google budget is alert-only, not a spend-cap budget."
   validation {
-    condition = (var.review.approved && var.review.experiment_limit_usd > 0 && var.review.monthly_limit_usd > 0 &&
+    condition = (var.review.approved &&
       length(var.review.provider_plan) > 3 && length(var.review.database_region) > 3 && length(var.review.evidence_reference) > 3 &&
     can(regex("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", var.review.quote_date)))
-    error_message = "Provisioning requires reviewed provider evidence and explicit experiment/monthly limits."
+    error_message = "Provisioning requires reviewed provider evidence and an explicit spending decision."
+  }
+  validation {
+    condition = (var.review.monthly_limit_usd > 0 && var.review.monthly_limit_usd < 5 &&
+      floor(var.review.monthly_limit_usd * 100) == var.review.monthly_limit_usd * 100 &&
+      var.review.experiment_limit_usd >= 0 && var.review.experiment_limit_usd <= var.review.monthly_limit_usd &&
+    floor(var.review.experiment_limit_usd * 100) == var.review.experiment_limit_usd * 100)
+    error_message = "Use whole USD cents with 0 < monthly limit < 5; the nonnegative experiment allocation must fit inside that same monthly ceiling."
   }
 }
 variable "secret_versions" {

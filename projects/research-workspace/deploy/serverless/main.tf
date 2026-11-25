@@ -34,6 +34,12 @@ resource "google_project_service" "api" {
   for_each           = local.apis
   service            = each.key
   disable_on_destroy = false
+  lifecycle {
+    precondition {
+      condition     = var.environment != "staging" || var.review.experiment_limit_usd > 0
+      error_message = "A zero experiment allocation permits offline work only; staging provisioning needs an explicit positive allocation within the monthly ceiling."
+    }
+  }
 }
 data "google_project" "current" {
   project_id = var.project_id
@@ -403,7 +409,8 @@ resource "google_billing_budget" "monthly" {
   amount {
     specified_amount {
       currency_code = "USD"
-      units         = tostring(ceil(var.review.monthly_limit_usd))
+      units         = tostring(floor(var.review.monthly_limit_usd))
+      nanos         = (var.review.monthly_limit_usd * 100 - floor(var.review.monthly_limit_usd) * 100) * 10000000
     }
   }
   threshold_rules { threshold_percent = 0.5 }

@@ -1,6 +1,6 @@
 # Research workspace serverless deployment
 
-Product requirements document. Version 1.0. November 25, 2026, Asia/Hong_Kong.
+Product requirements document. Version 1.1. November 25, 2026, Asia/Hong_Kong.
 
 Status: proposed work for review. The completed [capacity-wait implementation](RESEARCH-CAPACITY-IMPLEMENTATION.md) is the starting point. This document does not claim that a serverless deployment exists or authorize a paid plan, cloud provisioning, or public launch.
 
@@ -24,7 +24,7 @@ Writing this PRD does not change the existing Oracle monitor or extend its Novem
 | Dispatch | Persist dispatch intent with accepted work. Deliver authenticated wakeups to a bounded dispatcher, with scheduled reconciliation for missed wakeups and interrupted jobs. |
 | Database | Keep PostgreSQL 17 as the compatibility baseline. Evaluate Neon first for intermittent use and Cloud SQL as a same-cloud alternative. Select one provider and plan from measured compatibility, latency, and total cost. |
 | Recovery | Retain private R2 backups and their verification contract. Adapt operator jobs to managed database permissions and temporary local storage. |
-| Cost | Minimize recurring spend. A free compute allowance is not a promise that the complete application costs nothing. No monthly spending ceiling has been agreed. |
+| Cost | Minimize recurring spend. A free compute allowance is not a promise that the complete application costs nothing. The owner approved setup with total monthly spending strictly below US$5 on November 25; configuration uses US$4.99 as the maximum across all providers, environments and experiments. The current design must be requalified against this ceiling before provisioning. |
 
 Moving the database to D1, rewriting the solver for Workers, adopting Cloudflare Containers, adding user accounts, building a new dashboard, collecting new matches, and changing research interpretation are outside this migration. Cloud Run functions are unnecessary for the existing container boundary. These alternatives can be reconsidered if the selected design fails its cost or compatibility review.
 
@@ -167,6 +167,6 @@ Rollback must preserve newly accepted definitions and results. Prefer a compatib
 | 3. Isolated cloud rehearsal | Repeatable deployment, actual dispatch and termination tests, managed-provider R2 restore, hosted workload, growth checks, and idle observation. Record unmet targets without describing the release as ready. |
 | 4. Production handoff | Final cost and source-scope decision, HTTPS routes, alerts, schedules, cutover/rollback runbook, and a computer-off browser check. Mark production complete only after SL-01 through SL-12 pass. |
 
-Unresolved launch inputs are the database provider/plan and region, Google Cloud project and billing setup, experiment and monthly spending limits, production API hostname, notification destination, and publication scope. Resolve them from the stage-one report before the dependent cloud actions. They do not prevent implementation planning or local work.
+Unresolved launch inputs are the database provider/plan and region, Google Cloud project and billing setup, an experiment suballocation within the approved under-US$5 monthly ceiling, production API hostname, notification destination, and publication scope. Resolve them from the stage-one report before the dependent cloud actions. They do not prevent implementation planning or local work.
 
 Store scripts, declarative configuration, sanitized evidence, and the implementation record in the existing `feature/research-workspace` branch. Mirror intended backend changes into the local development copy without replacing private `.local` data. Keep secrets, dumps, and restored objects outside Git. The deliverable of this request is this PRD; implementation follows separately.

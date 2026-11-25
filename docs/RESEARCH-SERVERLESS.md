@@ -4,6 +4,8 @@ The local serverless implementation and Terraform configuration are reviewable. 
 
 ## Runtime configuration
 
+The owner has approved setup with **total monthly spend strictly below US$5**, recorded as a US$4.99 maximum across all providers and environments. The current polling/database configuration does not fit and is not approved for provisioning. Terraform rejects limits of US$5 or higher and experiment allocations outside the same envelope. Its Google-scoped alert retains cents exactly; it is not a whole-application spending cap. Read the updated cost worksheet before creating resources.
+
 The module is [projects/research-workspace/deploy/serverless](../projects/research-workspace/deploy/serverless/). Terraform 1.17.2 and pinned Google provider 8.12.0 were used for local schema validation and six mocked plan tests. Mocked tests create no cloud resources and do not verify service permissions/networking. Commit the provider lock file. Keep private tfvars, Terraform state, credentials, dumps and restored objects outside Git.
 
 | Process | Settings | Access |

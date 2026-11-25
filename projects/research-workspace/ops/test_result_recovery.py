@@ -18,10 +18,16 @@ from service.result_store import ResultReader, shared_lock, snapshot
 from service.test_service import service, submission
 from service.worker import claim, execute
 from service.budget import Budget, reserve_search, search_liability
-from service.test_budget import ledger
+from service.test_budget import installed_ledger
 
 
 SYSTEM_ENV = {name: os.environ[name] for name in ('SYSTEMROOT', 'WINDIR', 'SYSTEMDRIVE') if name in os.environ}
+
+
+@pytest.fixture
+def ledger(service):
+    with installed_ledger(service[2].database_url) as value:
+        yield value
 
 
 def logical_row(identity, champion='team', **changes):

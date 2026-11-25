@@ -23,6 +23,12 @@ def ledger():
     url = os.environ.get('RESEARCH_BUDGET_TEST_DATABASE_URL') or os.environ.get('RESEARCH_TEST_DATABASE_URL')
     if not url:
         pytest.skip('Set an isolated migrated PostgreSQL test database')
+    with installed_ledger(url) as value:
+        yield value
+
+
+@contextmanager
+def installed_ledger(url):
     identity = 'budget-' + uuid.uuid4().hex
     with ConnectionPool(url, min_size=1, max_size=6, kwargs={'row_factory': dict_row}) as pool:
         with pool.connection() as conn:

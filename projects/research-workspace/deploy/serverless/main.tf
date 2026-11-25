@@ -9,8 +9,9 @@ locals {
     "secretmanager.googleapis.com", "artifactregistry.googleapis.com", "logging.googleapis.com",
   "monitoring.googleapis.com", "cloudbilling.googleapis.com", "billingbudgets.googleapis.com", "iam.googleapis.com", "storage.googleapis.com"])
   identities = toset(["api", "dispatcher", "search", "tasks", "scheduler", "backup", "verify", "prune", "cleanup", "import", "restore"])
-  secrets = toset(["api-db", "dispatcher-db", "search-db", "backup-db", "verify-db", "prune-db", "cleanup-db", "import-db", "restore-db", "session",
-  "r2-endpoint", "r2-bucket", "r2-access", "r2-secret", "objects-endpoint", "objects-bucket", "objects-access", "objects-secret"])
+  secrets = setunion(toset(["api-db", "dispatcher-db", "search-db", "backup-db", "verify-db", "prune-db", "cleanup-db", "import-db", "restore-db", "session",
+    "r2-endpoint", "r2-bucket", "r2-access", "r2-secret", "objects-endpoint", "objects-bucket", "objects-access", "objects-secret"]),
+  var.result_storage == null ? toset([]) : toset(["result-api", "result-worker", "result-operator"]))
   operator_commands = {
     backup = ["backup"], verify = ["verify"], prune = ["prune"], cleanup = ["cleanup"], import = ["import"], restore = ["restore"]
   }
@@ -18,22 +19,38 @@ locals {
     R2_ENDPOINT        = "r2-endpoint", R2_BUCKET = "r2-bucket", R2_ACCESS_KEY_ID = "r2-access", R2_SECRET_ACCESS_KEY = "r2-secret",
     OBJECT_R2_ENDPOINT = "objects-endpoint", OBJECT_R2_BUCKET = "objects-bucket", OBJECT_R2_ACCESS_KEY_ID = "objects-access", OBJECT_R2_SECRET_ACCESS_KEY = "objects-secret"
   }
+  operator_object_secrets = var.result_storage == null ? local.r2_env : { RESEARCH_RESULT_CREDENTIALS_JSON = "result-operator" }
+  result_env = var.result_storage == null ? {} : {
+    RESEARCH_RESULT_STORAGE_MODE      = "objects"
+    RESEARCH_RESULT_BUCKET            = var.result_storage.bucket
+    RESEARCH_RESULT_PREFIX            = var.result_storage.prefix
+    RESEARCH_RESULT_RESERVATION_BYTES = tostring(var.result_storage.reservation_bytes)
+    RESEARCH_DATABASE_HEADROOM_BYTES  = tostring(var.result_storage.headroom_bytes)
+  }
   secret_access = merge(
     { for role in ["api", "dispatcher", "search", "backup", "verify", "prune", "cleanup", "import", "restore"] : "${role}-db" => { role = role, secret = "${role}-db" }
     },
     { session = { role = "api", secret = "session" }, restore-source-lock = { role = "restore", secret = "backup-db" }
     },
-    { for pair in setproduct(["backup", "verify", "prune", "cleanup", "import", "restore"], values(local.r2_env)) : "${pair[0]}-${pair[1]}" => { role = pair[0], secret = pair[1] }
+    { for pair in setproduct(["backup", "verify", "prune", "cleanup", "import", "restore"], values(local.operator_object_secrets)) : "${pair[0]}-${pair[1]}" => { role = pair[0], secret = pair[1] }
+    },
+    var.result_storage == null ? {} : {
+      api-results    = { role = "api", secret = "result-api" }
+      search-results = { role = "search", secret = "result-worker" }
     }
   )
-  common_env = {
-    SSL_CERT_FILE                     = "/usr/local/lib/python3.12/site-packages/certifi/cacert.pem",
-    RESEARCH_DEPLOYMENT_MODE          = "serverless", RESEARCH_APP_COMMIT = var.app_commit,
-    RESEARCH_MAX_SECONDS              = "120", RESEARCH_MAX_ATTEMPTS = "3", RESEARCH_WORKER_CONCURRENCY = "2", RESEARCH_MAX_QUEUED = "100",
-    RESEARCH_CLIENT_IP_MODE           = "shared", RESEARCH_MAX_OUTSTANDING = "2", RESEARCH_MAX_LAUNCHES_PER_MINUTE = "4",
-    RESEARCH_MAX_LAUNCH_ATTEMPTS      = "3", RESEARCH_DISPATCH_BATCH_SIZE = "2", RESEARCH_CAPACITY_MAX_AGE_SECONDS = "900",
-    RESEARCH_RESULT_RESERVATION_BYTES = "2147483648", RESEARCH_DATABASE_HEADROOM_BYTES = "1073741824"
-  }
+  budget_env = var.budget_window_id == "" ? {} : { RESEARCH_BUDGET_WINDOW_ID = var.budget_window_id }
+  common_env = merge(local.budget_env, {
+    SSL_CERT_FILE                      = "/usr/local/lib/python3.12/site-packages/certifi/cacert.pem",
+    RESEARCH_DEPLOYMENT_MODE           = "serverless", RESEARCH_APP_COMMIT = var.app_commit,
+    RESEARCH_MAX_SECONDS               = "120", RESEARCH_MAX_ATTEMPTS = "3", RESEARCH_WORKER_CONCURRENCY = "2", RESEARCH_MAX_QUEUED = "100",
+    RESEARCH_CLIENT_IP_MODE            = "shared", RESEARCH_MAX_OUTSTANDING = "2", RESEARCH_MAX_LAUNCHES_PER_MINUTE = "4",
+    RESEARCH_MAX_LAUNCH_ATTEMPTS       = "3", RESEARCH_DISPATCH_BATCH_SIZE = "2", RESEARCH_CAPACITY_MAX_AGE_SECONDS = "900",
+    RESEARCH_RESULT_RESERVATION_BYTES  = var.result_storage == null ? "2147483648" : tostring(var.result_storage.reservation_bytes),
+    RESEARCH_DATABASE_HEADROOM_BYTES   = var.result_storage == null ? "1073741824" : tostring(var.result_storage.headroom_bytes)
+    RESEARCH_CAPACITY_MEASUREMENT_MODE = var.result_storage == null ? "manual" : var.result_storage.capacity_measurement_mode
+    RESEARCH_CAPACITY_LIMIT_BYTES      = var.result_storage == null ? "1073741824" : tostring(var.result_storage.capacity_limit_bytes)
+  })
   dispatch_marker_permissions = {
     api        = ["storage.objects.create"]
     dispatcher = ["storage.objects.list", "storage.objects.delete"]
@@ -229,8 +246,8 @@ resource "google_cloud_run_v2_service" "api" {
         http_get { path = "/live" }
       }
       dynamic "env" {
-        for_each = merge(local.common_env, local.dispatch_marker_env, {
-          RESEARCH_POOL_SIZE            = "4", RESEARCH_CLIENT_IP_MODE = "shared", RESEARCH_ALLOWED_ORIGINS = join(",", var.allowed_origins),
+        for_each = merge(local.common_env, local.dispatch_marker_env, local.result_env, {
+          RESEARCH_POOL_SIZE            = var.budget_window_id == "" ? "4" : "3", RESEARCH_CLIENT_IP_MODE = "shared", RESEARCH_ALLOWED_ORIGINS = join(",", var.allowed_origins),
           RESEARCH_TASK_QUEUE           = google_cloud_tasks_queue.dispatch.id, RESEARCH_DISPATCHER_URL = google_cloud_run_v2_service.dispatcher.uri,
           RESEARCH_TASK_SERVICE_ACCOUNT = google_service_account.identity["tasks"].email
         })
@@ -240,7 +257,8 @@ resource "google_cloud_run_v2_service" "api" {
         }
       }
       dynamic "env" {
-        for_each = { RESEARCH_DATABASE_URL = "api-db", RESEARCH_SESSION_SECRET = "session" }
+        for_each = merge({ RESEARCH_DATABASE_URL = "api-db", RESEARCH_SESSION_SECRET = "session" },
+        var.result_storage == null ? {} : { RESEARCH_RESULT_CREDENTIALS_JSON = "result-api" })
         content {
           name = env.key
           value_source {
@@ -282,7 +300,7 @@ resource "google_cloud_run_v2_job" "search" {
           limits = { cpu = "2", memory = "2Gi" }
         }
         dynamic "env" {
-          for_each = merge(local.common_env, { RESEARCH_POOL_SIZE = "2" })
+          for_each = merge(local.common_env, local.result_env, { RESEARCH_POOL_SIZE = "2" })
           content {
             name  = env.key
             value = env.value
@@ -294,6 +312,18 @@ resource "google_cloud_run_v2_job" "search" {
             secret_key_ref {
               secret  = google_secret_manager_secret.secret["search-db"].secret_id
               version = var.secret_versions["search-db"]
+            }
+          }
+        }
+        dynamic "env" {
+          for_each = var.result_storage == null ? {} : { RESEARCH_RESULT_CREDENTIALS_JSON = "result-worker" }
+          content {
+            name = env.key
+            value_source {
+              secret_key_ref {
+                secret  = google_secret_manager_secret.secret[env.value].secret_id
+                version = var.secret_versions[env.value]
+              }
             }
           }
         }
@@ -344,20 +374,21 @@ resource "google_cloud_run_v2_job" "operator" {
           limits = { cpu = "1", memory = "4Gi" }
         }
         dynamic "env" {
-          for_each = {
+          for_each = merge(local.result_env, local.budget_env, {
             SSL_CERT_FILE                    = local.common_env.SSL_CERT_FILE,
+            RESEARCH_DEPLOYMENT_MODE         = "serverless", RESEARCH_CLIENT_IP_MODE = "shared",
             RESEARCH_OPERATOR_ENDPOINT_MODE  = "direct",
             RESEARCH_APP_COMMIT              = var.app_commit, RESEARCH_OPERATOR_MAX_STAGING_BYTES = tostring(var.operator_staging_bytes),
             RESEARCH_OPERATOR_MAX_DUMP_BYTES = tostring(var.operator_dump_bytes), RESEARCH_OPERATOR_TIMEOUT_SECONDS = "1500",
             RESEARCH_BACKUP_PREFIX           = var.r2_namespaces.backups, RESEARCH_OBJECT_PREFIX = var.r2_namespaces.objects, RESEARCH_REPORT_PREFIX = var.r2_namespaces.reports
-          }
+          })
           content {
             name  = env.key
             value = env.value
           }
         }
         dynamic "env" {
-          for_each = merge({ RESEARCH_OPERATOR_DATABASE_URL = "${each.key}-db" }, local.r2_env,
+          for_each = merge({ RESEARCH_OPERATOR_DATABASE_URL = "${each.key}-db" }, local.operator_object_secrets,
           each.key == "restore" ? { RESEARCH_BACKUP_DATABASE_URL = "backup-db" } : {})
           content {
             name = env.key

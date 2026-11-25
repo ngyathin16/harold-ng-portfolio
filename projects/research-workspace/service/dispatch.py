@@ -49,6 +49,9 @@ def reserve(pool, settings):
             (settings.max_attempts, settings.max_launch_attempts, list(OUTSTANDING))).fetchone()
         if row is None:
             return None
+        if settings.budget_window_id:
+            from .budget import authorize_launch
+            authorize_launch(conn, settings.budget_window_id, row['run_id'], row['generation'], row['launch_attempts'] + 1)
         reservation = conn.execute("""INSERT INTO research.execution_reservations(id,run_id,generation,state)
             VALUES(%s,%s,%s,'launching') RETURNING *""", (secrets.token_hex(16), row['run_id'], row['generation'])).fetchone()
         conn.execute("UPDATE research.dispatch_outbox SET state='reserved',launch_attempts=launch_attempts+1 WHERE run_id=%s", (row['run_id'],))

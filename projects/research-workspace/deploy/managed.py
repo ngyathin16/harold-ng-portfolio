@@ -24,7 +24,7 @@ SCHEMAS = ("research", "research_data")
 ROLE_MAP = {"anon": "research_visitor", "authenticated": "research_authenticated", "service_role": "research_importer"}
 LOGIN_GROUPS = {"api": "research_api", "worker": "research_worker", "dispatcher": "research_dispatcher", "importer": "research_importer", "backup": None}
 CONNECTION_LIMITS = {"api": 8, "worker": 4, "dispatcher": 4, "importer": 4, "backup": 4}
-APP_ROLES = tuple(ROLE_MAP.values()) + ("research_api", "research_worker", "research_dispatcher") + tuple("research_" + name + "_login" for name in LOGIN_GROUPS)
+APP_ROLES = tuple(ROLE_MAP.values()) + ("research_api", "research_worker", "research_dispatcher", "research_budget_operator") + tuple("research_" + name + "_login" for name in LOGIN_GROUPS)
 
 
 def require_tls(url, *, session=False):
@@ -60,7 +60,6 @@ def managed_body(content):
 
 
 def grant_backup_reader(connection):
-    connection.execute("GRANT ALL ON ALL TABLES IN SCHEMA research,research_data TO research_importer")
     connection.execute("GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA research,research_data TO research_importer")
     connection.execute("GRANT USAGE ON SCHEMA research,research_data TO research_backup_login")
     connection.execute("GRANT SELECT ON ALL TABLES IN SCHEMA research,research_data TO research_backup_login")
@@ -73,7 +72,11 @@ def grant_backup_reader(connection):
         connection.execute(sql.SQL("DROP POLICY IF EXISTS managed_backup_read ON {}").format(name))
         connection.execute(sql.SQL("CREATE POLICY managed_backup_read ON {} FOR SELECT TO research_backup_login USING(true)").format(name))
         connection.execute(sql.SQL("DROP POLICY IF EXISTS managed_import ON {}").format(name))
-        connection.execute(sql.SQL("CREATE POLICY managed_import ON {} TO research_importer USING(true) WITH CHECK(true)").format(name))
+        if table['nspname'] == 'research' and table['relname'].startswith('budget_'):
+            connection.execute(sql.SQL('REVOKE ALL ON {} FROM research_importer').format(name))
+        else:
+            connection.execute(sql.SQL('GRANT ALL ON {} TO research_importer').format(name))
+            connection.execute(sql.SQL("CREATE POLICY managed_import ON {} TO research_importer USING(true) WITH CHECK(true)").format(name))
 
 
 def apply(connection, passwords, baseline):
@@ -124,6 +127,7 @@ def apply(connection, passwords, baseline):
             if group:
                 connection.execute(sql.SQL("GRANT {} TO {}").format(sql.Identifier(group), sql.Identifier(role)))
         grant_backup_reader(connection)
+        connection.execute("GRANT research_budget_operator TO research_backup_login")
         connection.execute("CREATE TABLE IF NOT EXISTS research.environment(identity text PRIMARY KEY)")
         connection.execute("INSERT INTO research.environment(identity) SELECT gen_random_uuid()::text WHERE NOT EXISTS(SELECT 1 FROM research.environment)")
         connection.execute("GRANT SELECT ON research.environment TO research_backup_login")
@@ -169,7 +173,7 @@ def audit(connection):
     categories = {key: 0 for key in ("source", "evidence", "saved_definitions", "result_cache", "other")}
     for table in tables:
         name = table["name"]
-        category = "result_cache" if name == "query_results" else "saved_definitions" if name in ("query_runs", "query_subscriptions", "rulesets") else "evidence" if name in ("assertions", "observations", "sources", "evidence") else "source" if table["schema"] == "research_data" else "other"
+        category = "result_cache" if name in ("query_results", "result_generations", "result_segments", "result_object_intents") else "saved_definitions" if name in ("query_runs", "query_subscriptions", "rulesets") else "evidence" if name in ("assertions", "observations", "sources", "evidence") else "source" if table["schema"] == "research_data" else "other"
         categories[category] += table["total_bytes"]
     return {"postgres_version_num": version, "tables": tables, "categories_bytes": categories,
             "database_allocated_bytes": connection.execute("SELECT pg_database_size(current_database()) AS bytes").fetchone()["bytes"],

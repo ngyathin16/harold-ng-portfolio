@@ -38,7 +38,7 @@ def prepare(conn, markers, run_id, generation):
 
 
 class GCSMarkers:
-    def __init__(self, settings, client=None, access_token=None):
+    def __init__(self, settings, client=None, access_token=None, charge=None):
         if not re.fullmatch(r'[a-z0-9][a-z0-9._-]{1,220}[a-z0-9]', settings.dispatch_marker_bucket):
             raise ValueError('Configure a private dispatch marker bucket')
         if not re.fullmatch(r'[A-Za-z0-9/_-]{1,120}', settings.dispatch_marker_prefix):
@@ -48,8 +48,11 @@ class GCSMarkers:
         self.upload_url = 'https://storage.googleapis.com/upload/storage/v1/b/' + settings.dispatch_marker_bucket + '/o'
         self.client = client or httpx.Client(timeout=3, trust_env=False)
         self.access_token = access_token
+        self.charge = charge
 
     def request(self, method, url, **kwargs):
+        if self.charge is not None:
+            self.charge(method)
         return self.client.request(method, url,
             headers={'Authorization': 'Bearer ' + (self.access_token or metadata_token(self.client)),
                      **kwargs.pop('headers', {})}, **kwargs)

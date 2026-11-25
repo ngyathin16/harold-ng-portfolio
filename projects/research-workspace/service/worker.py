@@ -8,6 +8,7 @@ import secrets
 import sys
 import threading
 import time
+from contextlib import ExitStack
 
 import psycopg
 from psycopg.rows import dict_row
@@ -48,7 +49,7 @@ def claim(pool, settings):
             return None
         owner=secrets.token_hex(24)
         run=conn.execute("""UPDATE research.query_runs SET state='running',attempts=attempts+1,started_at=now(),finished_at=NULL,
-            lease_owner=%s,lease_until=now()+interval '30 seconds',result_count=0,champion_set_count=NULL,progress='{}',error=NULL WHERE id=%s RETURNING *""",(owner,run['id'])).fetchone()
+            lease_owner=%s,lease_until=now()+interval '30 seconds',result_count=0,result_generation_id=NULL,champion_set_count=NULL,progress='{}',error=NULL WHERE id=%s RETURNING *""",(owner,run['id'])).fetchone()
         conn.execute('DELETE FROM research.query_results WHERE run_id=%s',(run['id'],))
         rules = conn.execute('SELECT rules FROM research.rulesets WHERE publication_id=%s AND version=%s',(run['publication_id'],run['ruleset_version'])).fetchone()
         run.update(lease_owner=owner,rules=rules['rules'])
@@ -75,7 +76,7 @@ def claim_bound(pool, settings, run_id, generation, reservation_id):
         owner = secrets.token_hex(24)
         run = conn.execute("""UPDATE research.query_runs SET state='running',attempts=attempts+1,started_at=now(),finished_at=NULL,
             lease_owner=%s,lease_until=now()+interval '30 seconds',result_count=0,champion_set_count=NULL,
-            progress='{}',error=NULL WHERE id=%s RETURNING *""", (owner, run_id)).fetchone()
+            progress='{}',error=NULL,result_generation_id=NULL WHERE id=%s RETURNING *""", (owner, run_id)).fetchone()
         conn.execute("UPDATE research.execution_reservations SET claimed_at=now(),state='running' WHERE id=%s", (reservation_id,))
         conn.execute('DELETE FROM research.query_results WHERE run_id=%s', (run_id,))
         rules = conn.execute('SELECT rules FROM research.rulesets WHERE publication_id=%s AND version=%s',
@@ -116,15 +117,25 @@ class LeaseHeartbeat:
 
 
 def execute(pool, settings, run):
-    with LeaseHeartbeat(pool, run) as heartbeat:
-        return execute_leased(pool, settings, run, heartbeat)
+    with ExitStack() as resources:
+        budget = None
+        if settings.budget_window_id:
+            from .budget import Budget
+            budget_pool = resources.enter_context(ConnectionPool(settings.database_url, min_size=0, max_size=1, timeout=3,
+                kwargs={'row_factory': dict_row, 'connect_timeout': 5, 'options': '-c statement_timeout=5000 -c lock_timeout=3000'}))
+            budget = Budget(budget_pool, settings.budget_window_id)
+        with LeaseHeartbeat(pool, run) as heartbeat:
+            return execute_leased(pool, settings, run, heartbeat, budget=budget)
 
 
-def execute_leased(pool, settings, run, heartbeat):
+def execute_leased(pool, settings, run, heartbeat, *, budget=None):
+    from .result_store import ResultWriter, ResultLeaseLost
+    from .result_builder import ScratchLimitExceeded
     batch=[]
     last_check=0
     interrupted=False
     progress={}
+    writer=None
 
     def flush(force=False):
         nonlocal last_check,interrupted
@@ -133,6 +144,11 @@ def execute_leased(pool, settings, run, heartbeat):
         if not force and time.monotonic()-last_check<1 and len(batch)<1000:
             return
         check_capacity(settings)
+        if writer is not None:
+            writer.append(batch, progress)
+            batch.clear()
+            last_check=time.monotonic()
+            return
         with pool.connection() as conn:
             owned=conn.execute("""UPDATE research.query_runs SET lease_until=now()+interval '30 seconds',progress=%s
                 WHERE id=%s AND lease_owner=%s AND state='running' AND lease_until>=now() RETURNING id""",
@@ -166,6 +182,8 @@ def execute_leased(pool, settings, run, heartbeat):
         return interrupted
 
     try:
+        if settings.result_storage_mode == 'objects':
+            writer = ResultWriter(pool, settings, run, heartbeat, budget=budget)
         flush(force=True)
         if run['solver_version']!=SOLVER_VERSION:
             raise ValueError('Historical solver version is unavailable. Deploy its archived worker to recompute.')
@@ -173,6 +191,9 @@ def execute_leased(pool, settings, run, heartbeat):
                       max_seconds=settings.max_seconds,max_results=settings.max_results)
         progress=summary
         flush(force=True)
+        if writer is not None:
+            writer.finish(summary)
+            return summary['state']
         with pool.connection() as conn:
             owned = conn.execute("""SELECT id FROM research.query_runs WHERE id=%s AND state='running'
                 AND lease_owner=%s AND lease_until>=now() FOR UPDATE""", (run['id'], run['lease_owner'])).fetchone()
@@ -186,14 +207,14 @@ def execute_leased(pool, settings, run, heartbeat):
                 WHERE id=%s AND state='running' AND lease_owner=%s""",
                 (summary['state'],Jsonb(summary),counts['configurations'],counts['champion_sets'],summary.get('reason'),settings.result_retention_days,run['id'],run['lease_owner']))
         return summary['state']
-    except CapacityUnavailable:
+    except (CapacityUnavailable, ScratchLimitExceeded):
         with pool.connection() as conn:
             conn.execute("""UPDATE research.query_runs SET state='resource_limited',finished_at=now(),lease_owner=NULL,lease_until=NULL,
                 expires_at=now()+(%s*interval '1 day'),
                 error='Search stopped because disk capacity is unavailable. Results are incomplete; retry after capacity recovers.'
                 WHERE id=%s AND state='running' AND lease_owner=%s""",(settings.result_retention_days,run['id'],run['lease_owner']))
         return 'resource_limited'
-    except LeaseLost:
+    except (LeaseLost, ResultLeaseLost):
         return 'lease_lost'
     except (psycopg.OperationalError, psycopg.InterfaceError, PoolTimeout):
         # Platform retries are disabled. Reconciliation retries only after proving
@@ -208,6 +229,9 @@ def execute_leased(pool, settings, run, heartbeat):
                 WHERE id=%s AND state='running' AND lease_owner=%s""",(settings.result_retention_days,run['id'],run['lease_owner']))
         logging.error('Query worker failed for run %s',run['id'])
         return 'failed'
+    finally:
+        if writer is not None:
+            writer.close()
 
 
 def cleanup(pool,settings=None):
@@ -231,7 +255,7 @@ def main():
         parser.error('RESEARCH_DATABASE_URL is required')
     if settings.deployment_mode == 'serverless' and not (args.bound or args.cleanup):
         parser.error('Serverless workers require --bound; use a separate operator Job for cleanup')
-    with ConnectionPool(settings.database_url,min_size=1,max_size=2,timeout=3,
+    with ConnectionPool(settings.database_url,min_size=1,max_size=1 if settings.budget_window_id else 2,timeout=3,
                         kwargs={'row_factory':dict_row, 'connect_timeout': 5, 'options': '-c statement_timeout=15000 -c lock_timeout=10000'}) as pool:
         if args.cleanup:
             cleanup(pool,settings)

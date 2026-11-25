@@ -140,7 +140,11 @@ class CopyBackupTests(unittest.TestCase):
                 path = self.directory / "objects/bundle/item.json"
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(b"verified source evidence")
-                manifest = {"backup_id": "set1", "members": [{"path": "objects/bundle/item.json", **self.item}]}
+                manifest = {"format_version": 2, "query_check_version": 2, "backup_id": "set1",
+                            "members": [{"path": "objects/bundle/item.json", **self.item}]}
+                for name, body in [('database.dump', b'dump'), ('roles.json', b'{}')]:
+                    (self.directory / name).write_bytes(body)
+                    manifest['members'].append({'path': name, 'size': len(body), 'sha256': hashlib.sha256(body).hexdigest()})
                 self.receipts["objects/bundle/item.json"] = backup.check_stream(self.source, "bundle/item.json", self.item, for_copy=True)
                 with self.assertRaises(type(error)):
                     self.publish(manifest)
@@ -217,6 +221,21 @@ class SignedCopyTests(unittest.TestCase):
                 self.store.copy("set1/objects/item.json", self.source)
         self.assertEqual(send.call_count, 1)
 
+    def test_result_archive_copy_signs_the_separate_source_bucket(self):
+        xml = b'<CopyObjectResult><ETag>"copied"</ETag><LastModified>2026-11-25T00:00:00Z</LastModified></CopyObjectResult>'
+        requests = []
+        def send(request):
+            requests.append(request)
+            return AWSResponse(request.url, 200, {'content-type': 'application/xml'}, RawBody(xml))
+        source = backup.CopySource(ENDPOINT, 'private-results', 'results/generation/active_traits.bin', ETAG)
+        with patch.object(self.store.client._endpoint.http_session, 'send', side_effect=send):
+            self.store.copy('set1/results/generation/active_traits.bin', source)
+        headers = {key.lower(): value.decode() if isinstance(value, bytes) else value for key, value in requests[0].headers.items()}
+        self.assertEqual(headers['x-amz-copy-source'], 'private-results/results/generation/active_traits.bin')
+        self.assertEqual(headers['cf-copy-destination-if-none-match'], '*')
+        self.assertEqual(headers['x-amz-copy-source-if-match'], ETAG)
+        self.assertFalse(requests[0].body)
+
     def test_lost_copy_response_retries_with_both_conditions_and_leaves_failure_visible(self):
         requests = []
         def send(request):
@@ -239,7 +258,8 @@ class SignedCopyTests(unittest.TestCase):
         body = io.BytesIO(b"data")
         with patch.object(self.store.client, "get_object", return_value={"Body": body, "ETag": ETAG}) as get:
             receipt = backup.check_stream(self.store, "source", {"size": 4, "sha256": hashlib.sha256(b"data").hexdigest()}, for_copy=True)
-        self.assertEqual(receipt, backup.CopySource(ENDPOINT, "private", "backups/source", ETAG))
+        self.assertEqual(receipt, backup.CopySource(ENDPOINT, "private", "backups/source", ETAG,
+                                                   4, hashlib.sha256(b'data').hexdigest()))
         self.assertEqual(get.call_count, 1)
         self.assertTrue(body.closed)
 

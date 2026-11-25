@@ -1,0 +1,135 @@
+{
+  "status": "passed",
+  "queries": [
+    {
+      "query": "retained-general",
+      "dictionary_bytes": 156942,
+      "orders": [
+        {
+          "order": "active_traits",
+          "rows": 280543,
+          "pack_bytes": 7013575,
+          "pack_sha256": "30b1b3e9cb03e3148ba7a0cacd7c0974eba6338f3d472ff182758fefc25691b9",
+          "order_sha256": "e7a7d0e734ffbed7777f684b73e737c362e9e9ff9eefd99b4dd302978e9a76bb",
+          "frame_count": 69
+        },
+        {
+          "order": "total_cost",
+          "rows": 280543,
+          "pack_bytes": 7013575,
+          "pack_sha256": "148aa7b25cf1bc83b15dfbac92e0456d6e495492d712e2f70efb8c12641a953f",
+          "order_sha256": "0ab40dae40235a1798075f67be82b98cc4f82948427ad3fc21d903df8d27ae03",
+          "frame_count": 69
+        },
+        {
+          "order": "champions",
+          "rows": 280543,
+          "pack_bytes": 7013575,
+          "pack_sha256": "ecdc35dfb547a9746c205ca7b0957e59b6834f19f8e7fc51358171ed843db1bf",
+          "order_sha256": "6f1e72e1de0763211799a9d79101c4d3b6b1e525ffea7f242a55455c4944aa30",
+          "frame_count": 69
+        },
+        {
+          "order": "discovery",
+          "rows": 280543,
+          "pack_bytes": 7013575,
+          "pack_sha256": "3e5ac134d281f14d157a59277fd589c80ff421ed73ee4fecb5831c68d79d8a21",
+          "order_sha256": "57832a092a5a6cba183a002d5f582ec45728972f8aef7aadd91263f5aaff1cf8",
+          "frame_count": 69
+        }
+      ],
+      "rows": 280543,
+      "champion_sets": 211961,
+      "canonical_rows_sha256": "2efff5e0364c565f3507ff5533155bc86dbb098d8918457f94f046e387d0aefe",
+      "sqlite_bytes": 98390016,
+      "scratch_bytes": 126444316
+    },
+    {
+      "query": "retained-jazz",
+      "dictionary_bytes": 156942,
+      "orders": [
+        {
+          "order": "active_traits",
+          "rows": 38809,
+          "pack_bytes": 970225,
+          "pack_sha256": "75e80220ea63d21ed0743dc438b7c5d8114e7703f2e0274c5a825c8bac927f89",
+          "order_sha256": "77d72ace01d6af1236e7b995988f42e824b67908aea532e4fb7243eb6b8a493c",
+          "frame_count": 10
+        },
+        {
+          "order": "total_cost",
+          "rows": 38809,
+          "pack_bytes": 970225,
+          "pack_sha256": "b9629316ea0b2c4ca60b3dae105605a98d5665e373d26dfa3c4ca720f4685046",
+          "order_sha256": "54880756e48cd7be8529705b7ec23225f7263f8aa63101caa9d5eb1f4788fa61",
+          "frame_count": 10
+        },
+        {
+          "order": "champions",
+          "rows": 38809,
+          "pack_bytes": 970225,
+          "pack_sha256": "cee34da6b3ee73077026cd13e66e3c2db800967032e286db916be2c9e2b4b0de",
+          "order_sha256": "f1d86c47daf8a3329a4a5599966c50cd27befd575413376212062986436edc69",
+          "frame_count": 10
+        },
+        {
+          "order": "discovery",
+          "rows": 38809,
+          "pack_bytes": 970225,
+          "pack_sha256": "7439ead6f43ec25863b89301858cc43c99ef34524313c238a6820d5ba469a3e3",
+          "order_sha256": "64b22f7cf5fe212ec9534716bdd1bbbd2d788477a54cebdad3e704f4283e3b71",
+          "frame_count": 10
+        }
+      ],
+      "rows": 38809,
+      "champion_sets": 30935,
+      "canonical_rows_sha256": "6c921597b1a267a0037e3c61367ec5aa24b0ac0dafdc72d0f2175e2357aef88e",
+      "sqlite_bytes": 13651968,
+      "scratch_bytes": 17532868
+    }
+  ],
+  "source_modified": false,
+  "collation": {
+    "datcollate": "C",
+    "datctype": "C"
+  },
+  "rows": 319352,
+  "seconds": 162.781,
+  "peak_rss_bytes": 173957120,
+  "evidence": {
+    "recorded_on": "2026-11-25",
+    "original_private_report_sha256": "3b1e633399a5fc0b0a75c42761df770b0ce096c0fdded63b438f8346ee18e81f",
+    "private_harness_sha256": "3b5dbc2c5c5f4965c17c729a2d08bf86fd34b9c8eb0b7f581a1b6e0cc1d33575",
+    "query_identifiers": "Aliased for publication; logical hashes were calculated over original identities.",
+    "environment": "Windows local process; retained PostgreSQL 17 fixture uses C collation.",
+    "python_version": null,
+    "python_version_note": "Not captured by the original harness; the later test-suite runtime is recorded separately.",
+    "measurement_runs": 1,
+    "timing_interpretation": "Single observed validation duration; no performance comparison or hosted latency claim.",
+    "limiter": "Not profiled. CPU load and contention were not captured.",
+    "source_files_observed_after_measurement": {
+      "service/result_codec.py": "fe50fc14e3bb141cd43cfaa1b128a8ab4a9009ff1c31cf20a56f00780673b9eb",
+      "service/result_builder.py": "d12a197d34bba9ea16fb909749bd91aaf44e3fe9b59da35c7d554698e8327763"
+    },
+    "source_hash_limit": "Hashes were captured during evidence publication, not embedded at original measurement time."
+  },
+  "format_version": 1,
+  "cloud_used": false,
+  "record_bytes": 25,
+  "frame_records": 4096,
+  "maximum_canonical_result_bytes": 16384,
+  "maximum_dictionary_bytes": 4194304,
+  "checked": [
+    "Every retained payload has identical canonical JSON after encode/decode, including scalar types and unknown/evidence fields.",
+    "Original discovery ordinals and every stored logical metadata field match reconstructed values.",
+    "Each of eight complete ordering streams matches PostgreSQL: two retained queries times four orders.",
+    "All pack hashes, frame hashes, exact row counts and independent champion-set counts match.",
+    "SQLite query plans for all four orders have no temporary sorting tree."
+  ],
+  "limits": [
+    "This production replay checks entire ordering streams; the earlier prototype separately exercised arbitrary pages.",
+    "Peak working set includes the validation harness retaining an ordinal/record lookup, not just production worker memory.",
+    "Four packs were built for validation; terminal production storage keeps three completed-sort packs.",
+    "No hosted API latency, concurrent load, solver execution, migration write, recovery or provider invoice qualification."
+  ]
+}

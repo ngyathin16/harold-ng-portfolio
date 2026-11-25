@@ -1,0 +1,335 @@
+{
+  "format_version": 1,
+  "run_id": "f2225e6ec5824d56b5f8924c4666019a",
+  "started_at": "2026-11-25T08:39:56.098356+00:00",
+  "status": "passed",
+  "endpoints_redacted": true,
+  "credentials_included": false,
+  "cloud_run_launched": false,
+  "maximum_http_attempts": 40,
+  "maximum_possible_write_bytes": 524288,
+  "payload_bytes": 65536,
+  "payload_sha256": "7daca2095d0438260fa849183dfc67faa459fdf4936e1bc91eec6b281b27e4c2",
+  "frozen_result_objects_sha256": "e8f8e1902ed236559c999b0068d2f21c388da529f5d15d6097f05f6d1b352107",
+  "qualification_script_sha256": "790acbd5759a2cbccee4c4929f98fbee68af6e9efb4066af9f6a9c56566d3e9f",
+  "copy_transport": "Frozen production conditional header hook plus direct same-account boto3 CopyObject; database receipts excluded",
+  "documentation": [
+    "https://developers.cloudflare.com/r2/api/s3/extensions/",
+    "https://developers.cloudflare.com/r2/api/s3/conditional-operations/"
+  ],
+  "checks": [
+    {
+      "name": "worker_immutable_put_and_full_verification",
+      "passed": true,
+      "put_status": 200
+    },
+    {
+      "name": "worker_range",
+      "passed": true,
+      "start": 0,
+      "length": 25,
+      "status": 206
+    },
+    {
+      "name": "worker_range",
+      "passed": true,
+      "start": 4095,
+      "length": 200,
+      "status": 206
+    },
+    {
+      "name": "worker_range",
+      "passed": true,
+      "start": 65529,
+      "length": 7,
+      "status": 206
+    },
+    {
+      "name": "same_content_put_is_idempotent",
+      "passed": true,
+      "put_status": 412
+    },
+    {
+      "name": "different_content_put_fails_without_overwrite",
+      "passed": true,
+      "put_status": 412
+    },
+    {
+      "name": "api_read_only_full_get",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "api_read_only_range",
+      "passed": true,
+      "start": 17,
+      "length": 33,
+      "status": 206
+    },
+    {
+      "name": "api_write_is_forbidden_and_absent",
+      "passed": true,
+      "put_status": 403,
+      "head_status": 404
+    },
+    {
+      "name": "operator_results_to_private_archive_copy",
+      "passed": true,
+      "copy_status": 200
+    },
+    {
+      "name": "copy_destination_condition_rejects_existing_key",
+      "passed": true,
+      "copy_status": 412
+    },
+    {
+      "name": "copy_source_condition_rejects_wrong_etag",
+      "passed": true,
+      "copy_status": 412,
+      "head_status": 404
+    },
+    {
+      "name": "operator_archive_to_results_copy_and_api_read",
+      "passed": true,
+      "copy_status": 200
+    }
+  ],
+  "cleanup": [
+    {
+      "bucket_role": "results",
+      "object_role": "source.bin",
+      "delete_status": 204,
+      "absence_confirmed": true
+    },
+    {
+      "bucket_role": "archive",
+      "object_role": "copy.bin",
+      "delete_status": 204,
+      "absence_confirmed": true
+    },
+    {
+      "bucket_role": "results",
+      "object_role": "restored.bin",
+      "delete_status": 204,
+      "absence_confirmed": true
+    }
+  ],
+  "finished_at": "2026-11-25T08:40:00.264506+00:00",
+  "authorized_http_requests": 28,
+  "actual_http_attempts": 28,
+  "possible_write_bytes": 458767,
+  "new_verified_object_bytes": 196608,
+  "uncertain_write": false,
+  "all_created_objects_absent": true,
+  "http_responses": [
+    {
+      "label": "worker_create",
+      "operation": "PutObject",
+      "status": 200,
+      "error_code": null
+    },
+    {
+      "label": "worker_create",
+      "operation": "GetObject",
+      "status": 200,
+      "error_code": null,
+      "content_length": 65536
+    },
+    {
+      "label": "worker_range_0",
+      "operation": "GetObject",
+      "status": 206,
+      "error_code": null,
+      "content_length": 25,
+      "content_range": "bytes 0-24/65536"
+    },
+    {
+      "label": "worker_range_4095",
+      "operation": "GetObject",
+      "status": 206,
+      "error_code": null,
+      "content_length": 200,
+      "content_range": "bytes 4095-4294/65536"
+    },
+    {
+      "label": "worker_range_65529",
+      "operation": "GetObject",
+      "status": 206,
+      "error_code": null,
+      "content_length": 7,
+      "content_range": "bytes 65529-65535/65536"
+    },
+    {
+      "label": "idempotent_put",
+      "operation": "PutObject",
+      "status": 412,
+      "error_code": "PreconditionFailed"
+    },
+    {
+      "label": "idempotent_put",
+      "operation": "GetObject",
+      "status": 200,
+      "error_code": null,
+      "content_length": 65536
+    },
+    {
+      "label": "wrong_content_put",
+      "operation": "PutObject",
+      "status": 412,
+      "error_code": "PreconditionFailed"
+    },
+    {
+      "label": "wrong_content_put",
+      "operation": "GetObject",
+      "status": 200,
+      "error_code": null,
+      "content_length": 65536
+    },
+    {
+      "label": "api_get",
+      "operation": "GetObject",
+      "status": 200,
+      "error_code": null,
+      "content_length": 65536
+    },
+    {
+      "label": "api_range",
+      "operation": "GetObject",
+      "status": 206,
+      "error_code": null,
+      "content_length": 33,
+      "content_range": "bytes 17-49/65536"
+    },
+    {
+      "label": "api_write_denied",
+      "operation": "PutObject",
+      "status": 403,
+      "error_code": "AccessDenied"
+    },
+    {
+      "label": "api_write_absent",
+      "operation": "HeadObject",
+      "status": 404,
+      "error_code": "404"
+    },
+    {
+      "label": "operator_verify_source",
+      "operation": "GetObject",
+      "status": 200,
+      "error_code": null,
+      "content_length": 65536
+    },
+    {
+      "label": "cross_bucket_copy",
+      "operation": "CopyObject",
+      "status": 200,
+      "error_code": null
+    },
+    {
+      "label": "verify_archive_copy",
+      "operation": "GetObject",
+      "status": 200,
+      "error_code": null,
+      "content_length": 65536
+    },
+    {
+      "label": "copy_destination_rejected",
+      "operation": "CopyObject",
+      "status": 412,
+      "error_code": "PreconditionFailed"
+    },
+    {
+      "label": "archive_unchanged_after_rejection",
+      "operation": "GetObject",
+      "status": 200,
+      "error_code": null,
+      "content_length": 65536
+    },
+    {
+      "label": "copy_source_rejected",
+      "operation": "CopyObject",
+      "status": 412,
+      "error_code": "PreconditionFailed"
+    },
+    {
+      "label": "bad_copy_absent",
+      "operation": "HeadObject",
+      "status": 404,
+      "error_code": "404"
+    },
+    {
+      "label": "cross_bucket_restore",
+      "operation": "CopyObject",
+      "status": 200,
+      "error_code": null
+    },
+    {
+      "label": "api_read_restored_copy",
+      "operation": "GetObject",
+      "status": 200,
+      "error_code": null,
+      "content_length": 65536
+    },
+    {
+      "label": "cleanup_0",
+      "operation": "DeleteObject",
+      "status": 204,
+      "error_code": null
+    },
+    {
+      "label": "cleanup_0",
+      "operation": "HeadObject",
+      "status": 404,
+      "error_code": "404"
+    },
+    {
+      "label": "cleanup_1",
+      "operation": "DeleteObject",
+      "status": 204,
+      "error_code": null
+    },
+    {
+      "label": "cleanup_1",
+      "operation": "HeadObject",
+      "status": 404,
+      "error_code": "404"
+    },
+    {
+      "label": "cleanup_2",
+      "operation": "DeleteObject",
+      "status": 204,
+      "error_code": null
+    },
+    {
+      "label": "cleanup_2",
+      "operation": "HeadObject",
+      "status": 404,
+      "error_code": "404"
+    }
+  ],
+  "limits": [
+    "Sequential transport qualification only; no concurrent writer or ambiguous-write recovery test.",
+    "R2 destination CopyObject conditions are a provider beta extension.",
+    "Finite local experiment; no claim of a hard monthly invoice cap.",
+    "Copy transport used production conditional headers with direct boto3; database copy receipts were excluded."
+  ],
+  "secret_scan_passed": true,
+  "current_result_objects_matches_frozen": true,
+  "operation_attempts": {
+    "PutObject": 4,
+    "CopyObject": 4,
+    "GetObject": 12,
+    "HeadObject": 5,
+    "DeleteObject": 3
+  },
+  "r2_class_a_attempts": 8,
+  "r2_class_b_attempts": 17,
+  "evidence": {
+    "original_private_report_sha256": "fbdd26219e01a25bbfd6f3bca8c23beba352c7fa00a36d76b99373ec763e2e92",
+    "scope": "Previously authorized, finite live R2 qualification using distinct API, worker and operator credentials.",
+    "republished_without_new_cloud_calls": true,
+    "object_namespace": "Unique staging keys only; no pre-existing object was modified.",
+    "credentials_and_endpoints": "Excluded from this report and Git.",
+    "account_invoice_limit": "Not established by a finite transport experiment."
+  }
+}

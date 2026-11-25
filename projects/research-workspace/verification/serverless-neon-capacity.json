@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-11-25T09:08:26.250038+00:00",
+  "runtime_fence_preserved": true,
+  "provider_invoice_measurement": false,
+  "scope": "current Neon branch logical relation storage, all databases and shared forks",
+  "migration": {
+    "applied": [],
+    "already_applied": 11,
+    "role_mapping": {
+      "anon": "research_visitor",
+      "authenticated": "research_authenticated",
+      "service_role": "research_importer"
+    }
+  },
+  "execution_identity": "migration owner; restricted API execution pending runtime activation",
+  "refresh_seconds": 0.062,
+  "sample": {
+    "used_bytes": 251084800,
+    "limit_bytes": 1073741824,
+    "measured_at": "2026-11-25 09:08:45.348208+00:00"
+  },
+  "fits_two_run_reservations_plus_headroom": true,
+  "provider_baseline_unchanged": true,
+  "passed": true,
+  "migration_source_sha256": "98ea8a4692600cedbf783022e0edd4416d0316216ce05e66b754fe7081eaa42e"
+}

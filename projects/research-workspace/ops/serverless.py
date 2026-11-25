@@ -2,12 +2,15 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 from datetime import datetime, timezone
+from dataclasses import replace
 import gzip
 import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import signal
 import tempfile
 import time
@@ -16,9 +19,10 @@ import uuid
 import psycopg
 from psycopg import sql
 from psycopg.rows import dict_row
+from psycopg_pool import ConnectionPool
 
 from deploy.managed import APP_ROLES, SCHEMAS, provider_baseline, require_tls
-from . import backup
+from . import backup, result_recovery
 
 
 def positive(name):
@@ -101,7 +105,7 @@ def import_bundle(store, url, directory, staging_bytes):
     return publish(directory, url, ImportStorage(store), managed=True, max_restored_bytes=reserved, max_verification_bytes=verification_bytes)
 
 
-def cleanup(connection, store):
+def cleanup(connection, store, result_objects=None, *, budget=None):
     """Shared lock is held by caller; source objects are never cleanup candidates."""
     with connection.transaction():
         rows = connection.execute("""SELECT a.storage_key FROM research.query_artifacts a JOIN research.query_runs r ON r.id=a.run_id
@@ -117,7 +121,10 @@ def cleanup(connection, store):
             connection.execute("DELETE FROM research.query_artifact_gc WHERE storage_key=%s", (key,))
         connection.execute("DELETE FROM research.query_results WHERE run_id IN (SELECT id FROM research.query_runs WHERE expires_at<now())")
         connection.execute("DELETE FROM research.request_limits WHERE window_start<now()-interval '1 day'")
-    return {"deleted_query_objects": len(rows)}
+    result = {"deleted_query_objects": len(rows)}
+    if result_objects is not None:
+        result.update(result_recovery.cleanup(connection, result_objects, budget=budget))
+    return result
 
 
 def assert_managed_target(connection, manifest, baseline):
@@ -161,18 +168,24 @@ def fence_restored_work(connection, max_attempts=3, max_launch_attempts=3, reten
         state=CASE WHEN r.state='queued' THEN 'pending' ELSE 'done' END,
         eligible_at=now(),created_at=now() FROM research.query_runs r WHERE r.id=o.run_id""")
     connection.execute("DELETE FROM research.capacity_sample")
+    if connection.execute("SELECT to_regclass('research.budget_windows') AS name").fetchone()['name']:
+        connection.execute("UPDATE research.budget_windows SET armed=false")
 
 
-def restore(store, objects, identity, url, directory, staging_bytes):
+def restore(store, objects, identity, url, directory, staging_bytes, *, result_objects=None, result_copy_store=None):
     manifest = backup.manifest_for(store, identity)
     if not manifest.get("managed"):
         raise ValueError("VM backup requires explicit reviewed provider-role conversion before managed restore")
-    if sum(item["size"] for item in manifest["members"]) + 16 * 1024 * 1024 > staging_bytes:
+    digest_scratch = result_recovery.DIGEST_SCRATCH_BYTES if manifest.get('query_check_version', 1) == 2 else 0
+    if sum(item["size"] for item in manifest["members"]) + 16 * 1024 * 1024 + digest_scratch > staging_bytes:
         raise ValueError("Restore exceeds staging capacity before writing")
     baseline = json.loads(backup.require_env("RESEARCH_RESTORE_BASELINE_JSON"))
     with psycopg.connect(url, row_factory=dict_row) as connection:
         assert_managed_target(connection, manifest, baseline)
     backup.verify_set(store, identity, directory)
+    staged_results = result_recovery.staged_objects(directory) if manifest['format_version'] >= 2 else None
+    if any(item['path'].startswith('results/') for item in manifest['members']) and result_objects is None:
+        raise ValueError('Result recovery requires an isolated result namespace')
     roles = json.loads((directory / "roles.json").read_bytes())
     if set(roles["roles"]) - set(APP_ROLES):
         raise ValueError("Backup contains unapproved provider roles")
@@ -199,7 +212,7 @@ def restore(store, objects, identity, url, directory, staging_bytes):
         connection.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
         if backup.table_checks(connection) != manifest["table_checks"]:
             raise ValueError("Restored application rows differ, including private rows")
-        if backup.query_checks(connection) != manifest["query_checks"]:
+        if backup.query_checks(connection, staged_results, version=manifest.get('query_check_version', 1), scratch=directory) != manifest["query_checks"]:
             raise ValueError("Restored result hashes differ from the snapshot")
         if provider_baseline(connection) != baseline:
             raise ValueError("Restore altered provider baseline")
@@ -229,15 +242,56 @@ def restore(store, objects, identity, url, directory, staging_bytes):
         if item["path"].startswith("objects/"):
             key = item["path"][8:]
             ImportStorage(objects).put_verified(key, backup.child(directory, item["path"]), item["sha256"], "application/octet-stream")
+    restored_results = result_recovery.restore_members(result_objects, manifest, directory,
+        archive_store=store, copy_store=result_copy_store) if result_objects is not None else 0
     return {**report, "backup_id": identity, "query_result_hashes_verified": len(manifest["query_checks"]),
+            "result_objects_restored": restored_results, "query_check_version": manifest.get('query_check_version', 1),
             "dispatch_paused": True, "api_and_worker_verified": False}
 
 
-def operate(command, work, identity=None):
+@contextmanager
+def operator_budget(command):
+    """One independent writable source session; never the dump or restore snapshot."""
+    from service.budget import Budget, BudgetUnavailable
+    window = os.environ.get('RESEARCH_BUDGET_WINDOW_ID', '')
+    if not window and os.environ.get('RESEARCH_RESULT_STORAGE_MODE') != 'objects':
+        yield None
+        return
+    if not window:
+        raise BudgetUnavailable('Cloud object operators require a reviewed resource allowance window')
+    source = backup.require_env('RESEARCH_BACKUP_DATABASE_URL' if command == 'restore' else 'RESEARCH_OPERATOR_DATABASE_URL')
+    require_tls(source, session=True)
+    with ConnectionPool(source, min_size=0, max_size=1, timeout=5,
+                        kwargs={'row_factory': dict_row, 'connect_timeout': 5,
+                                'options': '-c statement_timeout=5000 -c lock_timeout=5000'}) as pool:
+        budget = Budget(pool, window)
+        budget.invocation(operator=True)
+        yield budget
+
+
+def operator_database_url(command):
     url = backup.require_env("RESEARCH_OPERATOR_DATABASE_URL")
+    override = os.environ.get('RESEARCH_RESTORE_DATABASE_NAME')
+    if override is None:
+        return url
+    if command != 'restore':
+        raise ValueError('A restore database override is only valid for the restore command')
+    if not re.fullmatch(r'[a-z][a-z0-9_]{0,62}', override) or not override.endswith('_restore_test'):
+        raise ValueError('Restore database name must be a lowercase SQL identifier ending in _restore_test, at most 63 characters')
+    source = psycopg.conninfo.conninfo_to_dict(backup.require_env('RESEARCH_BACKUP_DATABASE_URL'))
+    if override == source.get('dbname'):
+        raise ValueError('Restore database must differ from the live source database')
+    return psycopg.conninfo.make_conninfo(url, dbname=override)
+
+
+def operate(command, work, identity=None, *, budget=None):
+    url = operator_database_url(command)
     require_tls(url, session=True)
+    if os.environ.get('RESEARCH_RESULT_STORAGE_MODE') == 'objects' and budget is None:
+        raise ValueError('Cloud object operators require a reviewed resource allowance')
+    charge = budget.result_charge if budget is not None else None
     staging = positive("RESEARCH_OPERATOR_MAX_STAGING_BYTES")
-    store = backup.R2Store()
+    store = backup.R2Store(budget=budget)
     if command == "verify":
         with backup.database_operation_lock(url):
             if identity is None:
@@ -250,17 +304,31 @@ def operate(command, work, identity=None):
     if command == "prune":
         with backup.database_operation_lock(url) as connection:
             return backup.prune(LockedStore(connection, store), execute=True)
-    objects = backup.R2Store("OBJECT_", backup.require_env("RESEARCH_OBJECT_PREFIX"))
+    objects = backup.R2Store("OBJECT_", backup.require_env("RESEARCH_OBJECT_PREFIX"), budget=budget)
     separate_namespaces(store, objects)
+    results = result_recovery.configured_objects(charge=charge) if os.environ.get('RESEARCH_RESULT_STORAGE_MODE') == 'objects' else None
+    if results is not None:
+        separate_namespaces(store, results)
+        separate_namespaces(objects, results)
     if command == "restore":
         restore_prefix = backup.require_env("RESEARCH_RESTORE_OBJECT_PREFIX")
-        restored_objects = backup.R2Store("OBJECT_", restore_prefix)
+        restored_objects = backup.R2Store("OBJECT_", restore_prefix, budget=budget)
         separate_namespaces(objects, restored_objects)
         separate_namespaces(store, restored_objects)
+        restored_results = None
+        if results is not None:
+            from service.config import Settings
+            from service.result_objects import ResultObjects
+            restored_results = ResultObjects.from_settings(replace(Settings.from_env(),
+                result_prefix=backup.require_env('RESEARCH_RESTORE_RESULT_PREFIX')), charge=charge)
+            for other in (results, store, objects, restored_objects):
+                separate_namespaces(other, restored_results)
         source_url = backup.require_env("RESEARCH_BACKUP_DATABASE_URL")
         require_tls(source_url, session=True)
         with backup.database_operation_lock(source_url) as connection:
-            return restore(LockedStore(connection, store), LockedStore(connection, restored_objects), backup.backup_id(identity), url, work / "restore", staging)
+            result_copy_store = LockedStore(connection, backup.R2Store.from_result_objects(restored_results, budget=budget)) if restored_results is not None else None
+            return restore(LockedStore(connection, store), LockedStore(connection, restored_objects), backup.backup_id(identity), url, work / "restore", staging,
+                           result_objects=restored_results, result_copy_store=result_copy_store)
     with backup.database_operation_lock(url) as connection:
         store, objects = LockedStore(connection, store), LockedStore(connection, objects)
         if command == "backup":
@@ -268,21 +336,18 @@ def operate(command, work, identity=None):
             copy_sources = {}
             manifest = backup.prepare_set(url, None, work / identity, identity, object_store=objects, managed=True,
                 max_staging_bytes=staging, max_dump_bytes=positive("RESEARCH_OPERATOR_MAX_DUMP_BYTES"), connection=connection,
-                copy_sources=copy_sources)
+                copy_sources=copy_sources, result_objects=results)
             manifest = backup.publish_set(store, work / identity, manifest, copy_sources=copy_sources)
             return {"backup_id": identity, "verified_members": len(manifest["members"]),
                     "bytes": sum(item["size"] for item in manifest["members"]),
                     "server_side_copied_objects": len(copy_sources),
                     "server_side_copied_bytes": sum(item["size"] for item in manifest["members"] if item["path"] in copy_sources)}
         if command == "cleanup":
-            return cleanup(connection, objects)
+            return cleanup(connection, objects, results, budget=budget)
         return import_bundle(objects, url, work / "import", staging)
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("backup", "verify", "prune", "cleanup", "import", "restore"))
-    args = parser.parse_args()
+def run(command, budget=None):
     began = time.monotonic()
     # A hard process limit bounds downloads, compilation and database work together.
     if hasattr(signal, "SIGALRM"):
@@ -293,28 +358,42 @@ def main():
         if timeout < 1:
             raise ValueError("Operator timeout must be positive")
         signal.alarm(timeout)
-    result = {"operation": args.command, "operation_id": uuid.uuid4().hex, "reported_at": backup.now()}
+    charge = budget.result_charge if budget is not None else None
+    result = {"operation": command, "operation_id": uuid.uuid4().hex, "reported_at": backup.now()}
     with tempfile.TemporaryDirectory(prefix="research-operator-") as directory:
         work = Path(directory)
         try:
-            result.update(operate(args.command, work, os.environ.get("RESEARCH_BACKUP_ID")), passed=True)
+            result.update(operate(command, work, os.environ.get("RESEARCH_BACKUP_ID"), budget=budget), passed=True)
         except Exception as error:
             result.update(passed=False, error_type=type(error).__name__)
         result["duration_seconds"] = round(time.monotonic() - began, 3)
         try:
             report = work / "report.json"
             backup.write_json(report, result)
-            store = backup.R2Store(namespace=backup.require_env("RESEARCH_REPORT_PREFIX"))
-            separate_namespaces(store, backup.R2Store())
+            store = backup.R2Store(namespace=backup.require_env("RESEARCH_REPORT_PREFIX"), budget=budget)
+            separate_namespaces(store, backup.R2Store(budget=budget))
             object_prefix = os.environ.get("RESEARCH_OBJECT_PREFIX")
-            if object_prefix and os.environ.get("OBJECT_R2_BUCKET") == store.bucket:
-                if store.prefix == object_prefix or store.prefix.startswith(object_prefix + "/") or object_prefix.startswith(store.prefix + "/"):
-                    raise ValueError("Report and object namespaces overlap")
+            if object_prefix:
+                separate_namespaces(store, backup.R2Store('OBJECT_', object_prefix, budget=budget))
+            if os.environ.get('RESEARCH_RESULT_STORAGE_MODE') == 'objects':
+                separate_namespaces(store, result_recovery.configured_objects(charge=charge))
             store.put(result["operation_id"] + ".json", report)
         except Exception as error:
             result.update(passed=False, durable_report_failed=type(error).__name__)
         print(backup.packed(result).decode(), flush=True)
     return 0 if result["passed"] else 1
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('command', choices=('backup', 'verify', 'prune', 'cleanup', 'import', 'restore'))
+    args = parser.parse_args()
+    try:
+        with operator_budget(args.command) as budget:
+            return run(args.command, budget)
+    except Exception as error:
+        print(backup.packed({'operation': args.command, 'passed': False, 'error_type': type(error).__name__}).decode(), flush=True)
+        return 1
 
 
 if __name__ == "__main__":

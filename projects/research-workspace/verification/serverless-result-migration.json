@@ -1,0 +1,46 @@
+{
+  "mode": "execute",
+  "source_modified": false,
+  "queries": [
+    {
+      "id": "Aik3xa_zJwXVM3h80Z6vKeSB",
+      "source_fingerprint": "8b38743822a66997b08ebe5822350f584f3cfb1515ff761bb107aa41e68c50e8",
+      "stored_rows": 280543,
+      "stored_champion_sets": 211961,
+      "rows_sha256": "4302f4ec378144f70174b17b23a354a8802c18d935cb115bb9eb20c0683b094d",
+      "object_count": 4,
+      "object_bytes": 21197667,
+      "generation_id": "86b9ebdfb0e37050d268206cbbb4d928"
+    },
+    {
+      "id": "zvhvotLPIM70pbUhbX_KWa_i",
+      "source_fingerprint": "184248d6ce7b74e22ab9d25ac1f60111bb0750e6095b7ca90dbde0eba0c04c14",
+      "stored_rows": 38809,
+      "stored_champion_sets": 30935,
+      "rows_sha256": "ae2eff462a77029f5155237aab8d179e43b0e9a58774c114a5856778b5cc3680",
+      "object_count": 4,
+      "object_bytes": 3067617,
+      "generation_id": "783e3eb3a7d591b88471ff9060d804f8"
+    }
+  ],
+  "passed": true,
+  "duration_seconds": 243.953,
+  "writer_fence_retained": true,
+  "control_plane_http_calls": 18,
+  "quiescence": {
+    "checked_at": "2026-11-25T08:59:35.757366+00:00",
+    "paused_schedules": 4,
+    "pending_tasks": 0,
+    "outstanding_executions": 0,
+    "terminal_execution_counts": {
+      "search": 0,
+      "backup": 2,
+      "verify": 1,
+      "restore": 1,
+      "cleanup": 0,
+      "prune": 0,
+      "import": 0
+    }
+  },
+  "window": "staging_20261125_results_v1"
+}

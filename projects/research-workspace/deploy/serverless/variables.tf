@@ -57,6 +57,69 @@ variable "secret_versions" {
     error_message = "Use immutable numeric secret versions, never latest."
   }
 }
+variable "budget_window_id" {
+  type        = string
+  default     = ""
+  description = "Explicit resource-allowance window installed in the authoritative source database. It never resets automatically."
+  validation {
+    condition     = var.budget_window_id == "" || can(regex("^[a-zA-Z0-9_-]{1,128}$", var.budget_window_id))
+    error_message = "Use the exact reviewed resource-allowance identifier."
+  }
+}
+variable "result_storage" {
+  type = object({
+    bucket                    = string
+    prefix                    = string
+    capacity_evidence         = string
+    reservation_bytes         = number
+    headroom_bytes            = number
+    capacity_measurement_mode = optional(string, "manual")
+    capacity_limit_bytes      = optional(number, 1073741824)
+  })
+  default     = null
+  description = "Optional reviewed private result storage. Null preserves PostgreSQL results and existing secret bindings. The evidence must qualify metadata capacity, recovery and the same all-provider monthly ceiling; this does not authorize an upgrade or enable schedules."
+  validation {
+    condition     = var.result_storage == null || var.budget_window_id != ""
+    error_message = "Object result storage requires an explicitly installed resource-allowance window."
+  }
+  validation {
+    condition = var.result_storage == null ? true : (
+      contains(["manual", "neon_branch"], var.result_storage.capacity_measurement_mode) &&
+      var.result_storage.capacity_limit_bytes > 0 &&
+      floor(var.result_storage.capacity_limit_bytes) == var.result_storage.capacity_limit_bytes &&
+      (var.result_storage.capacity_measurement_mode != "neon_branch" || var.result_storage.capacity_limit_bytes <= 1073741824)
+    )
+    error_message = "Use manual capacity or the qualified Neon branch collector with an explicit positive limit no greater than 1 GiB."
+  }
+  validation {
+    condition = var.result_storage == null ? true : try(
+      can(regex("^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$", var.result_storage.bucket)) &&
+      length(trimspace(var.result_storage.capacity_evidence)) > 3 &&
+      var.result_storage.reservation_bytes >= 67108864 && floor(var.result_storage.reservation_bytes) == var.result_storage.reservation_bytes &&
+      var.result_storage.headroom_bytes >= 134217728 && floor(var.result_storage.headroom_bytes) == var.result_storage.headroom_bytes,
+    false)
+    error_message = "Result storage needs a valid private bucket, explicit reviewed capacity evidence, and integer bounds of at least 64 MiB per run and 128 MiB headroom."
+  }
+  validation {
+    condition = var.result_storage == null ? true : try(
+      can(regex("^${var.environment}/results/[a-z0-9][a-z0-9_-]*(/[a-z0-9][a-z0-9_-]*)*/$", var.result_storage.prefix)) &&
+      length(var.result_storage.prefix) <= 129 && length(split("/", trimsuffix(var.result_storage.prefix, "/"))) <= 16 &&
+      alltrue([for part in split("/", trimsuffix(var.result_storage.prefix, "/")) :
+        !contains(concat(["con", "prn", "aux", "nul"], [for i in range(1, 10) : "com${i}"], [for i in range(1, 10) : "lpt${i}"]), part)
+      ]) &&
+      alltrue([for prefix in values(var.r2_namespaces) :
+        !startswith(var.result_storage.prefix, prefix) && !startswith(prefix, var.result_storage.prefix)
+      ]),
+    false)
+    error_message = "Use a separate environment/results/identity/ namespace of at most 128 characters plus its trailing slash, with safe components and no overlap with objects, backups or reports."
+  }
+  validation {
+    condition = var.result_storage == null ? true : alltrue([
+      for name in ["result-api", "result-worker", "result-operator"] : contains(keys(var.secret_versions), name)
+    ])
+    error_message = "Object result storage requires pinned numeric versions for result-api, result-worker and result-operator."
+  }
+}
 variable "allowed_origins" {
   type    = list(string)
   default = ["https://haroldng.dev"]

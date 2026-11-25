@@ -38,8 +38,18 @@ class Settings:
     dispatch_marker_bucket: str = ''
     dispatch_marker_prefix: str = 'dispatch/'
     capacity_max_age_seconds: int = 900
+    capacity_measurement_mode: str = 'manual'
+    capacity_limit_bytes: int = 1073741824
     result_reservation_bytes: int = 2147483648
     database_headroom_bytes: int = 1073741824
+    result_storage_mode: str = 'postgres'
+    result_credentials_json: str = ''
+    result_bucket: str = ''
+    result_prefix: str = 'results/'
+    result_local_root: str = ''
+    result_scratch_root: str = ''
+    result_scratch_bytes: int = 536870912
+    budget_window_id: str = ''
 
     @classmethod
     def from_env(cls):
@@ -61,7 +71,17 @@ class Settings:
             raise ValueError('Invalid deployment mode')
         if settings.client_ip_mode not in ('peer', 'shared'):
             raise ValueError('Invalid client IP mode')
+        if settings.result_storage_mode not in ('postgres', 'objects'):
+            raise ValueError('Invalid result storage mode')
+        if settings.capacity_measurement_mode not in ('manual', 'neon_branch'):
+            raise ValueError('Invalid capacity measurement mode')
+        if settings.capacity_measurement_mode == 'neon_branch' and settings.capacity_limit_bytes > 1073741824:
+            raise ValueError('Neon branch capacity exceeds the qualified limit')
+        if settings.result_storage_mode == 'objects' and not (settings.result_credentials_json or settings.result_local_root):
+            raise ValueError('Object result storage requires restricted credentials or a local root')
         if settings.deployment_mode == 'serverless':
+            if settings.result_storage_mode == 'objects' and not settings.budget_window_id:
+                raise ValueError('Serverless result storage requires an explicitly reviewed resource allowance')
             from psycopg.conninfo import conninfo_to_dict
             if settings.database_url and conninfo_to_dict(settings.database_url).get('sslmode') != 'verify-full':
                 raise ValueError('Serverless database connections require sslmode=verify-full')

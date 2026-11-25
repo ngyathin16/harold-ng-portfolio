@@ -108,6 +108,14 @@ and removes an old completion marker before its payload. Interrupted deletions
 leave incomplete remnants, not a falsely usable set. Removing abandoned partial
 sets is a separate reviewed maintenance task.
 
+Result cleanup retains any planned upload whose object is absent, because a timed-out
+write may still finish. When that object exists and its full size and hash match,
+cleanup commits the verified intent and defers its generation until the next cleanup
+invocation. This separate pass preserves completion proof if a later deletion loses
+its acknowledgement or its database transaction rolls back. Storage reservations are
+released only after the expired terminal run has no active execution or retained result
+generation, including runs that failed before producing their first result object.
+
 Verify defaults to the newest complete set; `RESEARCH_BACKUP_ID` selects an exact
 set. Import takes a private directory prefix in `RESEARCH_IMPORT_BUNDLE_KEY`
 containing `bundle.json` and `artifacts/`, plus

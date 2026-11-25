@@ -1,0 +1,103 @@
+{
+  "checked_at": "2026-11-25T08:53:43.979002+00:00",
+  "window": "staging_20261125_results_v1",
+  "public_access_enabled": false,
+  "schedules_enabled": false,
+  "search_admission_enabled": false,
+  "historical_results_imported": false,
+  "before_database_bytes": 123305984,
+  "migration": {
+    "applied": [
+      "migrations/009_result_objects.sql",
+      "migrations/010_budget.sql"
+    ],
+    "already_applied": 8,
+    "role_mapping": {
+      "anon": "research_visitor",
+      "authenticated": "research_authenticated",
+      "service_role": "research_importer"
+    }
+  },
+  "window_installed_previously": false,
+  "after_database_bytes": 123838464,
+  "metrics": [
+    {
+      "metric": "api_response_bytes",
+      "ceiling": 268435456,
+      "used": 1048576
+    },
+    {
+      "metric": "cloud_control_calls",
+      "ceiling": 10000,
+      "used": 1000
+    },
+    {
+      "metric": "gcs_class_a",
+      "ceiling": 10000,
+      "used": 500
+    },
+    {
+      "metric": "google_egress_bytes",
+      "ceiling": 5368709120,
+      "used": 2147483648
+    },
+    {
+      "metric": "operator_executions",
+      "ceiling": 12,
+      "used": 4
+    },
+    {
+      "metric": "r2_class_a",
+      "ceiling": 10000,
+      "used": 5000
+    },
+    {
+      "metric": "r2_class_b",
+      "ceiling": 10000,
+      "used": 5000
+    },
+    {
+      "metric": "search_attempts",
+      "ceiling": 6,
+      "used": 0
+    },
+    {
+      "metric": "service_invocations",
+      "ceiling": 500,
+      "used": 326
+    }
+  ],
+  "storage": {
+    "ceiling": 5664056162,
+    "used": 1073741824
+  },
+  "provider_baseline_unchanged": true,
+  "restricted_logins": {
+    "api": {
+      "connected": true,
+      "direct_accounting_write_denied": true
+    },
+    "worker": {
+      "connected": true,
+      "direct_accounting_write_denied": true
+    },
+    "dispatcher": {
+      "connected": true,
+      "direct_accounting_write_denied": true
+    },
+    "importer": {
+      "connected": true,
+      "direct_accounting_write_denied": true
+    },
+    "backup": {
+      "connected": true,
+      "direct_accounting_write_denied": true
+    }
+  },
+  "migration_source_sha256": {
+    "migrations/009_result_objects.sql": "ba37106e6a2058cdf420d06df79fa73e7d82a8ba9caa51f0c728749647b109fb",
+    "migrations/010_budget.sql": "6440b6e95750f3b99b4e768869c0a7cc31f3128a6cba1c99cf22ca210a41dfed"
+  },
+  "passed": true,
+  "application_tables": 84
+}

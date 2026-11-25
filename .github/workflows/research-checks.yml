@@ -42,6 +42,12 @@ jobs:
       RESEARCH_DEPLOY_TEST_DATABASE_URL: postgresql://postgres:ci-fixture-only@localhost:5432/research_deploy_test
       RESEARCH_ADOPT_TEST_DATABASE_URL: postgresql://postgres:ci-fixture-only@localhost:5432/research_adopt_test
       RESEARCH_MANAGED_TEST_DATABASE_URL: postgresql://postgres:ci-managed-fixture-only@localhost:5433/research_managed_test
+      RESEARCH_MANAGED_INSTALL_TEST_DATABASE_URL: postgresql://managed_fixture_owner:ci-managed-owner-fixture-only@localhost:5433/research_managed_test
+      RESEARCH_MANAGED_RESTORE_TEST_DATABASE_URL: postgresql://managed_fixture_owner:ci-managed-owner-fixture-only@localhost:5433/research_managed_restore_test
+      RESEARCH_MIGRATION_SOURCE_TEST_URL: postgresql://postgres:ci-fixture-only@localhost:5432/research_migration_source_test
+      RESEARCH_MIGRATION_TARGET_TEST_URL: postgresql://postgres:ci-fixture-only@localhost:5432/research_migration_target_test
+      RESEARCH_BUDGET_TEST_DATABASE_URL: postgresql://postgres:ci-fixture-only@localhost:5432/research_budget_test
+      RESEARCH_BUDGET_HTTP_TEST_DATABASE_URL: postgresql://postgres:ci-fixture-only@localhost:5432/research_budget_http_test
     defaults:
       run:
         working-directory: projects/research-workspace
@@ -51,6 +57,19 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r service/requirements.txt -r ops/backup-requirements.txt
+      - name: Install matching PostgreSQL 17 dump and restore clients
+        run: |
+          if ! test -x /usr/lib/postgresql/17/bin/pg_dump; then
+            sudo install -d /usr/share/postgresql-common/pgdg
+            sudo curl --fail --silent --show-error https://www.postgresql.org/media/keys/ACCC4CF8.asc -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc
+            . /etc/os-release
+            printf 'deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt %s-pgdg main\n' "$VERSION_CODENAME" | sudo tee /etc/apt/sources.list.d/research-pgdg.list >/dev/null
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client-17
+          fi
+          /usr/lib/postgresql/17/bin/pg_dump --version
+          /usr/lib/postgresql/17/bin/pg_restore --version
+          echo /usr/lib/postgresql/17/bin >> "$GITHUB_PATH"
       - name: Migrate an isolated test database
         run: |
           python - <<'PY'
@@ -61,19 +80,26 @@ jobs:
               conn.execute('CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role')
               conn.execute('CREATE DATABASE research_deploy_test')
               conn.execute('CREATE DATABASE research_adopt_test')
+              conn.execute('CREATE DATABASE research_migration_source_test')
+              conn.execute('CREATE DATABASE research_migration_target_test')
+              conn.execute('CREATE DATABASE research_budget_test')
+              conn.execute('CREATE DATABASE research_budget_http_test')
               from deploy.migrate import MIGRATIONS
               for name in MIGRATIONS:
                   conn.execute(Path(name).read_text())
-          from psycopg.rows import dict_row
-          from deploy.managed import apply, provider_baseline, LOGIN_GROUPS
-          with psycopg.connect(os.environ['RESEARCH_MANAGED_TEST_DATABASE_URL'], row_factory=dict_row) as conn:
-              baseline = provider_baseline(conn)
-              passwords = {name: name + '-ci-fixture-' + 'x' * 30 for name in LOGIN_GROUPS}
-              apply(conn, passwords, baseline)
-              assert apply(conn, passwords, baseline)['applied'] == []
+          for name in ('RESEARCH_MIGRATION_SOURCE_TEST_URL', 'RESEARCH_MIGRATION_TARGET_TEST_URL',
+                       'RESEARCH_BUDGET_TEST_DATABASE_URL', 'RESEARCH_BUDGET_HTTP_TEST_DATABASE_URL'):
+              with psycopg.connect(os.environ[name], autocommit=True) as conn:
+                  for migration in MIGRATIONS:
+                      conn.execute(Path(migration).read_text())
+          with psycopg.connect(os.environ['RESEARCH_MANAGED_TEST_DATABASE_URL'], autocommit=True) as conn:
+              conn.execute("CREATE ROLE managed_fixture_owner LOGIN CREATEDB CREATEROLE NOSUPERUSER NOBYPASSRLS NOREPLICATION PASSWORD 'ci-managed-owner-fixture-only'")
+              conn.execute('ALTER DATABASE research_managed_test OWNER TO managed_fixture_owner')
+              conn.execute('CREATE DATABASE research_managed_restore_test OWNER managed_fixture_owner')
           PY
+      - run: python -m pytest deploy/test_managed.py -q
       - run: python -m unittest discover -s data -p test_import.py -v
-      - run: python -m unittest discover -s ops -p 'test_*.py' -v
+      - run: python -m pytest ops -q
       - run: python -m unittest deploy.test_deploy -v
       - run: python -m unittest solver.test_solver -v
       - run: python -m pytest service -q

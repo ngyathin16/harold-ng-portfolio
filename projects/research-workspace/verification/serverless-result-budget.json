@@ -1,0 +1,66 @@
+{
+  "checked_at": "2026-11-25T08:47:36.090892+00:00",
+  "mutations": false,
+  "google": {
+    "services": 2,
+    "jobs": 7,
+    "paused_schedules": 4,
+    "active_secret_versions": 18,
+    "secret_versions_after_result_rollout": 21
+  },
+  "r2": {
+    "buckets": {
+      "research-workspace-private": {
+        "objects": 636,
+        "bytes": 567233113
+      },
+      "research-workspace-results-staging": {
+        "objects": 0,
+        "bytes": 0
+      }
+    },
+    "list_attempts": 2,
+    "outside_project_baseline_owner_reported_bytes": 295350000,
+    "account_wide_operations_independently_verified": false
+  },
+  "quote": {
+    "fixed_list_price_usd": 1.888002976,
+    "fixed_reserve_usd": 1.91,
+    "variable_list_price_usd": 2.630136,
+    "variable_components_usd": {
+      "services": 0.3535,
+      "operator_jobs_12": 0.67392,
+      "search_jobs_6": 0.0864,
+      "job_overhead_18": 0.228096,
+      "requests_500": 0.0002,
+      "google_output_5_gib": 1.15,
+      "secret_access_10000": 0.03,
+      "tasks_10000": 0.004,
+      "gcs_hints": 0.05402,
+      "monitoring": 0.05
+    },
+    "variable_reserve_usd": 3,
+    "total_reserve_usd": 4.91,
+    "monthly_ceiling_usd": 4.99,
+    "unallocated_usd": 0.08,
+    "google_free_credits_deducted": false,
+    "disabled_secret_versions_billable": true,
+    "public_or_unbounded_operation_qualified": false
+  },
+  "neon": {
+    "branch_count": 1,
+    "provider_branch_logical_size_bytes": 250224640,
+    "provider_logical_limit_bytes": 1073741824,
+    "capacity_sample_installed": false,
+    "measurement_time_verified": false,
+    "deprecated_zero_usage_fields_rejected": true
+  },
+  "sources": [
+    "https://cloud.google.com/run/pricing",
+    "https://cloud.google.com/secret-manager/pricing",
+    "https://cloud.google.com/artifact-registry/pricing",
+    "https://cloud.google.com/scheduler/pricing",
+    "https://developers.cloudflare.com/r2/pricing/",
+    "https://neon.com/docs/introduction/plans"
+  ]
+}

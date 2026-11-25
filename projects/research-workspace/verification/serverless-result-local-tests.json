@@ -1,0 +1,162 @@
+{
+  "format_version": 1,
+  "recorded_on": "2026-11-25",
+  "status": "passed_with_platform_skip",
+  "started_at": "2026-11-25T08:50:12.464115+00:00",
+  "original_batch_finished_at": "2026-11-25T08:50:41.891195+00:00",
+  "finished_at": "2026-11-25T08:51:02.222073+00:00",
+  "finished_at_note": "Completion timestamp for the corrected data run, taken from its log modification time.",
+  "environment": {
+    "python_version": "3.12.13",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "postgres_version": "17.11",
+    "fresh_cluster": true,
+    "collation": "C",
+    "separate_service_budget_and_budget_http_databases": true
+  },
+  "cloud_used": false,
+  "original_retained_database_modified": false,
+  "schema_migrations": [
+    "migrations/001_publications.sql",
+    "migrations/002_source_tables.sql",
+    "migrations/003_source_views.sql",
+    "migrations/005_service_roles.sql",
+    "migrations/006_private_artifacts.sql",
+    "migrations/007_serverless.sql",
+    "migrations/008_managed_capacity.sql",
+    "migrations/009_result_objects.sql",
+    "migrations/010_budget.sql",
+    "service/migrations/002_queries.sql"
+  ],
+  "suites": [
+    {
+      "name": "service",
+      "command": "python -m pytest service -q -ra",
+      "passed": 302,
+      "failed": 0,
+      "skipped": [
+        {
+          "module": "service.test_result_objects",
+          "test": "test_local_file_symlink_is_not_deleted",
+          "reason": "Creating file symlinks requires Windows developer mode or privilege"
+        }
+      ],
+      "pytest_seconds": 26.83,
+      "warnings": [
+        "Starlette test client uses the deprecated AnyIO BlockingPortal alias."
+      ]
+    },
+    {
+      "name": "solver",
+      "command": "python -m unittest solver.test_solver -v",
+      "passed": 13,
+      "failed": 0,
+      "skipped": [],
+      "unittest_seconds": 1.152,
+      "real_snapshot_test_executed": true
+    },
+    {
+      "name": "data",
+      "command": "python -m unittest discover -s data -p test_import.py -v",
+      "passed": 10,
+      "failed": 0,
+      "skipped": [],
+      "unittest_seconds": 1.774,
+      "real_bundle_test_executed": true,
+      "Windows_extended_path_test_executed": true
+    }
+  ],
+  "initial_harness_correction": {
+    "suite": "data",
+    "error": "The supplied artifact directory lacked bundle.json.",
+    "correction": "Reran with the existing complete local bundle; all ten checks passed.",
+    "production_change_required": false
+  },
+  "source_fixture": {
+    "bundle_metadata_sha256": "d4bbbc0891626fbba39f341048e4bf8d32fd2ab2aebf38f0d3213027d3b1e511",
+    "solver_latest_metadata_sha256": "a179c136237d7f68709afdf7ba13d85b2a0f027ff01603900ee6cfac54a1e357",
+    "snapshot_id": "set19-pbe-556cc1ab5f2d630d"
+  },
+  "per_module_service_collected_tests": {
+    "service.test_budget": 47,
+    "service.test_budget_http": 33,
+    "service.test_dispatch": 15,
+    "service.test_dispatch_markers": 15,
+    "service.test_export_artifacts": 7,
+    "service.test_result_codec": 71,
+    "service.test_result_objects": 67,
+    "service.test_result_store": 7,
+    "service.test_serverless_api": 16,
+    "service.test_service": 25
+  },
+  "source_files_changed_during_batch": [],
+  "source_sha256": {
+    "data/__init__.py": "a02732d9528a327d83650aa7cc9b89301f07fc788d2774d70726cf572e6775fd",
+    "data/growth_fixture.py": "f884614843ae538eabda60f78a282385e38db1182be4949910f9aa71d1ef9ca5",
+    "data/import_snapshot.py": "9c3df76d33e849bb39fff4b75ab3702219ff2c6e9b1ee2c320fc674b9869d879",
+    "data/schema.py": "1631a9315b2234eee1437b6fe57d203af318107cacd21e54e3218d6f001aa4ca",
+    "data/test_import.py": "7bbe92101ca5eea11a8ea939499be92b82da97acf9574a760af44f1e0527e092",
+    "data/verify_postgres.py": "0c433cd7b4ca409d35b824b02e41076cf537dc63809ba86e704a19027faa53ce",
+    "data/verify_restore.py": "c5d8d07b1fc3f723eaeaab7fb47bac16bfa9786f6b1d40a42b2152b704e8b39b",
+    "data/verify_statistics.py": "b40c861e86aba74faaff2f309a515944d27026817fedf0eca14516dd5acda6c6",
+    "data/verify_worker_recovery.py": "0a3e475aad1cad188699c69fa96790acb872aeb01a5711b3d00d73082a7427ca",
+    "migrations/001_publications.sql": "5efe6ec9eeb50474e08c47202b66ab08b33446fd11c7d06000acd041d1841bbd",
+    "migrations/002_source_tables.sql": "191bc57804d50b730050ee7d71ad83bb26a9cdc16d4ec9791dc48cdb5dd80016",
+    "migrations/003_source_views.sql": "3a827f3dfe56ac73512d7a67261bd8af146984f4a9d0743300d465b07b43b026",
+    "migrations/005_service_roles.sql": "b32f15357a98f6a5a406aff1a5aa680f67decf1d146c6bd802086df58f8352a6",
+    "migrations/006_private_artifacts.sql": "4c95c3c900a8ba688d1ea53a8f457fec7f4dd5c173a3043849de31d344a9361b",
+    "migrations/007_serverless.sql": "8528e9d024ace01a5fc0e03d248a21100078150d57f899ea36250126d4bd655d",
+    "migrations/008_managed_capacity.sql": "01ddf5583fa320ade2ee3025ab1e750336a52f2270bb5a152dd832cd4a6b9c78",
+    "migrations/009_result_objects.sql": "ba37106e6a2058cdf420d06df79fa73e7d82a8ba9caa51f0c728749647b109fb",
+    "migrations/010_budget.sql": "6440b6e95750f3b99b4e768869c0a7cc31f3128a6cba1c99cf22ca210a41dfed",
+    "service/__init__.py": "7476d76da2f2ec8d4b77e2d15b758080984bb56d6ebe4e7411bbc5ede6410b5c",
+    "service/admission.py": "0b9bbe138a71cb1a63240da2c3820e030013d0f48ac5d08324c5ad811128be1c",
+    "service/app.py": "000faa93636579dcc8fe6c1209613dd2e9f4c6d305d12b591a872ef6c1a3741d",
+    "service/budget.py": "2d4ef349c306f42b420e534f52c1b08a55f2b971f6cc3c2aa9ee1b5edc521ae3",
+    "service/budget_http.py": "dd0be6692f0f41e6c1a524410ce7d1efd7ef0201890b00e7a5fd6ec79e8319ef",
+    "service/cloud.py": "f8645c2e713bcd4d37e013dbc3d977d39dd34123e654b2930f117f0529a46b29",
+    "service/config.py": "a93d9d30b8cee7b40abb2b599ff0c39479b03b4bd9174d3a78f7bff67f2f8ce1",
+    "service/dispatch.py": "c98528c079e31e16c2d03bad8917e2c8bc8c9c5dbf54b25157935202283a063e",
+    "service/dispatcher.py": "6694e73d96d1972559ca0e32b338a675e85fd12900b0b5b59be5464f8283c0e0",
+    "service/export_artifacts.py": "d56efe55161c401dae758a808e925d106b9d5da171734032786196394aa610a2",
+    "service/load_check.py": "b6a1b175585849b0aca1207ff583cf9272600da3c933427b28cef8d01c7c5c1e",
+    "service/markers.py": "356528152321f5cae418833616867856f3b8ffb9cea46427a4d42ab11ba6630b",
+    "service/migrations/002_queries.sql": "fa2edfabceea2b35a69d8aa68c70dd063e1ce1934e533bbb5b3d63218d61e2a3",
+    "service/result_builder.py": "d12a197d34bba9ea16fb909749bd91aaf44e3fe9b59da35c7d554698e8327763",
+    "service/result_codec.py": "fe50fc14e3bb141cd43cfaa1b128a8ab4a9009ff1c31cf20a56f00780673b9eb",
+    "service/result_objects.py": "e8f8e1902ed236559c999b0068d2f21c388da529f5d15d6097f05f6d1b352107",
+    "service/result_store.py": "76d75ffb2a679e48ed86813f727f3e1b5a58a4b3914c0820c6edeeff4a6e768d",
+    "service/test_budget.py": "5aaa189858f374c4c27b1bc2e76d1fb881f5da75212eb250521ca4a8015ccf84",
+    "service/test_budget_http.py": "046bd3a08f5ef8a1db24ae78cf2293747bf7a5090a6aa975328c2f6d9d3f8e64",
+    "service/test_dispatch.py": "3dadb357868d651e870d0ef94133ab9477f79f7c6a1b43e02cdaaad5f904f9d2",
+    "service/test_dispatch_markers.py": "630eea32e3c75db4839dc4e747974784685ed7a73c28610755eae7842269a3ce",
+    "service/test_export_artifacts.py": "624a789ae2704bfcdf8f793a36d58f9ed81941355180b34f578c7ee248628a86",
+    "service/test_result_codec.py": "1f3ea1461e432a3fc83a656c01db7412458ee065da882094d6fa3dfe4e584197",
+    "service/test_result_objects.py": "a06a4dfffe6872c5c69a67ac55746e011a8676a1a86bb8e799f55da44f481b56",
+    "service/test_result_store.py": "f763e4256968b6625f023f836d1d4b7dc0179ea95b8da8e518efe5a8ef20cf33",
+    "service/test_serverless_api.py": "836d62db17ac07c42968c7dfaf9ecc32080a464f3a29313a39bc98482d241e93",
+    "service/test_service.py": "1a712c98c3c8920e979e1a87e8d7267d9616169cfee519017701a382def3e202",
+    "service/worker.py": "b742452a20763a63254208a0848845b63b5066f6028ff38cb7c05c017d1094aa",
+    "solver/__init__.py": "32db53fee8064c900b83b9af2098a0258adc2de383c821c36bbf6ed8bd431ef4",
+    "solver/__main__.py": "80a4e58c6b39c781cccbd602774c7e0ae1208c99ffdd83ece50a3761b8e268b3",
+    "solver/benchmark.py": "136c9b191533b961c21dc3bd387a2994fdb37129bd4853a613ea763561f0bec6",
+    "solver/native.py": "eb5f05fe3dd472442996afb446c7c18f607c30f66c036f3b8d53636792e548ec",
+    "solver/rules.py": "a868bd3582e2970abfe8449a82ab9c68868c7a842157593c89e70b7e6a8a4a7e",
+    "solver/search.py": "d5ef938ba72407b3be91fe11dad6561764a7209fb601bc76fec8b32e9385d608",
+    "solver/test_solver.py": "10fb8cec87513e1d6c8ecce78d7d4664a1a2b5e3207f24ca3cf07f5a145d9e54"
+  },
+  "private_logs_sha256": {
+    "data.log": "b5a1b51f2b0833adab2dfeb0c18386b53d8794340da439f1428673fd42fec7a8",
+    "data-corrected.log": "a7e531794359722985c1b609544d4f3aced9a2131be42def969d911f911e71e9",
+    "solver.log": "4ed8477c2fbf6029409e5173fad22d29b8b6b71201f3258074b7be5e517635ff",
+    "service.log": "fbecf9856a19a0ac8493b76b87bdad0ad6fe54c480b42918b26ebba37862fa48",
+    "service-junit.xml": "72f5cd41e1f3f6cd8d0473bd9e616b2b5aca688c8e2c0b216e03c61acfdb1248"
+  },
+  "limits": [
+    "The sole skipped test needs Windows file-symlink privilege; directory-junction protection tests ran.",
+    "No operating-system privilege or security settings were changed to force that test to run.",
+    "This batch covers migrations001..010. Later schema or production edits require their own follow-up checks.",
+    "Local test durations are descriptive and do not establish production throughput, hosted runtime or invoice bounds.",
+    "The real bundle and solver snapshot are available locally; GitHub CI may skip those fixture-dependent checks when assets are absent."
+  ]
+}

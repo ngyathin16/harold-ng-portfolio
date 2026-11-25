@@ -9,8 +9,10 @@ def reserve(conn, run_id, settings):
     if conn.execute("""SELECT 1 FROM research.execution_reservations WHERE run_id=%s
         AND state IN ('launching','uncertain','running') LIMIT 1""", (run_id,)).fetchone():
         raise CapacityUnavailable('The previous execution is still being reconciled. Retry this saved query shortly.')
-    sample = conn.execute('''SELECT *, measured_at <= now() AND
-        measured_at >= now()-(%s*interval '1 second') AS fresh
+    from .capacity import refresh
+    refresh(conn, settings)
+    sample = conn.execute('''SELECT *, measured_at <= clock_timestamp() AND
+        measured_at >= clock_timestamp()-(%s*interval '1 second') AS fresh
         FROM research.capacity_sample WHERE singleton''', (settings.capacity_max_age_seconds,)).fetchone()
     if not sample or not sample['fresh']:
         raise CapacityUnavailable('Search capacity measurement is unavailable or stale. Browsing remains available; retry later.')

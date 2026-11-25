@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 from contextlib import contextmanager, nullcontext
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -24,7 +24,7 @@ from psycopg.rows import dict_row
 
 
 LOCK_NAME = "research-backup-objects"
-FORMAT_VERSION = 1
+FORMAT_VERSION = 2
 MAX_MEMBER_BYTES = 5_000_000_000
 APP_ROOT = Path(__file__).resolve().parents[1]
 
@@ -88,12 +88,56 @@ class CopySource:
     bucket: str
     key: str
     etag: str
+    size: int | None = None
+    sha256: str | None = None
+
+
+class UncertainObjectWrite(RuntimeError):
+    pass
 
 
 class R2Store:
-    def __init__(self, env_prefix="", namespace=None):
+    @classmethod
+    def from_result_objects(cls, objects, *, budget):
+        if objects.client is None:
+            raise ValueError('R2 backup adapter requires cloud result storage')
+        store = cls.__new__(cls)
+        store.client, store.bucket, store.endpoint = objects.client, objects.bucket, objects.endpoint
+        store.prefix, store.requests = safe_relative(objects.prefix), 0
+        if budget is None:
+            raise ValueError('Cloud object operators require physical storage accounting')
+        store.budget = budget
+        store.charge = budget.result_charge
+        store.client.meta.events.register('before-call.s3.CopyObject', store._immutable_copy)
+        return store
+
+    def __init__(self, env_prefix="", namespace=None, *, charge=None, budget=None):
         import boto3
         from botocore.config import Config
+        if budget is None and os.environ.get('RESEARCH_RESULT_STORAGE_MODE') == 'objects':
+            raise ValueError('Cloud object operators require physical storage accounting')
+        self.budget = budget
+        if budget is not None:
+            charge = budget.result_charge
+        self.charge = charge if charge is not None else lambda kind, **kwargs: None
+        if not callable(self.charge):
+            raise ValueError('Invalid R2 resource allowance callback')
+        legacy = [env_prefix + name for name in ('R2_ENDPOINT', 'R2_BUCKET', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY')]
+        configured = [bool(os.environ.get(name)) for name in legacy]
+        if any(configured) and not all(configured):
+            raise ValueError('Incomplete legacy R2 configuration; credentials cannot be combined')
+        if not any(configured) and os.environ.get('RESEARCH_RESULT_CREDENTIALS_JSON'):
+            if budget is None:
+                raise ValueError('Bundled cloud operators require physical storage accounting')
+            from types import SimpleNamespace
+            from service.result_objects import ResultObjects
+            objects = ResultObjects.from_settings(SimpleNamespace(
+                result_credentials_json=os.environ['RESEARCH_RESULT_CREDENTIALS_JSON'], result_bucket='',
+                result_prefix=namespace or os.environ.get('RESEARCH_BACKUP_PREFIX', 'research-backups'),
+                result_local_root='', deployment_mode='serverless'), charge=charge)
+            adapted = self.from_result_objects(objects, budget=budget)
+            self.__dict__.update(adapted.__dict__)
+            return
         endpoint = require_env(env_prefix + "R2_ENDPOINT")
         parsed = urlparse(endpoint)
         if (parsed.scheme != "https" or not parsed.hostname or not parsed.hostname.endswith(".r2.cloudflarestorage.com")
@@ -106,10 +150,14 @@ class R2Store:
         self.client = boto3.client("s3", endpoint_url=endpoint, region_name="auto",
             aws_access_key_id=require_env(env_prefix + "R2_ACCESS_KEY_ID"),
             aws_secret_access_key=require_env(env_prefix + "R2_SECRET_ACCESS_KEY"),
-            config=Config(retries={"max_attempts": 3, "mode": "standard"}, connect_timeout=10, read_timeout=60,
+            config=Config(retries=({"total_max_attempts": 1, "mode": "standard"} if charge is not None else {"max_attempts": 3, "mode": "standard"}), connect_timeout=10, read_timeout=60,
                           request_checksum_calculation="when_required", response_checksum_validation="when_required"))
         # R2's destination condition is an extension, injected before SigV4 signing.
         self.client.meta.events.register("before-call.s3.CopyObject", self._immutable_copy)
+        if charge is not None:
+            from service.result_objects import _reject_redirects
+            self.client.meta.events.register_first('needs-retry.s3', _reject_redirects,
+                                                   unique_id='research-backups-no-redirect')
         self.requests = 0
 
     @staticmethod
@@ -119,13 +167,60 @@ class R2Store:
     def key(self, name):
         return self.prefix + "/" + safe_relative(name)
 
-    def read(self, name):
+    def receipt_identity(self, name):
+        return hashlib.sha256((self.endpoint + '\n' + self.bucket + '\n' + self.key(name)).encode('utf-8')).hexdigest()
+
+    def _verify_receipt(self, name, identity, size, sha256):
+        try:
+            check_stream(self, name, {'size': size, 'sha256': sha256})
+        except Exception as error:
+            if self._missing(error):
+                raise UncertainObjectWrite('Reserved object is absent; an uncertain write cannot be repeated or refunded') from None
+            raise
+        self.budget.verify_object(identity)
+
+    @staticmethod
+    def _missing(error):
+        response = getattr(error, 'response', {})
+        return (response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 404
+                and response.get('Error', {}).get('Code') in ('404', 'NotFound', 'NoSuchKey'))
+
+    def _prepare_write(self, name, size, sha256):
+        if self.budget is None:
+            return None, True
+        identity = self.receipt_identity(name)
+        state = self.budget.prepare_object(identity, size, sha256)
+        if state == 'new':
+            return identity, True
+        if state not in ('planned', 'verified'):
+            raise ValueError('Invalid physical object receipt')
+        self._verify_receipt(name, identity, size, sha256)
+        return identity, False
+
+    def exists(self, name):
+        key = self.key(name)
+        self.charge('head', bytes=0)
         self.requests += 1
-        return self.client.get_object(Bucket=self.bucket, Key=self.key(name))["Body"]
+        try:
+            response = self.client.head_object(Bucket=self.bucket, Key=key)
+            if response.get('ResponseMetadata', {}).get('HTTPStatusCode') != 200:
+                raise ValueError('Unexpected backup existence response')
+            return True
+        except Exception as error:
+            if self._missing(error):
+                return False
+            raise
+
+    def read(self, name):
+        key = self.key(name)
+        self.charge('get', bytes=0)
+        self.requests += 1
+        return self.client.get_object(Bucket=self.bucket, Key=key)["Body"]
 
     def read_for_copy(self, name):
-        self.requests += 1
         key = self.key(name)
+        self.charge('get', bytes=0)
+        self.requests += 1
         response = self.client.get_object(Bucket=self.bucket, Key=key)
         etag = response.get("ETag")
         if not isinstance(etag, str) or not re.fullmatch(r'"[A-Za-z0-9][A-Za-z0-9._-]{0,127}"', etag):
@@ -140,30 +235,71 @@ class R2Store:
         safe_relative(source.key)
         if source.bucket == self.bucket and source.key == key:
             raise ValueError("Backup copy destination must differ from its source")
+        if self.budget is not None and (type(source.size) is not int or not 0 <= source.size <= MAX_MEMBER_BYTES
+                or not isinstance(source.sha256, str) or not re.fullmatch(r'[0-9a-f]{64}', source.sha256)):
+            raise ValueError('Budgeted copy requires fully verified source size and SHA-256')
+        identity, write = self._prepare_write(name, source.size, source.sha256)
+        if not write:
+            return
+        self.charge('copy', bytes=0)
         self.requests += 1
         self.client.copy_object(Bucket=self.bucket, Key=key,
             CopySource={"Bucket": source.bucket, "Key": source.key}, CopySourceIfMatch=source.etag)
+        if identity is not None:
+            self._verify_receipt(name, identity, source.size, source.sha256)
 
     def put(self, name, path):
-        if Path(path).stat().st_size > MAX_MEMBER_BYTES:
+        key = self.key(name)
+        size = Path(path).stat().st_size
+        if size > MAX_MEMBER_BYTES:
             raise ValueError("Backup member exceeds the supported single-upload size")
+        sha256 = digest_file(path) if self.budget is not None else None
+        identity, write = self._prepare_write(name, size, sha256)
+        if not write:
+            return
+        self.charge('put', bytes=size)
         self.requests += 1
         with Path(path).open("rb") as stream:
-            self.client.put_object(Bucket=self.bucket, Key=self.key(name), Body=stream, IfNoneMatch="*")
+            from service.result_objects import _BoundedSource
+            self.client.put_object(Bucket=self.bucket, Key=key, Body=_BoundedSource(stream, size), ContentLength=size, IfNoneMatch="*")
+        if identity is not None:
+            self._verify_receipt(name, identity, size, sha256)
 
     def keys(self):
         paginator = self.client.get_paginator("list_objects_v2")
         prefix = self.prefix + "/"
-        for page in paginator.paginate(Bucket=self.bucket, Prefix=prefix):
+        pages = iter(paginator.paginate(Bucket=self.bucket, Prefix=prefix))
+        while True:
+            self.charge('list', bytes=0)
+            try:
+                page = next(pages)
+            except StopIteration:
+                break
             self.requests += 1
             for item in page.get("Contents", []):
                 if not item["Key"].startswith(prefix):
                     raise ValueError("Listing left the configured namespace")
                 yield item["Key"][len(prefix):]
+            if not page.get('IsTruncated', False):
+                return
 
     def delete(self, name):
+        key = self.key(name)
+        identity = self.receipt_identity(name)
+        receipt = self.budget.get_object_receipt(identity) if self.budget is not None else None
+        if receipt is not None:
+            if receipt['state'] == 'deleted':
+                return
+            if receipt['state'] == 'planned' or self.exists(name):
+                self._verify_receipt(name, identity, receipt['size'], receipt['sha256'])
+        self.charge('delete', bytes=0)
         self.requests += 1
-        self.client.delete_object(Bucket=self.bucket, Key=self.key(name))
+        self.client.delete_object(Bucket=self.bucket, Key=key)
+        if self.budget is not None:
+            if self.exists(name):
+                raise ValueError('Backup deletion could not be verified')
+            if receipt is not None:
+                self.budget.delete_object(identity)
 
 
 def read_bytes(store, key, maximum=16 * 1024 * 1024):
@@ -193,7 +329,7 @@ def check_stream(store, key, item, destination=None, *, for_copy=False):
                     output.write(block)
         if size != item["size"] or digest.hexdigest() != item["sha256"]:
             raise ValueError("Backup member size or SHA-256 mismatch")
-        return source
+        return replace(source, size=size, sha256=digest.hexdigest()) if source is not None else None
     finally:
         if output:
             output.close()
@@ -206,14 +342,23 @@ def manifest_for(store, identity):
     if marker.get("sha256") != hashlib.sha256(raw).hexdigest():
         raise ValueError("Backup manifest hash mismatch")
     manifest = json.loads(raw)
-    if manifest.get("format_version") != FORMAT_VERSION or manifest.get("backup_id") != identity:
+    return validate_manifest(manifest, identity)
+
+
+def validate_manifest(manifest, identity):
+    if manifest.get("format_version") not in (1, FORMAT_VERSION) or manifest.get("backup_id") != identity:
         raise ValueError("Incompatible backup format or identity")
+    if manifest.get('query_check_version', 1) not in (1, 2):
+        raise ValueError('Incompatible logical result checksum version')
+    if manifest['format_version'] >= 2 and manifest.get('query_check_version') != 2:
+        raise ValueError('V2 backup requires a canonical logical result checksum')
     members = manifest["members"]
     names = [safe_relative(item["path"]) for item in members]
     if len(names) != len(set(names)) or "database.dump" not in names or "roles.json" not in names:
         raise ValueError("Backup member inventory is invalid")
     for item in members:
-        if item["path"] not in ("database.dump", "roles.json") and not item["path"].startswith("objects/"):
+        namespaces = ('objects/', 'results/') if manifest['format_version'] >= 2 else ('objects/',)
+        if item["path"] not in ("database.dump", "roles.json") and not item["path"].startswith(namespaces):
             raise ValueError("Unexpected backup member")
         if not isinstance(item["size"], int) or item["size"] < 0 or not re.fullmatch(r"[0-9a-f]{64}", item["sha256"]):
             raise ValueError("Invalid member checksum or size")
@@ -267,7 +412,16 @@ def pg_command(tool, url, arguments, *, max_file_bytes=None, timeout=1500):
     return process.stdout.strip()
 
 
-def query_checks(connection):
+def query_checks(connection, objects=None, *, version=2, scratch=None):
+    if version == 2:
+        from .result_recovery import query_checks as logical_checks
+        return logical_checks(connection, objects, scratch)
+    if version != 1:
+        raise ValueError('Unsupported logical result checksum version')
+    return legacy_query_checks(connection)
+
+
+def legacy_query_checks(connection):
     checks = []
     runs = connection.execute("SELECT id,state,result_count,champion_set_count FROM research.query_runs ORDER BY id").fetchall()
     for run in runs:
@@ -311,7 +465,9 @@ def table_checks(connection):
 
 
 def prepare_set(url, objects, directory, identity, *, object_store=None, managed=False,
-                max_staging_bytes=None, max_dump_bytes=None, connection=None, copy_sources=None):
+                max_staging_bytes=None, max_dump_bytes=None, connection=None, copy_sources=None,
+                result_objects=None):
+    from . import result_recovery
     if copy_sources is not None and (object_store is None or copy_sources):
         raise ValueError("Backup copy preparation requires an object store and empty receipts")
     commit = require_env("RESEARCH_APP_COMMIT")
@@ -328,6 +484,9 @@ def prepare_set(url, objects, directory, identity, *, object_store=None, managed
                 snapshot = connection.execute("SELECT pg_export_snapshot() AS id,current_database() AS database,transaction_timestamp() AS snapshot_at").fetchone()
                 server_version = connection.execute("SHOW server_version").fetchone()["server_version"]
                 inventory = connection.execute("SELECT storage_key,size,sha256 FROM research.artifacts UNION SELECT storage_key,size,sha256 FROM research.query_artifacts ORDER BY storage_key").fetchall()
+                result_refs = result_recovery.inventory(connection)
+                if result_refs and result_objects is None:
+                    result_objects = result_recovery.configured_objects()
                 if len({item["storage_key"] for item in inventory}) != len(inventory):
                     raise ValueError("An object key has conflicting registered checksums")
                 if managed:
@@ -337,7 +496,8 @@ def prepare_set(url, objects, directory, identity, *, object_store=None, managed
                         raise ValueError("Managed backup requires the dedicated non-administrative backup reader")
                     if not max_staging_bytes or not max_dump_bytes or max_dump_bytes <= 0:
                         raise ValueError("Managed backup requires explicit staging and dump byte budgets")
-                    if sum(item["size"] for item in inventory) + max_dump_bytes + 16 * 1024 * 1024 > max_staging_bytes:
+                    if (sum(item["size"] for item in inventory) + sum(ref.size for ref in result_refs) +
+                            max_dump_bytes + 16 * 1024 * 1024 + result_recovery.DIGEST_SCRATCH_BYTES > max_staging_bytes):
                         raise ValueError("Backup exceeds the operator staging budget before writing")
                     if any(item["size"] > MAX_MEMBER_BYTES for item in inventory):
                         raise ValueError("Source object exceeds the supported backup member size")
@@ -357,7 +517,6 @@ def prepare_set(url, objects, directory, identity, *, object_store=None, managed
                 publications = connection.execute("SELECT id,dataset_id,snapshot_id,status FROM research.publications ORDER BY id").fetchall()
                 ledger = connection.execute("SELECT to_regclass('public.research_schema_migrations') AS name").fetchone()["name"]
                 applied = connection.execute("SELECT name,sha256,applied_at FROM public.research_schema_migrations ORDER BY name").fetchall() if ledger else None
-                checks = query_checks(connection)
                 all_tables = table_checks(connection) if managed else None
                 roles = role_definitions(connection)
                 if managed:
@@ -379,6 +538,15 @@ def prepare_set(url, objects, directory, identity, *, object_store=None, managed
                     os.chmod(destination, 0o600)
                     if destination.stat().st_size != item["size"] or digest_file(destination) != item["sha256"]:
                         raise ValueError("Registered source object is missing or corrupt")
+                result_source = result_recovery.SourceStore(result_objects, result_refs, connection)
+                for ref in result_refs:
+                    name = 'results/' + safe_relative(ref.key)
+                    source = check_stream(result_source, ref.key, {'size': ref.size, 'sha256': ref.sha256},
+                                          child(directory, name), for_copy=copy_sources is not None)
+                    if copy_sources is not None:
+                        copy_sources[name] = source
+                staged_results = result_recovery.staged_objects(directory) if result_refs else result_objects
+                checks = query_checks(connection, staged_results, scratch=directory)
                 options = ["--schema=research", "--schema=research_data", "--enable-row-security"] if managed else []
                 pg_command("pg_dump", url, ["--format=custom", "--no-owner", *options,
                     "--snapshot=" + snapshot["id"], "--file=" + str(directory / "database.dump")], max_file_bytes=max_dump_bytes if managed else None)
@@ -395,6 +563,7 @@ def prepare_set(url, objects, directory, identity, *, object_store=None, managed
             "client_version": pg_command("pg_dump", url, ["--version"]), "application_commit": commit,
             "migration_files": migrations, "applied_migrations": applied,
             "publications": publications, "query_checks": checks, "members": members, "managed": managed,
+            "query_check_version": result_recovery.CHECK_VERSION,
             "table_checks": all_tables, "backup_identity": reader["name"] if managed else None}
 
 
@@ -416,11 +585,12 @@ def database_operation_lock(url):
 
 
 def publish_set(store, directory, manifest, *, copy_sources=None):
-    identity = manifest["backup_id"]
+    identity = backup_id(manifest["backup_id"])
+    validate_manifest(manifest, identity)
     if any(item["size"] > MAX_MEMBER_BYTES for item in manifest["members"]):
         raise ValueError("Backup member exceeds the supported single-upload size")
     if copy_sources is not None:
-        expected = {item["path"] for item in manifest["members"] if item["path"].startswith("objects/")}
+        expected = {item["path"] for item in manifest["members"] if item["path"].startswith(("objects/", "results/"))}
         if set(copy_sources) != expected or any(not isinstance(source, CopySource) for source in copy_sources.values()):
             raise ValueError("Backup copy receipts must cover exactly the verified object inventory")
     for item in manifest["members"]:
@@ -508,6 +678,7 @@ def assert_restore_target(connection, manifest):
 
 
 def restore_set(store, identity, target_url, directory):
+    from . import result_recovery
     began = time.monotonic()
     manifest = manifest_for(store, identity)
     with psycopg.connect(target_url, row_factory=dict_row) as connection:
@@ -528,10 +699,11 @@ def restore_set(store, identity, target_url, directory):
         # Login passwords and privileged attributes need deliberate provisioning.
     pg_command("pg_restore", target_url, ["--exit-on-error", "--single-transaction", "--no-owner", "--dbname=" + conninfo_to_dict(target_url)["dbname"], str(directory / "database.dump")])
     from data.verify_restore import verify
-    report = verify(target_url, directory / "objects")
+    result_objects = result_recovery.staged_objects(directory) if manifest['format_version'] >= 2 else None
+    report = verify(target_url, directory / "objects", result_objects=result_objects)
     with psycopg.connect(target_url, row_factory=dict_row) as connection:
         connection.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
-        actual = query_checks(connection)
+        actual = query_checks(connection, result_objects, version=manifest.get('query_check_version', 1), scratch=directory)
         if actual != manifest["query_checks"]:
             raise ValueError("Restored query rows or counts differ from the backup snapshot")
         connection.execute("UPDATE research.query_runs SET lease_owner=NULL,lease_until=now()-interval '1 day' WHERE state='running'")

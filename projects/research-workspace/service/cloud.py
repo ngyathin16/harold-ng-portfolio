@@ -20,7 +20,7 @@ def access_token(client):
     return response.json()['access_token']
 
 
-def wake(settings, run_id, generation):
+def wake(settings, run_id, generation, *, charge=None):
     """Best effort after commit; reconciliation recovers every failed wakeup."""
     try:
         if not re.fullmatch(RESOURCE + r'queues/[a-zA-Z0-9_-]+', settings.task_queue):
@@ -30,6 +30,8 @@ def wake(settings, run_id, generation):
         body = json.dumps({'run_id': run_id, 'generation': generation}, separators=(',', ':')).encode()
         name = hashlib.sha256(body).hexdigest()
         with httpx.Client(timeout=0.5, trust_env=False) as client:
+            if charge is not None:
+                charge()
             token = access_token(client)
             response = client.post('https://cloudtasks.googleapis.com/v2/' + settings.task_queue + '/tasks',
                 headers={'Authorization': 'Bearer ' + token}, json={'task': {
@@ -48,18 +50,28 @@ def wake(settings, run_id, generation):
 
 
 class CloudRun:
-    def __init__(self, settings, client=None):
+    def __init__(self, settings, client=None, charge=None):
         if not re.fullmatch(RESOURCE + r'jobs/[a-z][a-z0-9-]*', settings.dispatch_job):
             raise ValueError('Configure one allowlisted Cloud Run Job')
         self.job = settings.dispatch_job
         self.client = client or httpx.Client(timeout=5, trust_env=False)
+        self.charge = charge
 
     def request(self, method, path, **kwargs):
+        if self.charge is not None:
+            self.charge()
         response = self.client.request(method, 'https://run.googleapis.com/v2/' + path,
             headers={'Authorization': 'Bearer ' + access_token(self.client)}, **kwargs)
         return response
 
     def launch(self, reservation):
+        from .budget import BudgetUnavailable
+        try:
+            return self.launch_reserved(reservation)
+        except BudgetUnavailable:
+            raise LaunchRejected('Cloud launch allowance is exhausted') from None
+
+    def launch_reserved(self, reservation):
         response = self.request('POST', self.job + ':run', json={'overrides': {
             'taskCount': 1, 'containerOverrides': [{'env': [
                 {'name': 'RESEARCH_RUN_ID', 'value': reservation['run_id']},

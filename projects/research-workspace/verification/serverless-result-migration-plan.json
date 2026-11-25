@@ -1,0 +1,61 @@
+{
+  "mode": "plan",
+  "source_modified": false,
+  "queries": [
+    {
+      "id": "retained-general",
+      "source_fingerprint": "8b38743822a66997b08ebe5822350f584f3cfb1515ff761bb107aa41e68c50e8",
+      "stored_rows": 280543,
+      "stored_champion_sets": 211961,
+      "rows_sha256": "4302f4ec378144f70174b17b23a354a8802c18d935cb115bb9eb20c0683b094d",
+      "object_count": 4,
+      "object_bytes": 21197667
+    },
+    {
+      "id": "retained-jazz",
+      "source_fingerprint": "184248d6ce7b74e22ab9d25ac1f60111bb0750e6095b7ca90dbde0eba0c04c14",
+      "stored_rows": 38809,
+      "stored_champion_sets": 30935,
+      "rows_sha256": "ae2eff462a77029f5155237aab8d179e43b0e9a58774c114a5856778b5cc3680",
+      "object_count": 4,
+      "object_bytes": 3067617
+    }
+  ],
+  "seconds": 151.906,
+  "evidence": {
+    "recorded_on": "2026-11-25",
+    "original_private_report_sha256": "3e3854a74da9c08160b56149bfba52a5776b50e0ef1d0292d8a2f398d328c76f",
+    "private_harness_sha256": "2efeb1e7751a5b79f1eca2da2d99419921dd0179e809839dd3b00af5fdfb00bd",
+    "query_identifiers": "Aliased for publication; logical hashes were calculated over original identities.",
+    "environment": "Windows local process; retained PostgreSQL 17 fixture uses C collation.",
+    "python_version": null,
+    "python_version_note": "Not captured by the original harness; the later test-suite runtime is recorded separately.",
+    "measurement_runs": 1,
+    "timing_interpretation": "Single observed validation duration; no performance comparison or hosted latency claim.",
+    "limiter": "Not profiled. CPU load and contention were not captured.",
+    "source_files_observed_after_measurement": {
+      "service/result_codec.py": "fe50fc14e3bb141cd43cfaa1b128a8ab4a9009ff1c31cf20a56f00780673b9eb",
+      "service/result_builder.py": "d12a197d34bba9ea16fb909749bd91aaf44e3fe9b59da35c7d554698e8327763"
+    },
+    "source_hash_limit": "Hashes were captured during evidence publication, not embedded at original measurement time."
+  },
+  "format_version": 1,
+  "cloud_used": false,
+  "target_modified": false,
+  "status": "passed",
+  "total_rows": 319352,
+  "total_objects": 8,
+  "total_object_bytes": 24265284,
+  "logical_checksum_version": 2,
+  "checked": [
+    "Read-only retained source planning constructs one frozen dictionary and three completed-sort packs per query.",
+    "Original ordinals and complete logical row values are included in the versioned logical checksums.",
+    "Both complete query counts and distinct champion-set counts match their source metadata."
+  ],
+  "limits": [
+    "Planning only: no target database writes, object transfers or publication occurred.",
+    "This run predates physical budget receipts and migration reservations; it does not qualify those later additions.",
+    "Per-generation dictionaries account for the difference from the earlier prototype shared-dictionary byte total.",
+    "The source fingerprint hashes migration input metadata; it is not a hosted target recovery receipt."
+  ]
+}

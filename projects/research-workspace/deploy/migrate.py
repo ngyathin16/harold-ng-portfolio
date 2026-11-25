@@ -15,6 +15,9 @@ MIGRATIONS = (
     "migrations/006_private_artifacts.sql",
     "migrations/007_serverless.sql",
     "migrations/008_managed_capacity.sql",
+    "migrations/009_result_objects.sql",
+    "migrations/010_budget.sql",
+    "migrations/011_neon_capacity.sql",
 )
 LOCK = "research-schema-migrations"
 LOGIN_ROLES = {
@@ -74,6 +77,7 @@ def apply(connection, passwords, root=ROOT, names=MIGRATIONS):
         connection.execute("GRANT SELECT ON ALL TABLES IN SCHEMA research,research_data TO research_backup_login")
         connection.execute("GRANT SELECT ON ALL SEQUENCES IN SCHEMA research,research_data TO research_backup_login")
         connection.execute("GRANT SELECT ON public.research_schema_migrations TO research_backup_login")
+        connection.execute("GRANT research_budget_operator TO research_backup_login")
         connection.execute("GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA research TO service_role")
     return {"applied": applied, "already_applied": len(known)}
 

@@ -1,0 +1,106 @@
+{
+  "started_at": "2026-11-25T09:00:40.800403+00:00",
+  "finished_at": "2026-11-25T09:00:46.191428+00:00",
+  "python_version": "3.12.13",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "fresh_cluster": true,
+  "wrong_password_denied": true,
+  "owner_superuser": false,
+  "owner_bypassrls": false,
+  "cloud_used": false,
+  "migrations": [
+    "migrations/001_publications.sql",
+    "migrations/002_source_tables.sql",
+    "migrations/003_source_views.sql",
+    "service/migrations/002_queries.sql",
+    "migrations/005_service_roles.sql",
+    "migrations/006_private_artifacts.sql",
+    "migrations/007_serverless.sql",
+    "migrations/008_managed_capacity.sql",
+    "migrations/009_result_objects.sql",
+    "migrations/010_budget.sql"
+  ],
+  "source_files_changed_during_run": [],
+  "format_version": 1,
+  "status": "passed",
+  "postgres_version": "17.11",
+  "authentication": "SCRAM-SHA-256 required for all host connections",
+  "source_sha256": {
+    "migrations/001_publications.sql": "5efe6ec9eeb50474e08c47202b66ab08b33446fd11c7d06000acd041d1841bbd",
+    "migrations/002_source_tables.sql": "191bc57804d50b730050ee7d71ad83bb26a9cdc16d4ec9791dc48cdb5dd80016",
+    "migrations/003_source_views.sql": "3a827f3dfe56ac73512d7a67261bd8af146984f4a9d0743300d465b07b43b026",
+    "service/migrations/002_queries.sql": "fa2edfabceea2b35a69d8aa68c70dd063e1ce1934e533bbb5b3d63218d61e2a3",
+    "migrations/005_service_roles.sql": "b32f15357a98f6a5a406aff1a5aa680f67decf1d146c6bd802086df58f8352a6",
+    "migrations/006_private_artifacts.sql": "4c95c3c900a8ba688d1ea53a8f457fec7f4dd5c173a3043849de31d344a9361b",
+    "migrations/007_serverless.sql": "8528e9d024ace01a5fc0e03d248a21100078150d57f899ea36250126d4bd655d",
+    "migrations/008_managed_capacity.sql": "01ddf5583fa320ade2ee3025ab1e750336a52f2270bb5a152dd832cd4a6b9c78",
+    "migrations/009_result_objects.sql": "ba37106e6a2058cdf420d06df79fa73e7d82a8ba9caa51f0c728749647b109fb",
+    "migrations/010_budget.sql": "6440b6e95750f3b99b4e768869c0a7cc31f3128a6cba1c99cf22ca210a41dfed",
+    "deploy/managed.py": "784d6a4edda79c8538a1ef87051a7a4aa5451488b9b2a6a087551f7ad24c494a",
+    "deploy/test_managed.py": "009c826035df7c77a7764041613f624c3ca1d64fc1da051a0a65af48462519e3",
+    "ops/backup.py": "fc60c1a2ea0bfcfd6e4b539891cf154d458bb6497f0996f1d210f4db4658e950",
+    "ops/serverless.py": "87f19a6552139c95d828ef315830f77c907e8b87860a4dd531c232f38e8ac519",
+    "ops/result_recovery.py": "299e23e3cfc4d4f08a2d3196a3a3ff3e627a7e54ac4d2e0b68baaec9dae7fa50",
+    "ops/test_serverless.py": "34d6c7ef66c2a4fed3b80265da0311054805ba25b4ca2d3fdaf49b4159898a84"
+  },
+  "suites": [
+    {
+      "name": "managed_install_restore",
+      "passed": 6,
+      "skipped": [],
+      "failed": [],
+      "tests": [
+        "test_managed_importer_can_import_but_cannot_edit_any_ledger_table",
+        "test_managed_backup_reads_private_rows_and_only_executes_authorized_budget_functions",
+        "test_runtime_logins_cannot_create_operator_storage_receipts[api]",
+        "test_runtime_logins_cannot_create_operator_storage_receipts[worker]",
+        "test_runtime_logins_cannot_create_operator_storage_receipts[dispatcher]",
+        "test_actual_backup_restore_preserves_permissions_and_disarms_copied_allowance"
+      ],
+      "junit_sha256": "508f8d711cab5d6e3d5951a3aab9f74757c24080773a9c56a772c6ba504463aa"
+    },
+    {
+      "name": "existing_managed_ops",
+      "passed": 13,
+      "skipped": [],
+      "failed": [],
+      "tests": [
+        "test_bounded_logical_hash_preserves_order_and_unknown_values",
+        "test_bounded_logical_hash_rejects_exhausted_scratch_space",
+        "test_import_refuses_staging_overflow_before_download",
+        "test_managed_endpoint_refuses_unverified_tls_and_transaction_pooling",
+        "test_namespace_boundaries_include_parent_prefixes",
+        "test_object_stream_stops_before_writing_excess_bytes",
+        "test_provider_role_mapping_does_not_touch_provider_storage",
+        "test_backup_reads_private_rows_and_cannot_write",
+        "test_cross_connection_operator_exclusion_and_release",
+        "test_private_rows_change_full_logical_hash",
+        "test_restore_fences_cloud_bindings_preserving_queued_identity_and_budgets",
+        "test_restore_refuses_live_database_by_namespace_even_with_alias",
+        "test_runtime_logins_are_not_owners_or_administrators"
+      ],
+      "junit_sha256": "c6a24200313c4eedb0f1e85384137fe26986fb19a93cd72d9fc0d0f53503521a"
+    }
+  ],
+  "workflow": {
+    "path": ".github/workflows/research-checks.yml",
+    "sha256_after_validation": "bf16d7e35a0fd3b4219a27deca20351e5b6e93593027b652ece4a0b108e5cbfe",
+    "checks": [
+      "YAML parsed with unique-key validation",
+      "Embedded Python bootstrap compiles",
+      "Equivalent owner, source/restore databases and password authentication exercised locally",
+      "New managed fixture runs before existing managed ops tests",
+      "Dedicated budget and budget HTTP test databases are migrated and supplied to service pytest"
+    ],
+    "postgres_client_install_source": "https://www.postgresql.org/download/linux/ubuntu/",
+    "github_actions_executed": false
+  },
+  "limits": [
+    "Local Windows PostgreSQL instance, not provider-hosted permission or recovery qualification.",
+    "Actual pg_dump and pg_restore ran with PostgreSQL17 clients; the test-only Windows adapter omits unavailable Linux RLIMIT_FSIZE.",
+    "Linux resource-limit behavior and the GitHub-hosted workflow were not executed in this run.",
+    "The source database began empty; test-generated login passwords are intentionally not published.",
+    "No pre-existing source data, cloud resource, secret or object was touched.",
+    "Migrations001..010 only; later011 changes need follow-up verification."
+  ]
+}

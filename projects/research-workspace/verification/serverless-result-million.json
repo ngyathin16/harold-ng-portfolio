@@ -1,0 +1,80 @@
+{
+  "status": "passed",
+  "cloud_used": false,
+  "source_modified": false,
+  "population": {
+    "unique_champions": 26,
+    "members_per_result": 8,
+    "selection": "longest UTF-8 names, one form per champion",
+    "minimum_name_bytes": 7,
+    "maximum_name_bytes": 30
+  },
+  "last_progress": {
+    "rows": 1000000,
+    "seconds": 293.703,
+    "sqlite_bytes": 405753856,
+    "peak_rss_bytes": 104103936
+  },
+  "packs": [
+    {
+      "order": "active_traits",
+      "bytes": 25000000,
+      "sha256": "a2e2a3c48ae8033c00555a7229f0f2b68d01d81731a490a5ae6d88b1e95da6fb"
+    },
+    {
+      "order": "total_cost",
+      "bytes": 25000000,
+      "sha256": "7f332633f7213f5c0d5d0da730f4b99e0c6e8eb4480f3ac0d856f8d29b43d3f5"
+    },
+    {
+      "order": "champions",
+      "bytes": 25000000,
+      "sha256": "6307f2743d61cc8cff658b4f27c259c17e56a281a2f61640f66f37893402ac0d"
+    },
+    {
+      "order": "discovery",
+      "bytes": 25000000,
+      "sha256": "6307f2743d61cc8cff658b4f27c259c17e56a281a2f61640f66f37893402ac0d"
+    }
+  ],
+  "rows": 1000000,
+  "champion_sets": 1000000,
+  "sqlite_bytes": 405753856,
+  "scratch_bytes": 505753856,
+  "seconds": 302.844,
+  "peak_rss_bytes": 104103936,
+  "evidence": {
+    "recorded_on": "2026-11-25",
+    "original_private_report_sha256": "a02eb053221bffd5aed14da9a2c421a9f424bbc36a6a064fc93c4e5ed5264d6b",
+    "private_harness_sha256": "f9b03e5071c21d63d2018de2a8be372e0bf1cfe2989ae0db390de8a5c7d737f9",
+    "query_identifiers": "Aliased for publication; logical hashes were calculated over original identities.",
+    "environment": "Windows local process; retained PostgreSQL 17 fixture uses C collation.",
+    "python_version": null,
+    "python_version_note": "Not captured by the original harness; the later test-suite runtime is recorded separately.",
+    "measurement_runs": 1,
+    "timing_interpretation": "Single observed validation duration; no performance comparison or hosted latency claim.",
+    "limiter": "Not profiled. CPU load and contention were not captured.",
+    "source_files_observed_after_measurement": {
+      "service/result_codec.py": "fe50fc14e3bb141cd43cfaa1b128a8ab4a9009ff1c31cf20a56f00780673b9eb",
+      "service/result_builder.py": "d12a197d34bba9ea16fb909749bd91aaf44e3fe9b59da35c7d554698e8327763"
+    },
+    "source_hash_limit": "Hashes were captured during evidence publication, not embedded at original measurement time."
+  },
+  "format_version": 1,
+  "maximum_scratch_bytes": 536870912,
+  "record_bytes": 25,
+  "frame_records": 4096,
+  "frames_per_million_row_pack": 245,
+  "checked": [
+    "One million distinct eight-member configurations were decoded, encoded and checked against their exact source record bytes.",
+    "The independent distinct champion-set count is one million.",
+    "Every built pack contains exactly one million records and its full SHA256 matches the file.",
+    "SQLite plus four final pack files occupied 505753856 bytes, below the enforced 512 MiB scratch ceiling."
+  ],
+  "limits": [
+    "Synthetic combinations of 26 distinct champions from the retained ruleset, selected by longest UTF-8 names; not solver output.",
+    "Not an exhaustive worst-case scratch bound for every admissible future dictionary; enforced bounds may explicitly reject such work.",
+    "The production three completed-sort packs require exactly 75000000 raw record bytes per million results; this test additionally built discovery order.",
+    "No Cloud Run, concurrent workload, new network objects or source mutations."
+  ]
+}

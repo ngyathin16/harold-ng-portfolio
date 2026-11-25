@@ -1,0 +1,78 @@
+{
+  "status": "passed",
+  "synthetic_incompressible_tails": true,
+  "cloud_used": false,
+  "actual_solver_run": false,
+  "rows_per_attempt": 1000000,
+  "runs": 2,
+  "attempts_per_run": 3,
+  "checkpoint_batch_rows": 1000,
+  "segment_rows": 4096,
+  "long_backup_snapshot_held": true,
+  "per_attempt": [
+    {
+      "attempt": 1,
+      "database_bytes": 78976691,
+      "seconds": 1.469
+    },
+    {
+      "attempt": 2,
+      "database_bytes": 146178575,
+      "seconds": 2.688
+    },
+    {
+      "attempt": 3,
+      "database_bytes": 213500431,
+      "seconds": 3.922
+    },
+    {
+      "attempt": 4,
+      "database_bytes": 280814095,
+      "seconds": 5.156
+    },
+    {
+      "attempt": 5,
+      "database_bytes": 348144143,
+      "seconds": 6.406
+    },
+    {
+      "attempt": 6,
+      "database_bytes": 415474191,
+      "seconds": 7.61
+    }
+  ],
+  "server_version": "17.11",
+  "toast_compression": "pglz",
+  "baseline_database_bytes": 11490995,
+  "database_bytes_before_vacuum": 415474191,
+  "result_metadata_growth_bytes": 403983196,
+  "table_bytes": [
+    {
+      "relname": "query_runs",
+      "bytes": 1310720
+    },
+    {
+      "relname": "result_generations",
+      "bytes": 401801216
+    },
+    {
+      "relname": "result_object_intents",
+      "bytes": 581632
+    },
+    {
+      "relname": "result_segments",
+      "bytes": 540672
+    }
+  ],
+  "seconds": 7.61,
+  "limitations": [
+    "Local PostgreSQL allocated bytes, not Neon provider storage/history.",
+    "No real solver, R2 objects or cloud compute.",
+    "All six attempts retain one old snapshot; tails use incompressible random bytes, not decoded result records.",
+    "Adds 120 maximally sized time-driven tail writes per attempt beyond 1000 result-driven checkpoints."
+  ],
+  "measurement_script_sha256": "9452f75d933cda2a758aa9b630b7233341b858ee301ce1f69a170b36eb9278ab",
+  "chosen_reservation_bytes_per_run": 268435456,
+  "chosen_database_headroom_bytes": 134217728,
+  "conclusion": "Local allocated metadata bound supports these reservations; actual provider headroom and hosted runtime remain release gates."
+}

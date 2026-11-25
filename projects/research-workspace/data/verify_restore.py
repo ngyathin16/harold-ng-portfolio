@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import sys
 
 import psycopg
 from psycopg.rows import dict_row
@@ -15,14 +16,17 @@ if __package__:
 else:
     import import_snapshot as importer
     import schema
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
-def verify(database_url, object_root, publication_id=None):
+def verify(database_url, object_root, publication_id=None, *, result_objects=None):
+    from ops import result_recovery
     object_root = Path(object_root).resolve()
     verified_publications, verified_objects, query_definitions = [], 0, 0
     with psycopg.connect(database_url, row_factory=dict_row) as connection:
         connection.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
         connection.execute("SET LOCAL statement_timeout='120s'")
+        generation_column = ',r.result_generation_id' if result_recovery.has_generations(connection) else ''
         publications = connection.execute("SELECT * FROM research.publications WHERE status='published' AND (%s::text IS NULL OR id=%s) ORDER BY id", (publication_id, publication_id)).fetchall()
         if not publications:
             raise ValueError("No matching published snapshot exists in the restored database")
@@ -54,13 +58,17 @@ def verify(database_url, object_root, publication_id=None):
                 raise ValueError("Restored publication is missing artifact metadata")
             for artifact in artifacts:
                 verify_object(artifact)
-            runs = connection.execute("SELECT r.id,r.definition,r.ruleset_version,r.state,r.result_count,r.champion_set_count,r.expires_at>now() AS retained,s.rules FROM research.query_runs r LEFT JOIN research.rulesets s ON s.publication_id=r.publication_id AND s.version=r.ruleset_version WHERE r.publication_id=%s", (publication["id"],)).fetchall()
+            runs = connection.execute("SELECT r.id,r.definition,r.ruleset_version,r.state,r.result_count,r.champion_set_count,r.expires_at>now() AS retained,s.rules" + generation_column + " FROM research.query_runs r LEFT JOIN research.rulesets s ON s.publication_id=r.publication_id AND s.version=r.ruleset_version WHERE r.publication_id=%s", (publication["id"],)).fetchall()
             for run in runs:
                 definition = run["definition"]
                 if run["rules"] is None or definition.get("publication_id") != publication["id"] or definition.get("snapshot_id") != publication["snapshot_id"] or definition.get("ruleset_version") != run["ruleset_version"]:
                     raise ValueError("Restored query lost its original version context: " + run["id"])
                 if run["state"] == "complete" and run["retained"]:
-                    counts = connection.execute("SELECT count(*) AS configurations,count(DISTINCT champion_set_key) AS champion_sets FROM research.query_results WHERE run_id=%s", (run["id"],)).fetchone()
+                    if run.get('result_generation_id') is not None:
+                        checked = result_recovery.logical_check(result_recovery.logical_rows(connection, run, result_objects))
+                        counts = {'configurations': checked['stored_rows'], 'champion_sets': checked['stored_champion_sets']}
+                    else:
+                        counts = connection.execute("SELECT count(*) AS configurations,count(DISTINCT champion_set_key) AS champion_sets FROM research.query_results WHERE run_id=%s", (run["id"],)).fetchone()
                     if counts["configurations"] != run["result_count"] or counts["champion_sets"] != run["champion_set_count"]:
                         raise ValueError("Restored complete query counts differ: " + run["id"])
                 query_definitions += 1
@@ -77,12 +85,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--objects", type=Path, required=True)
     parser.add_argument("--publication")
+    parser.add_argument('--result-restore-root', type=Path, help='Restored directory containing the results/ object namespace')
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     url = os.environ.get("RESEARCH_RESTORE_DATABASE_URL")
     if not url:
         parser.error("Set RESEARCH_RESTORE_DATABASE_URL to the restored test database")
-    result = verify(url, args.objects, args.publication)
+    from ops import result_recovery
+    objects = result_recovery.staged_objects(args.result_restore_root) if args.result_restore_root else None
+    result = verify(url, args.objects, args.publication, result_objects=objects)
     importer.write(args.output, result)
     print(json.dumps({"passed": True, "publications": len(result["publications"]), "objects_verified": result["objects_verified"], "query_definitions_verified": result["query_definitions_verified"]}))
 

@@ -1,5 +1,5 @@
 """Bounded, publication-scoped reads and anonymous query subscriptions."""
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, ExitStack
 import hashlib
 import hmac
 import json
@@ -155,24 +155,55 @@ def create_app(settings=None, pool=None, markers=None):
     @asynccontextmanager
     async def lifespan(app):
         try:
+            if settings.budget_window_id:
+                from .budget import Budget
+                if not settings.database_url:
+                    raise ValueError('A budget window requires a database connection')
+                def configure_budget_connection(conn):
+                    conn.execute("SET statement_timeout='5000ms'")
+                    conn.commit()
+                app.state.budget_pool = ConnectionPool(settings.database_url, min_size=0, max_size=1,
+                    timeout=3, kwargs={'row_factory': dict_row, 'connect_timeout': 3},
+                    configure=configure_budget_connection, open=True)
+                app.state.budget = Budget(app.state.budget_pool, settings.budget_window_id)
+            if settings.result_storage_mode == 'objects':
+                from .result_objects import ResultObjects
+                app.state.result_objects = ResultObjects.from_settings(settings,
+                    charge=app.state.budget.result_charge if app.state.budget else None)
             if app.state.markers is None and settings.deployment_mode == 'serverless':
                 from .markers import GCSMarkers
-                app.state.markers = GCSMarkers(settings)
+                if app.state.budget is not None:
+                    from .budget import REQUEST_OVERHEAD_BYTES
+                    app.state.markers = GCSMarkers(settings, charge=lambda kind: app.state.budget.charge(
+                        gcs_class_a=1, google_egress_bytes=REQUEST_OVERHEAD_BYTES))
+                else:
+                    app.state.markers = GCSMarkers(settings)
             if app.state.pool is None and settings.database_url:
                 app.state.pool = ConnectionPool(settings.database_url, min_size=0, max_size=settings.pool_size,
                     timeout=3, kwargs={'row_factory': dict_row}, open=True)
             yield
         finally:
-            if pool is None and app.state.pool:
-                app.state.pool.close()
-            if markers is None and app.state.markers:
-                app.state.markers.close()
+            with ExitStack() as cleanup:
+                if app.state.budget_pool is not None:
+                    cleanup.callback(app.state.budget_pool.close)
+                if app.state.result_objects is not None:
+                    cleanup.callback(app.state.result_objects.close)
+                if markers is None and app.state.markers:
+                    cleanup.callback(app.state.markers.close)
+                if pool is None and app.state.pool:
+                    cleanup.callback(app.state.pool.close)
 
     app = FastAPI(title='Research workspace', version='1.0.0', lifespan=lifespan)
     app.state.pool = pool
     app.state.markers = markers
+    app.state.result_objects = None
+    app.state.budget_pool = None
+    app.state.budget = None
     app.add_middleware(CORSMiddleware, allow_origins=list(settings.allowed_origins), allow_methods=['GET', 'POST'],
                        allow_headers=['Content-Type', 'X-Session-Token'], expose_headers=['Retry-After'])
+    from .budget_http import BudgetHTTPMiddleware
+    app.add_middleware(BudgetHTTPMiddleware, state=app.state, allow_origins=settings.allowed_origins,
+                       required=bool(settings.budget_window_id))
 
     @app.exception_handler(psycopg.Error)
     @app.exception_handler(PoolTimeout)
@@ -188,11 +219,13 @@ def create_app(settings=None, pool=None, markers=None):
                 network = capability_hash(network_identity(request, settings),settings.session_secret or 'read-rate-limit')
                 rate_limit(conn,'read-network:'+network,600)
                 conn.commit()
-                conn.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY')
+                result_read = request.url.path.endswith('/results') and settings.result_storage_mode == 'objects'
+                conn.execute('SET TRANSACTION ISOLATION LEVEL ' + ('READ COMMITTED' if result_read else 'REPEATABLE READ') + ' READ ONLY')
                 conn.execute("SET LOCAL statement_timeout='5000ms'")
             yield conn
 
     @app.get('/live')
+    @app.head('/live', include_in_schema=False)
     def live():
         return {'status': 'ok'}
 
@@ -404,7 +437,7 @@ def create_app(settings=None, pool=None, markers=None):
                 conn.execute("INSERT INTO research.query_artifact_gc(storage_key,delete_after) SELECT storage_key,now()+interval '2 minutes' FROM research.query_artifacts WHERE run_id=%s ON CONFLICT DO NOTHING",(run_id,))
                 conn.execute('DELETE FROM research.query_artifacts WHERE run_id=%s',(run_id,))
                 conn.execute('DELETE FROM research.query_results WHERE run_id=%s',(run_id,))
-                conn.execute("UPDATE research.query_runs SET state='queued',attempts=0,result_count=0,champion_set_count=NULL,progress='{}',error=NULL,started_at=NULL,finished_at=NULL,lease_owner=NULL,lease_until=NULL,expires_at=NULL WHERE id=%s",(run_id,))
+                conn.execute("UPDATE research.query_runs SET state='queued',attempts=0,result_count=0,result_generation_id=NULL,champion_set_count=NULL,progress='{}',error=NULL,started_at=NULL,finished_at=NULL,lease_owner=NULL,lease_until=NULL,expires_at=NULL WHERE id=%s",(run_id,))
             else:
                 run_id = secrets.token_urlsafe(18)
                 conn.execute('''INSERT INTO research.query_runs(id,publication_id,ruleset_version,solver_version,query_hash,definition)
@@ -417,6 +450,11 @@ def create_app(settings=None, pool=None, markers=None):
                 try:
                     reserve(conn, run_id, settings)
                     generation = enqueue(conn, run_id, settings, app.state.markers)
+                    if app.state.budget is not None:
+                        from .budget import reserve_search
+                        if type(settings.max_launch_attempts) is not int or not 1 <= settings.max_launch_attempts <= 3:
+                            raise CapacityUnavailable('Search retry allowance must be between one and three. Retry after operator review.')
+                        reserve_search(conn, settings.budget_window_id, run_id, generation, settings.max_launch_attempts)
                 except (CapacityUnavailable, MarkerUnavailable) as error:
                     raise HTTPException(503, str(error), headers={'Retry-After': '60'}) from None
         else:
@@ -428,7 +466,12 @@ def create_app(settings=None, pool=None, markers=None):
         if settings.deployment_mode == 'serverless' and not reusable:
             from .cloud import wake
             try:
-                wake(settings, run_id, generation)
+                if app.state.budget is not None:
+                    from .budget import REQUEST_OVERHEAD_BYTES
+                    wake(settings, run_id, generation, charge=lambda: app.state.budget.charge(
+                        cloud_control_calls=1, google_egress_bytes=REQUEST_OVERHEAD_BYTES))
+                else:
+                    wake(settings, run_id, generation)
             except Exception:
                 # Durable intent survives task API failures and process termination.
                 logging.warning('Dispatch wakeup pending for query %s generation %s', run_id, generation)
@@ -454,10 +497,24 @@ def create_app(settings=None, pool=None, markers=None):
     @app.get('/v1/queries/{query_id}/results')
     def results(query_id: str, page: int = Query(1,ge=1,le=1000000),page_size: int = Query(50,ge=1,le=200),
                 sort: Literal['active_traits','total_cost','champions'] = 'active_traits',conn=Depends(connection)):
-        run = get_run(conn,query_id)
+        if settings.result_storage_mode == 'objects':
+            from .result_store import shared_lock, snapshot, ResultReader
+            shared_lock(conn, query_id)
+            run = snapshot(conn, query_id)
+            if run is None:
+                raise HTTPException(404,'This query is unavailable.')
+        else:
+            run = get_run(conn,query_id)
         if run['expires_at'] and conn.execute('SELECT %s <= now() AS expired',(run['expires_at'],)).fetchone()['expired']:
             raise HTTPException(410,'Result cache expired. Submit the saved query to recompute against the same rules.')
         complete = run['state']=='complete'
+        if settings.result_storage_mode == 'objects':
+            try:
+                reader = ResultReader(app.state.result_objects)
+                rows = reader.page(conn, run, sort, (page-1)*page_size, page_size)
+            except (ValueError, OSError):
+                raise HTTPException(503,'Stored results are temporarily unavailable. Retry shortly.') from None
+            return dict(rows=rows,total=run['result_count'],page=page,page_size=page_size,complete=complete,state=run['state'])
         order = {'active_traits':'active_trait_count DESC','total_cost':'total_cost NULLS LAST','champions':'champion_names'}[sort] if complete else 'discovery_index'
         rows = conn.execute('SELECT result FROM research.query_results WHERE run_id=%s ORDER BY '+order+',configuration_key LIMIT %s OFFSET %s',(query_id,page_size,(page-1)*page_size)).fetchall()
         return dict(rows=[r['result'] for r in rows],total=run['result_count'],page=page,page_size=page_size,complete=complete,state=run['state'])

@@ -18,6 +18,14 @@ review = {
   evidence_reference   = "pending"
   approved             = false
 }
+# Match the billing account currency. Replace both zeros using the reviewed
+# conversion/quote in review.evidence_reference on review.quote_date.
+# This alert shares the USD 4.99 ceiling; it does not add spending authority.
+google_alert_budget = {
+  currency_code  = "HKD"
+  amount         = 0
+  usd_equivalent = 0
+}
 secret_versions = {
   api-db      = "1", dispatcher-db = "1", search-db = "1", backup-db = "1", verify-db = "1", prune-db = "1", cleanup-db = "1", import-db = "1", restore-db = "1", session = "1",
   r2-endpoint = "1", r2-bucket = "1", r2-access = "1", r2-secret = "1", objects-endpoint = "1", objects-bucket = "1", objects-access = "1", objects-secret = "1"

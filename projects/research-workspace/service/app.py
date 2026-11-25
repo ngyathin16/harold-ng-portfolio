@@ -149,20 +149,28 @@ class Cancellation(BaseModel):
     subscription_id: str = Field(min_length=1, max_length=160)
 
 
-def create_app(settings=None, pool=None):
+def create_app(settings=None, pool=None, markers=None):
     settings = settings or Settings.from_env()
 
     @asynccontextmanager
     async def lifespan(app):
-        if app.state.pool is None and settings.database_url:
-            app.state.pool = ConnectionPool(settings.database_url, min_size=0, max_size=settings.pool_size,
-                timeout=3, kwargs={'row_factory': dict_row}, open=True)
-        yield
-        if pool is None and app.state.pool:
-            app.state.pool.close()
+        try:
+            if app.state.markers is None and settings.deployment_mode == 'serverless':
+                from .markers import GCSMarkers
+                app.state.markers = GCSMarkers(settings)
+            if app.state.pool is None and settings.database_url:
+                app.state.pool = ConnectionPool(settings.database_url, min_size=0, max_size=settings.pool_size,
+                    timeout=3, kwargs={'row_factory': dict_row}, open=True)
+            yield
+        finally:
+            if pool is None and app.state.pool:
+                app.state.pool.close()
+            if markers is None and app.state.markers:
+                app.state.markers.close()
 
     app = FastAPI(title='Research workspace', version='1.0.0', lifespan=lifespan)
     app.state.pool = pool
+    app.state.markers = markers
     app.add_middleware(CORSMiddleware, allow_origins=list(settings.allowed_origins), allow_methods=['GET', 'POST'],
                        allow_headers=['Content-Type', 'X-Session-Token'], expose_headers=['Retry-After'])
 
@@ -402,10 +410,11 @@ def create_app(settings=None, pool=None):
             if settings.deployment_mode == 'serverless':
                 from .admission import reserve
                 from .dispatch import enqueue
+                from .markers import MarkerUnavailable
                 try:
                     reserve(conn, run_id, settings)
-                    generation = enqueue(conn, run_id, settings)
-                except CapacityUnavailable as error:
+                    generation = enqueue(conn, run_id, settings, app.state.markers)
+                except (CapacityUnavailable, MarkerUnavailable) as error:
                     raise HTTPException(503, str(error), headers={'Retry-After': '60'}) from None
         else:
             run_id,state = existing['id'],existing['state']

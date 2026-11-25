@@ -35,6 +35,8 @@ class Settings:
     task_queue: str = ''
     dispatcher_url: str = ''
     task_service_account: str = ''
+    dispatch_marker_bucket: str = ''
+    dispatch_marker_prefix: str = 'dispatch/'
     capacity_max_age_seconds: int = 900
     result_reservation_bytes: int = 2147483648
     database_headroom_bytes: int = 1073741824

@@ -12,7 +12,7 @@ class LaunchRejected(Exception):
     """A definitive cloud rejection: no execution was created."""
 
 
-def enqueue(conn, run_id, settings):
+def enqueue(conn, run_id, settings, markers=None):
     """Call in the acceptance transaction, once for each new search generation."""
     run = conn.execute("""UPDATE research.query_runs SET dispatch_generation=dispatch_generation+1
         WHERE id=%s AND state='queued' RETURNING dispatch_generation""", (run_id,)).fetchone()
@@ -22,6 +22,11 @@ def enqueue(conn, run_id, settings):
     conn.execute("""INSERT INTO research.dispatch_outbox(run_id,generation) VALUES(%s,%s)
         ON CONFLICT(run_id) DO UPDATE SET generation=EXCLUDED.generation,state='pending',
         launch_attempts=0,eligible_at=now(),created_at=now()""", (run_id, generation))
+    if settings.deployment_mode == 'serverless':
+        from .markers import MarkerUnavailable, prepare
+        if markers is None:
+            raise MarkerUnavailable('Dispatch wakeup storage is not configured.')
+        prepare(conn, markers, run_id, generation)
     return generation
 
 

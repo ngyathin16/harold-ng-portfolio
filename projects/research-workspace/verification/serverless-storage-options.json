@@ -1,0 +1,135 @@
+{
+  "observed_on": "2026-11-25",
+  "environment": "Windows-11-10.0.26300-SP0",
+  "postgres_version": "17.11",
+  "python_version": "3.14.2",
+  "zlib_version": "1.3.1.zlib-ng",
+  "codec": "canonical UTF-8 JSON + zlib level 6, independently per row",
+  "source_database_modified": false,
+  "provider_billed_storage_bytes": null,
+  "scope": "Complete clean-import clone: one retained publication and both benchmark query results",
+  "source_database_bytes": 936752819,
+  "original_results": {
+    "heap_toast_bytes": 587423744,
+    "index_bytes": 224411648,
+    "total_bytes": 811835392
+  },
+  "publication_ids": [
+    "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5"
+  ],
+  "queries": [
+    {
+      "query_id": "Aik3xa_zJwXVM3h80Z6vKeSB",
+      "state": "complete",
+      "configurations": 280543,
+      "champion_sets": 211961
+    },
+    {
+      "query_id": "zvhvotLPIM70pbUhbX_KWa_i",
+      "state": "complete",
+      "configurations": 38809,
+      "champion_sets": 30935
+    }
+  ],
+  "source_rows": {
+    "rows": 319352,
+    "canonical_row_sha256": "75f6934b8e08c9a3f3cd89eee0889cf0821c343a8841eb53a785d57ab8852f47"
+  },
+  "clone_rows_before": {
+    "rows": 319352,
+    "canonical_row_sha256": "75f6934b8e08c9a3f3cd89eee0889cf0821c343a8841eb53a785d57ab8852f47"
+  },
+  "encode_copy_seconds": 41.891,
+  "canonical_result_payload_bytes": 1366600376,
+  "compressed_result_payload_bytes": 253126068,
+  "compact_results": {
+    "heap_toast_bytes": 374087680,
+    "index_bytes": 237518848,
+    "total_bytes": 611606528
+  },
+  "migration_high_water_database_bytes": 1548408499,
+  "same_index_shapes": true,
+  "index_shapes": [
+    [
+      false,
+      false,
+      [
+        "run_id",
+        "active_trait_count",
+        "configuration_key"
+      ],
+      "0 3 0",
+      "3126 1978 3126",
+      "100 0 100",
+      null
+    ],
+    [
+      false,
+      false,
+      [
+        "run_id",
+        "champion_names",
+        "configuration_key"
+      ],
+      "0 0 0",
+      "3126 3126 3126",
+      "100 100 100",
+      null
+    ],
+    [
+      false,
+      false,
+      [
+        "run_id",
+        "total_cost",
+        "configuration_key"
+      ],
+      "0 0 0",
+      "3126 1978 3126",
+      "100 0 100",
+      null
+    ],
+    [
+      true,
+      true,
+      [
+        "run_id",
+        "configuration_key"
+      ],
+      "0 0",
+      "3126 3126",
+      "100 100",
+      null
+    ]
+  ],
+  "decode_hash_seconds": 17.752,
+  "compact_rows": {
+    "rows": 319352,
+    "canonical_row_sha256": "75f6934b8e08c9a3f3cd89eee0889cf0821c343a8841eb53a785d57ab8852f47"
+  },
+  "replacement_database_bytes": 736564915,
+  "database_bytes_saved": 200187904,
+  "remaining_to_decimal_1gb_bytes": 263435085,
+  "all_result_rows_match": true,
+  "production_fit_established": false,
+  "limitations": [
+    "This experiment does not change production schema, worker, API or backups.",
+    "The disposable replacement copies columns and indexes, not foreign keys, RLS or grants; it is not a deployable schema.",
+    "The clone contains one publication and two queries, not every historical publication/result.",
+    "Stored-row and sampled pagination parity do not prove deployed API/restore compatibility.",
+    "Logical/provider-billed storage, WAL/history, new-publication growth and temporary work are not measured.",
+    "Migration high-water storage requires room for both representations.",
+    "Default 2 GiB per-search reservation and 1 GiB headroom still cannot fit a 1 GB free plan.",
+    "The full solver-write and read-latency targets need separate tests before adopting this codec.",
+    "Compute, transfer, backup and all-provider monthly cost remain unqualified."
+  ],
+  "total_seconds": 121.421,
+  "sorted_pagination": {
+    "page_cases": 24,
+    "payload_rows_compared": 4800,
+    "page_size": 200
+  },
+  "source_commit": "86bdc894d831cdb6100e7035cd55ae137bcf9e98",
+  "script_sha256": "a3c5347439eba070bdfb173aacdc2bd2170dea3fc998ff8e687480e1f71fab41",
+  "verification_note": "Full codec run followed by separate read-only validation of index directions, opclasses, collations and 24 sorted pagination cases; final script includes both phases."
+}

@@ -1,0 +1,425 @@
+{
+  "checked_at": "2026-11-25T05:33:27.823491+00:00",
+  "project_id": "curly-king-79765026",
+  "import_passed": true,
+  "runtime_reads_passed": true,
+  "backup_private_visibility_passed": true,
+  "qualified_for_production": false,
+  "artifact_storage": "private local experiment directory",
+  "r2_recovery_drill": false,
+  "searches_executed": false,
+  "historical_results_imported": false,
+  "stages": [
+    {
+      "name": "preflight",
+      "at": "2026-11-25T05:33:27.823509+00:00"
+    },
+    {
+      "name": "restricted_managed_import",
+      "at": "2026-11-25T05:33:29.044374+00:00"
+    },
+    {
+      "name": "runtime_api_reads",
+      "at": "2026-11-25T05:34:52.015162+00:00"
+    },
+    {
+      "name": "backup_private_visibility",
+      "at": "2026-11-25T05:35:01.275671+00:00"
+    },
+    {
+      "name": "complete",
+      "at": "2026-11-25T05:35:02.670412+00:00"
+    }
+  ],
+  "plan": "free",
+  "provider_before": {
+    "branch_logical_size_bytes": 31227904,
+    "branch_logical_size_limit_bytes": 1073741824,
+    "project_synthetic_storage_size_bytes": 0,
+    "note": "Provider API snapshot; logical and synthetic values are distinct from pg_database_size."
+  },
+  "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+  "source_sha256": "ba117fe9694a6e07242842c72329112a849a44827284bd8b2d98665cde68f5ad",
+  "bundle_sha256": "6e22b9248587fbc58e4b2aa85649b74464f60e42b23b489db85535e46f5a1365",
+  "source_tables": 58,
+  "source_rows": 156868,
+  "views": 17,
+  "artifacts": 123,
+  "artifact_bytes": 89671406,
+  "max_restored_bytes": 268435456,
+  "max_verification_bytes": 268435456,
+  "before": {
+    "publications": 0,
+    "searches": 0,
+    "paused": true,
+    "database_allocated_bytes": 11067392
+  },
+  "importer_role": {
+    "rolname": "research_importer_login",
+    "rolsuper": false,
+    "rolbypassrls": false
+  },
+  "import": {
+    "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+    "status": "published",
+    "parity": "all_tables_and_views_verified",
+    "tables_and_views": 75
+  },
+  "import_seconds": 82.971,
+  "api_responses": {
+    "/v1/datasets": 200,
+    "/v1/datasets/tft-set-19/publications": 200,
+    "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5": 200,
+    "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/tables": 200,
+    "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/catalog?page_size=2": 200,
+    "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/records/tft19%3Aencounter%3ADA_19_2CostStart": 200,
+    "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/tables/entities?page_size=2": 200,
+    "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/tables/entities?page_size=2&page=2": 200,
+    "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/coverage": 200,
+    "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/rules": 200,
+    "/v1/publications/tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5/downloads": 404
+  },
+  "table_view_parity": {
+    "abilities": {
+      "rows": 144,
+      "logical_sha256": "18610d23a5b8e08bbed731339e3eacab0d9f168cad3b65494d67e9e681e45775"
+    },
+    "ability_values": {
+      "rows": 1408,
+      "logical_sha256": "9cefbee80aa1803ee0192a5e43be5ced52b93c3a4db242a896a39668f93f5d2e"
+    },
+    "assertions": {
+      "rows": 75596,
+      "logical_sha256": "96158a3f723e89a5a38f0dccd24bee6c6f07111a006897beedbd33e92eb572f6"
+    },
+    "assets": {
+      "rows": 1159,
+      "logical_sha256": "9835a3f95dba111454d9611c4e9086147560240aa61e1360223d4ff5ba47d199"
+    },
+    "augments": {
+      "rows": 371,
+      "logical_sha256": "20e9f18d87c38f758f825344a5c327d7a2d731ff88652305af8ea84c6ce5123a"
+    },
+    "change_events": {
+      "rows": 0,
+      "logical_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "collection_inventory": {
+      "rows": 245,
+      "logical_sha256": "a3051cb1922cd5a5dd586a7eacf79b87fd262ec6062bf04c3ded9cd206b0e73d"
+    },
+    "condition_nodes": {
+      "rows": 66,
+      "logical_sha256": "0acb72d881a8c8b93f79101e572050c7d78488e0ee2c9b59722df85c47f9562a"
+    },
+    "condition_predicates": {
+      "rows": 39,
+      "logical_sha256": "5a43112af19aa40f53e91813390812ec479be02177b6acc404277ed9b53c6347"
+    },
+    "coverage_entries": {
+      "rows": 20,
+      "logical_sha256": "07af24c1f6cd2bb48e85fcfe16b238c5e47e7bb2fb1d1daaa556c162ae1e931f"
+    },
+    "curated_records": {
+      "rows": 44,
+      "logical_sha256": "24f0b67564c4fffc54341f1d860541221ae33e3ca1dea255a5b31acfa9747fd7"
+    },
+    "curated_values": {
+      "rows": 764,
+      "logical_sha256": "827a5a59fc11f7d17322722f6324eca2446763256dd5780861a3d510a3775851"
+    },
+    "discrepancies": {
+      "rows": 4,
+      "logical_sha256": "07bccf3a371217961b958a1248cfb08d878cb847fcabd79240ed0510ab98a450"
+    },
+    "effect_values": {
+      "rows": 10093,
+      "logical_sha256": "92db40b3565b3f3df9923856b881e4d951aadf27247a5e3dcc688ccb91629f4d"
+    },
+    "entities": {
+      "rows": 1168,
+      "logical_sha256": "79eabeacba4e5b22b181f65a27006de4b42bf7fcc308ba1cf4a6a1f466156da2"
+    },
+    "entity_aliases": {
+      "rows": 2480,
+      "logical_sha256": "b21a4277b7127fc366916befb4f8d0d22cc270dbff9212156290d40a31848ba8"
+    },
+    "entity_relationships": {
+      "rows": 438,
+      "logical_sha256": "e38e3f15dd072fce5c896d84bf34f54b4732795c55f578dced64f2adbc5fbdc0"
+    },
+    "field_gaps": {
+      "rows": 870,
+      "logical_sha256": "3be5a949d4eb45701c335d4b72d413cd8748bd806df067cbeeb313b7fe8c02c7"
+    },
+    "item_recipes": {
+      "rows": 100,
+      "logical_sha256": "ff3897ee3902cc059e39cc1388cbfdf2ef4ed60f4b48761ea2e7aaf904d6032c"
+    },
+    "items": {
+      "rows": 183,
+      "logical_sha256": "a8be950f5ada9c3e135edb9214dc3d88f41807b213e0c2aad61e6b925f21d2ad"
+    },
+    "loot_entries": {
+      "rows": 0,
+      "logical_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "loot_tables": {
+      "rows": 123,
+      "logical_sha256": "4adb7503f27533bbc0c493cbf3dbf3888e40adb348e342f651a9d70a0481f8ca"
+    },
+    "mechanics": {
+      "rows": 141,
+      "logical_sha256": "dd4169becda2436fb83f34ddd45afd399d85c960b1f2c3228b9930b50741f65e"
+    },
+    "observation_comps": {
+      "rows": 44,
+      "logical_sha256": "3c160c455a10548e96f1db7225fff1800c42ddf17fe7012ca68a3ca4edbd88ef"
+    },
+    "observation_item_recommendations": {
+      "rows": 176,
+      "logical_sha256": "2ef0e6ec0f4edc3116d012e43c6dfaccc80b10feafbfce7af465a4b4db500d5c"
+    },
+    "observation_memberships": {
+      "rows": 665,
+      "logical_sha256": "018e69670da46796400871111447bc9f2c0f630483a0692f816891464223d2e2"
+    },
+    "observation_metrics": {
+      "rows": 180,
+      "logical_sha256": "fd09504872eefe6b1850dc5a74a052907eece12dd072f89dce5fdd4b03d93266"
+    },
+    "observation_payloads": {
+      "rows": 2,
+      "logical_sha256": "3efdcfe7a55935933b4d5713c377f5f4532e7f3200abaa847f92f33b0d061fdd"
+    },
+    "observation_placements": {
+      "rows": 360,
+      "logical_sha256": "9f1e46ad105fb15074782d93222dc36fa777cc6c5ce0da7b44dd01d1d7f5bee8"
+    },
+    "observation_recommended_items": {
+      "rows": 525,
+      "logical_sha256": "ef5335f6af7105e22537eecde9ef4ae9a3a76dab37abfc2d59966b4713790b8c"
+    },
+    "observation_samples": {
+      "rows": 46,
+      "logical_sha256": "3f8f09adff08851cdd5bea82a16d7a78d6fb9b91317cc10cb55ede803427cf58"
+    },
+    "research_catalog": {
+      "rows": 1256,
+      "logical_sha256": "3647dff0dd56716d5704e0d81e7e194648706e3efad649b380b4ecf91a1827a7"
+    },
+    "roles": {
+      "rows": 30,
+      "logical_sha256": "8c4fae8557ebc8f04b5123b65229721e33ef5022f11800634abe1933f5d895b3"
+    },
+    "snapshots": {
+      "rows": 1,
+      "logical_sha256": "b310b92baa411238aefd51e984ec8d84da7ef2a27f076a65efa20539727daba5"
+    },
+    "source_collections": {
+      "rows": 18,
+      "logical_sha256": "ccbaee01cdee27cf7799c55a3c1b773e9844bde0faaf474b218c20c854950c42"
+    },
+    "source_documents": {
+      "rows": 22,
+      "logical_sha256": "cf46f5e91838a5c00292ba288e9961e5651a38acd930c4be7a32c8594c967e8d"
+    },
+    "supplemental_armory_choices": {
+      "rows": 31,
+      "logical_sha256": "3d7bd5b1b38fbdcdcb57da68f440427e2adc4e2dc53bdb108804ee8a5fd32c2e"
+    },
+    "supplemental_armory_items": {
+      "rows": 3856,
+      "logical_sha256": "c2a48862444b3b6e84db21c19b636531bdd6ac1604d834c9f42bc8b86b20b041"
+    },
+    "supplemental_augment_distribution": {
+      "rows": 20,
+      "logical_sha256": "be8ccdd7466cbdcb3a017eaa09716bdf2dd7cd2d59c27c26c99c609bf32b2f3b"
+    },
+    "supplemental_baron_ensemble": {
+      "rows": 5,
+      "logical_sha256": "258f42107bb7547f466148f000b3637f5680f852aa8abcee057719e59e2b7a61"
+    },
+    "supplemental_beach_pop_instruments": {
+      "rows": 18,
+      "logical_sha256": "2a7f08885f91ed5f32a3befe47ecde8679d50c96c935e93a197951e4dbfed44d"
+    },
+    "supplemental_cashouts": {
+      "rows": 20,
+      "logical_sha256": "30d0e62d6f7540d2b94093844f43453dbf8ee08acddb44d2fdaebf9988220c61"
+    },
+    "supplemental_collab_members": {
+      "rows": 216,
+      "logical_sha256": "a1d5794b3fd43137124e88f0a8c505394cd62dde3dfd824620a0ee2c0e0e3ec3"
+    },
+    "supplemental_collections": {
+      "rows": 34,
+      "logical_sha256": "32091cfd8886553c9aa47866f970934f1ca5dd4c1adc1da288a0551ea32795c1"
+    },
+    "supplemental_curves": {
+      "rows": 204,
+      "logical_sha256": "b9e335fb73281b430e3b2978ac8ea6e47fe4412d56dbf30b0b1d2044b7cb44f5"
+    },
+    "supplemental_encounters": {
+      "rows": 24,
+      "logical_sha256": "a14cb8a52201243b8cba046fac2aac5c9e79dc10de2f83f828d3d23fb4648fc1"
+    },
+    "supplemental_loot_nodes": {
+      "rows": 5983,
+      "logical_sha256": "17b1f17c38f9e752fc779c3f2f297fd08ac522bd49875b603944c301d47f7d5c"
+    },
+    "supplemental_recommended_items": {
+      "rows": 144,
+      "logical_sha256": "668b8b194f1475ce050b34a03aa9a285a3f33f68013dde944714812b072af2d5"
+    },
+    "supplemental_recommended_tables": {
+      "rows": 18,
+      "logical_sha256": "0e3b46d4e17141dca35f439707c582ce9695a1b2bb33c8cae49875373ab520f1"
+    },
+    "supplemental_rounds": {
+      "rows": 53,
+      "logical_sha256": "a104e7a4e0b81c729bcfd1075faf001e535a2b520e9947280aa8aceb485649a9"
+    },
+    "supplemental_shop_pool": {
+      "rows": 5,
+      "logical_sha256": "3c05c861ab98679d519203d70d663eb70c9de3ab7a783fc9653a08db4a14dfe9"
+    },
+    "supplemental_unit_recommendations": {
+      "rows": 117,
+      "logical_sha256": "6abc5991fbe7f89e2abee8cf574b5b83d72154cfaea5430c8c9965351c83eac3"
+    },
+    "supplemental_values": {
+      "rows": 46544,
+      "logical_sha256": "c99b469e91224ad8b6839112710cc5e1b9cf17708f38c8b0b726ea0371ea3600"
+    },
+    "trait_breakpoints": {
+      "rows": 115,
+      "logical_sha256": "e03ca539d807d76cff1599726f0d512d20c9f61eb7e3d4047e20a30c050e8c9f"
+    },
+    "traits": {
+      "rows": 50,
+      "logical_sha256": "c9b5d926c4089a1dd844dcd3e8755a03a0152548665ff685e50cd02149e03578"
+    },
+    "unit_stats": {
+      "rows": 1521,
+      "logical_sha256": "4dcc4324ba96b4b910b1b8b62a749431973223c2a01b543f48cd2be2798ada7c"
+    },
+    "unit_traits": {
+      "rows": 207,
+      "logical_sha256": "f0a9b147d7fe79556cdafc6e550a9c7fcb84f9f422db2befcd76626b31cabf32"
+    },
+    "units": {
+      "rows": 126,
+      "logical_sha256": "b1473b9d03e5766331981fa18f6d02649a8bcce52edcc2fd250061da5bbd61bc"
+    },
+    "unlock_rules": {
+      "rows": 32,
+      "logical_sha256": "37d0da4b580661eef8fc11325f225fd850218104f074b427c9638b65d7ca57e8"
+    },
+    "v_abilities": {
+      "rows": 144,
+      "logical_sha256": "be478e8e93f4f30dc04ad7ac0601bedbf800767a306261dab4580991e3aae0c7"
+    },
+    "v_augments": {
+      "rows": 371,
+      "logical_sha256": "a30c58fce650e8e1e8389a4e1e18f602af82e0cacfbfcf461a4e19efab5391c5"
+    },
+    "v_cashouts": {
+      "rows": 20,
+      "logical_sha256": "30d0e62d6f7540d2b94093844f43453dbf8ee08acddb44d2fdaebf9988220c61"
+    },
+    "v_comp_observations": {
+      "rows": 44,
+      "logical_sha256": "06ad85d415dacb4c037f832a72c57c759db693166719cd95131ab16406add7fe"
+    },
+    "v_coverage": {
+      "rows": 20,
+      "logical_sha256": "c31c730f13b5bdda8279c59b9aa63f714a4cf22c4037baa2183f2d9099479ec9"
+    },
+    "v_effects": {
+      "rows": 10093,
+      "logical_sha256": "be5c88537c124280297fae2588f3c395b85afeaf02a613efef670ab472d11c1a"
+    },
+    "v_evidence": {
+      "rows": 122948,
+      "logical_sha256": "f7a2b7198d1540528c4863a358125277252295c95594f70090e3bda00daceaa0"
+    },
+    "v_items": {
+      "rows": 183,
+      "logical_sha256": "dba3c4da72c33d4b088b433ea6d895184460035683a1f3903d48bcd4905d4dff"
+    },
+    "v_loot": {
+      "rows": 123,
+      "logical_sha256": "e7e64cfd4c52bae25f69dd1e5867dac4fb227c6d42a482573cb813b66f4a67ee"
+    },
+    "v_loot_outcomes": {
+      "rows": 5983,
+      "logical_sha256": "17b1f17c38f9e752fc779c3f2f297fd08ac522bd49875b603944c301d47f7d5c"
+    },
+    "v_observations": {
+      "rows": 46,
+      "logical_sha256": "05016aa7b800c56ab4773e6b51c64adeabfd1e775b25327d7986513843126883"
+    },
+    "v_recommended_items": {
+      "rows": 936,
+      "logical_sha256": "22881d84d42ab682818c0b1e4b7113f47247e6d7ede7285d23afca0746703216"
+    },
+    "v_system_curves": {
+      "rows": 204,
+      "logical_sha256": "b9e335fb73281b430e3b2978ac8ea6e47fe4412d56dbf30b0b1d2044b7cb44f5"
+    },
+    "v_traits": {
+      "rows": 50,
+      "logical_sha256": "90c213a35f1c51a231f47791a3a6f166b803d445d8f718b87e00f29b1b100611"
+    },
+    "v_units": {
+      "rows": 126,
+      "logical_sha256": "db48009e410a894e74a140c8f8b952985fca32489ad9fad9fbefb1712bd408b9"
+    },
+    "v_unlocks": {
+      "rows": 32,
+      "logical_sha256": "308e30eccc3f14330d85c64095b68bfd60871318cc96d3cdf31f588e3f8fa529"
+    }
+  },
+  "backup_private_rows": {
+    "table": "research.artifacts",
+    "rows": 123,
+    "rls_enabled": true,
+    "exact_rows_equal": true,
+    "ordered_metadata_sha256": "83f300add3317ed272fe68ce7b14097191fb5abcd64f2273f951bdc03fa07c7b",
+    "role": {
+      "rolname": "research_backup_login",
+      "rolsuper": false,
+      "rolbypassrls": false,
+      "provider_admin": false,
+      "database_owner": false
+    },
+    "api_artifact_read_denied": true
+  },
+  "after": {
+    "publications": 1,
+    "searches": 0,
+    "query_results": 0,
+    "paused": true,
+    "database_allocated_bytes": 122511360
+  },
+  "provider_billed_storage_bytes": null,
+  "limitations": [
+    "Local artifacts are not deployed R2 source objects.",
+    "Private-row visibility is not a completed backup or restore drill.",
+    "API checks execute locally against hosted PostgreSQL; Cloud Run latency is unmeasured.",
+    "API GET requests write ordinary read-rate-limit counters.",
+    "Search result storage, concurrency, and all-provider budget qualification remain pending.",
+    "Provider storage API values did not yet reflect the completed import; current billed storage remains unqualified."
+  ],
+  "seconds": 94.847,
+  "provider_after": {
+    "observed_at": "2026-11-25T05:36:42.982026+00:00",
+    "branch_logical_size_bytes_reported": 31227904,
+    "project_synthetic_storage_size_bytes_reported": 0,
+    "branch_logical_size_limit_bytes": 1073741824,
+    "branch_api_updated_at": "2026-11-25T05:32:30Z",
+    "measurement_source": "Authenticated Neon API GET project and GET project branch",
+    "freshness": "Unconfirmed: two post-import branch reads still return the pre-import value; synthetic storage remains zero. These values do not qualify current billed storage."
+  }
+}

@@ -1,8 +1,13 @@
 locals {
   prefix = "research-${var.environment}"
+  google_alert_budget = var.google_alert_budget == null ? {
+    currency_code  = "USD"
+    amount         = var.review.monthly_limit_usd
+    usd_equivalent = var.review.monthly_limit_usd
+  } : var.google_alert_budget
   apis = toset(["run.googleapis.com", "cloudtasks.googleapis.com", "cloudscheduler.googleapis.com",
     "secretmanager.googleapis.com", "artifactregistry.googleapis.com", "logging.googleapis.com",
-  "monitoring.googleapis.com", "cloudbilling.googleapis.com", "billingbudgets.googleapis.com", "iam.googleapis.com"])
+  "monitoring.googleapis.com", "cloudbilling.googleapis.com", "billingbudgets.googleapis.com", "iam.googleapis.com", "storage.googleapis.com"])
   identities = toset(["api", "dispatcher", "search", "tasks", "scheduler", "backup", "verify", "prune", "cleanup", "import", "restore"])
   secrets = toset(["api-db", "dispatcher-db", "search-db", "backup-db", "verify-db", "prune-db", "cleanup-db", "import-db", "restore-db", "session",
   "r2-endpoint", "r2-bucket", "r2-access", "r2-secret", "objects-endpoint", "objects-bucket", "objects-access", "objects-secret"])
@@ -27,6 +32,15 @@ locals {
     RESEARCH_CLIENT_IP_MODE           = "shared", RESEARCH_MAX_OUTSTANDING = "2", RESEARCH_MAX_LAUNCHES_PER_MINUTE = "4",
     RESEARCH_MAX_LAUNCH_ATTEMPTS      = "3", RESEARCH_DISPATCH_BATCH_SIZE = "2", RESEARCH_CAPACITY_MAX_AGE_SECONDS = "900",
     RESEARCH_RESULT_RESERVATION_BYTES = "2147483648", RESEARCH_DATABASE_HEADROOM_BYTES = "1073741824"
+  }
+  dispatch_marker_permissions = {
+    api        = ["storage.objects.create"]
+    dispatcher = ["storage.objects.list", "storage.objects.delete"]
+    recovery   = ["storage.objects.create", "storage.objects.list"]
+  }
+  dispatch_marker_env = {
+    RESEARCH_DISPATCH_MARKER_BUCKET = google_storage_bucket.dispatch_markers.name
+    RESEARCH_DISPATCH_MARKER_PREFIX = "dispatch/"
   }
 }
 
@@ -70,6 +84,40 @@ resource "google_artifact_registry_repository" "images" {
   repository_id = local.prefix
   format        = "DOCKER"
   depends_on    = [google_project_service.api]
+}
+
+resource "google_storage_bucket" "dispatch_markers" {
+  name                        = "${var.project_id}-${local.prefix}-dispatch"
+  location                    = upper(var.region)
+  storage_class               = "STANDARD"
+  uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
+  force_destroy               = false
+  versioning { enabled = false }
+  soft_delete_policy { retention_duration_seconds = 0 }
+  lifecycle { prevent_destroy = true }
+  depends_on = [google_project_service.api]
+}
+resource "google_project_iam_custom_role" "dispatch_markers" {
+  for_each    = local.dispatch_marker_permissions
+  role_id     = "research_${var.environment}_marker_${each.key}"
+  title       = "Research ${var.environment} dispatch markers ${each.key}"
+  permissions = each.value
+  depends_on  = [google_project_service.api]
+}
+resource "google_storage_bucket_iam_member" "dispatch_markers" {
+  for_each = local.dispatch_marker_permissions
+  bucket   = google_storage_bucket.dispatch_markers.name
+  role     = google_project_iam_custom_role.dispatch_markers[each.key].name
+  member   = each.key == "recovery" ? var.recovery_principal : "serviceAccount:${google_service_account.identity[each.key].email}"
+  lifecycle {
+    precondition {
+      condition = each.key != "recovery" || !contains(concat(["allUsers", "allAuthenticatedUsers"], [
+        for identity in local.identities : "serviceAccount:${local.prefix}-${identity}@${var.project_id}.iam.gserviceaccount.com"
+      ]), var.recovery_principal)
+      error_message = "Dispatch marker recovery requires an independently authenticated principal, never an application service account."
+    }
+  }
 }
 
 resource "google_cloud_tasks_queue" "dispatch" {
@@ -121,7 +169,7 @@ resource "google_cloud_run_v2_service" "dispatcher" {
         limits = { cpu = "1", memory = "512Mi" }
       }
       dynamic "env" {
-        for_each = merge(local.common_env, { RESEARCH_POOL_SIZE = "2", RESEARCH_DISPATCH_JOB = google_cloud_run_v2_job.search.id })
+        for_each = merge(local.common_env, local.dispatch_marker_env, { RESEARCH_POOL_SIZE = "2", RESEARCH_DISPATCH_JOB = google_cloud_run_v2_job.search.id })
         content {
           name  = env.key
           value = env.value
@@ -138,7 +186,7 @@ resource "google_cloud_run_v2_service" "dispatcher" {
       }
     }
   }
-  depends_on = [google_secret_manager_secret_iam_member.access]
+  depends_on = [google_secret_manager_secret_iam_member.access, google_storage_bucket_iam_member.dispatch_markers["dispatcher"]]
 }
 resource "google_cloud_run_v2_service_iam_member" "dispatch" {
   for_each = toset(["tasks", "scheduler"])
@@ -175,7 +223,7 @@ resource "google_cloud_run_v2_service" "api" {
         http_get { path = "/live" }
       }
       dynamic "env" {
-        for_each = merge(local.common_env, {
+        for_each = merge(local.common_env, local.dispatch_marker_env, {
           RESEARCH_POOL_SIZE            = "4", RESEARCH_CLIENT_IP_MODE = "shared", RESEARCH_ALLOWED_ORIGINS = join(",", var.allowed_origins),
           RESEARCH_TASK_QUEUE           = google_cloud_tasks_queue.dispatch.id, RESEARCH_DISPATCHER_URL = google_cloud_run_v2_service.dispatcher.uri,
           RESEARCH_TASK_SERVICE_ACCOUNT = google_service_account.identity["tasks"].email
@@ -199,7 +247,7 @@ resource "google_cloud_run_v2_service" "api" {
       }
     }
   }
-  depends_on = [google_secret_manager_secret_iam_member.access, google_cloud_tasks_queue_iam_member.enqueue]
+  depends_on = [google_secret_manager_secret_iam_member.access, google_cloud_tasks_queue_iam_member.enqueue, google_storage_bucket_iam_member.dispatch_markers["api"]]
 }
 resource "google_cloud_run_v2_service_iam_member" "api" {
   for_each = var.public_api ? setunion(var.rehearsal_invokers, toset(["allUsers"])) : var.rehearsal_invokers
@@ -408,9 +456,9 @@ resource "google_billing_budget" "monthly" {
   budget_filter { projects = ["projects/${data.google_project.current.number}"] }
   amount {
     specified_amount {
-      currency_code = "USD"
-      units         = tostring(floor(var.review.monthly_limit_usd))
-      nanos         = (var.review.monthly_limit_usd * 100 - floor(var.review.monthly_limit_usd) * 100) * 10000000
+      currency_code = local.google_alert_budget.currency_code
+      units         = tostring(floor(local.google_alert_budget.amount))
+      nanos         = (local.google_alert_budget.amount * 100 - floor(local.google_alert_budget.amount) * 100) * 10000000
     }
   }
   threshold_rules { threshold_percent = 0.5 }
@@ -448,6 +496,7 @@ resource "google_monitoring_alert_policy" "dispatch" {
 
 output "api_uri" { value = google_cloud_run_v2_service.api.uri }
 output "dispatcher_uri" { value = google_cloud_run_v2_service.dispatcher.uri }
+output "dispatch_marker_bucket" { value = google_storage_bucket.dispatch_markers.name }
 output "secret_names" {
   value = { for name, secret in google_secret_manager_secret.secret : name => secret.secret_id }
 }

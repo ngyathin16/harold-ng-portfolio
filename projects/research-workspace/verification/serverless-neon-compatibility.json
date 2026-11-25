@@ -1,0 +1,239 @@
+{
+  "checked_at": "2026-11-25T05:23:16.214923+00:00",
+  "provider": "Neon",
+  "plan": "free",
+  "project_id": "curly-king-79765026",
+  "project_name": "research-compatibility",
+  "region_id": "aws-ap-southeast-1",
+  "postgres_major_requested": 17,
+  "endpoint_id": "ep-snowy-star-biu2gvgf",
+  "branch_id": "br-nameless-brook-bimrgvk5",
+  "compute_min_cu": 0.25,
+  "compute_max_cu": 0.25,
+  "endpoint_mode": "direct",
+  "sslmode": "verify-full",
+  "sslrootcert": "system",
+  "local_trust_source": "certifi CA bundle via OpenSSL SSL_CERT_FILE",
+  "data_imported": false,
+  "paid_plan_changes": false,
+  "migration_passed": true,
+  "permissions_passed": true,
+  "qualified_for_production": false,
+  "pending": [
+    "clean import",
+    "full result storage feasibility",
+    "backup recovery",
+    "direct/pooled concurrency and exhaustion",
+    "hosted latency and sleep",
+    "all-provider budget proof",
+    "R2 recovery drill"
+  ],
+  "operator_privileges": {
+    "rolname": "neondb_owner",
+    "rolsuper": false,
+    "rolcreatedb": true,
+    "rolcreaterole": true,
+    "rolreplication": true,
+    "rolbypassrls": true
+  },
+  "migration": {
+    "applied": [
+      "migrations/001_publications.sql",
+      "migrations/002_source_tables.sql",
+      "migrations/003_source_views.sql",
+      "service/migrations/002_queries.sql",
+      "migrations/005_service_roles.sql",
+      "migrations/006_private_artifacts.sql",
+      "migrations/007_serverless.sql",
+      "migrations/008_managed_capacity.sql"
+    ],
+    "already_applied": 0,
+    "role_mapping": {
+      "anon": "research_visitor",
+      "authenticated": "research_authenticated",
+      "service_role": "research_importer"
+    }
+  },
+  "postgres_version_num": 170012,
+  "application_roles": [
+    {
+      "rolname": "research_api",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "research_api_login",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": 8
+    },
+    {
+      "rolname": "research_authenticated",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "research_backup_login",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": 4
+    },
+    {
+      "rolname": "research_dispatcher",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "research_dispatcher_login",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": 4
+    },
+    {
+      "rolname": "research_importer",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "research_importer_login",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": 4
+    },
+    {
+      "rolname": "research_visitor",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "research_worker",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "research_worker_login",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": 4
+    }
+  ],
+  "permission_violations": [],
+  "database_allocated_bytes_before_import": 10985472,
+  "application_table_count": 75,
+  "provider_baseline_unchanged": true,
+  "dispatch_paused": true,
+  "runtime_logins": {
+    "api": {
+      "connected": true,
+      "role": "research_api_login",
+      "inherits_provider_admin": false,
+      "inherits_database_owner": false,
+      "inherits_table_owner": false
+    },
+    "worker": {
+      "connected": true,
+      "role": "research_worker_login",
+      "inherits_provider_admin": false,
+      "inherits_database_owner": false,
+      "inherits_table_owner": false
+    },
+    "dispatcher": {
+      "connected": true,
+      "role": "research_dispatcher_login",
+      "inherits_provider_admin": false,
+      "inherits_database_owner": false,
+      "inherits_table_owner": false
+    },
+    "importer": {
+      "connected": true,
+      "role": "research_importer_login",
+      "inherits_provider_admin": false,
+      "inherits_database_owner": false,
+      "inherits_table_owner": false
+    },
+    "backup": {
+      "connected": true,
+      "role": "research_backup_login",
+      "inherits_provider_admin": false,
+      "inherits_database_owner": false,
+      "inherits_table_owner": false
+    }
+  },
+  "endpoint_suspend_timeout_seconds_raw": 0,
+  "endpoint_suspend_timeout_semantics": "Provider default, documented as 300 seconds; actual idle suspension not yet measured.",
+  "sources": [
+    "https://neon.com/docs/manage/roles",
+    "https://neon.com/docs/connect/connect-securely",
+    "https://github.com/neondatabase/ai-rules/blob/main/neon-api-projects.mdc",
+    "https://neon.com/docs/security/security-overview",
+    "https://www.psycopg.org/psycopg3/docs/api/pq.html",
+    "https://www.postgresql.org/docs/17/libpq-status.html"
+  ],
+  "local_connection_setup": {
+    "initial_windows_default_ca_lookup": "failed certificate verification because default OpenSSL CA file was absent",
+    "resolution": "Supplied installed certifi CA bundle using SSL_CERT_FILE; sslmode=verify-full and sslrootcert=system preserved"
+  },
+  "backend_pg_stat_ssl": {
+    "ssl": false,
+    "version": null,
+    "bits": null
+  },
+  "client_tls": {
+    "checked_at": "2026-11-25T05:27:16.772422+00:00",
+    "ssl_in_use": true,
+    "sslmode": "verify-full",
+    "sslrootcert": "system",
+    "attributes": {
+      "protocol": "TLSv1.3",
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "key_bits": "256",
+      "library": "OpenSSL"
+    },
+    "evidence_method": "psycopg PGconn.ssl_in_use and libpq PQsslAttribute via the same loaded libpq library",
+    "backend_pg_stat_ssl_recheck": {
+      "ssl": false,
+      "version": null,
+      "bits": null
+    },
+    "interpretation": "The client connection is TLS-encrypted with certificate and hostname verification. Neon documents a proxy in front of PostgreSQL. The backend pg_stat_ssl observation does not describe the client-to-proxy connection; proxy TLS termination is inferred from the two observations. This test does not independently qualify protection of internal provider traffic."
+  }
+}

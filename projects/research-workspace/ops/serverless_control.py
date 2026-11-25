@@ -20,6 +20,7 @@ def main():
     commands = parser.add_subparsers(dest='command', required=True)
     commands.add_parser('pause')
     commands.add_parser('resume')
+    commands.add_parser('repair-markers')
     commands.add_parser('status')
     sample = commands.add_parser('capacity')
     sample.add_argument('--used-bytes', type=int, required=True)
@@ -36,10 +37,23 @@ def main():
             if measured.tzinfo is None or measured > datetime.now(timezone.utc):
                 parser.error('Measurement must have a timezone and cannot be in the future')
             record_sample(conn, args.used_bytes, args.limit_bytes, measured)
-        elif args.command in ('pause', 'resume'):
+        elif args.command in ('pause', 'resume', 'repair-markers'):
             conn.execute("SELECT pg_advisory_xact_lock(hashtext('research-query-admission'))")
             conn.execute("SELECT pg_advisory_xact_lock(hashtext('research-dispatch-admission'))")
-            conn.execute('UPDATE research.dispatch_control SET paused=%s WHERE singleton', (args.command == 'pause',))
+            if args.command != 'pause':
+                from service.config import Settings
+                from service.markers import GCSMarkers, repair
+                settings = Settings(
+                    dispatch_marker_bucket=os.environ.get('RESEARCH_DISPATCH_MARKER_BUCKET', ''),
+                    dispatch_marker_prefix=os.environ.get('RESEARCH_DISPATCH_MARKER_PREFIX', 'dispatch/'),
+                )
+                markers = GCSMarkers(settings, access_token=os.environ.get('RESEARCH_OPERATOR_GOOGLE_ACCESS_TOKEN'))
+                try:
+                    repair(conn, markers)
+                finally:
+                    markers.close()
+            if args.command != 'repair-markers':
+                conn.execute('UPDATE research.dispatch_control SET paused=%s WHERE singleton', (args.command == 'pause',))
         report = conn.execute('''SELECT paused,
             (SELECT count(*) FROM research.dispatch_outbox WHERE state='pending') AS pending,
             (SELECT count(*) FROM research.execution_reservations WHERE state IN ('launching','uncertain','running')) AS outstanding,

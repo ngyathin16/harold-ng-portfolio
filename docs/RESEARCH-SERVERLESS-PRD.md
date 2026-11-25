@@ -1,8 +1,8 @@
 # Research workspace serverless deployment
 
-Product requirements document. Version 1.1. November 25, 2026, Asia/Hong_Kong.
+Product requirements document. Version 1.2. November 25, 2026, Asia/Hong_Kong.
 
-Status: proposed work for review. The completed [capacity-wait implementation](RESEARCH-CAPACITY-IMPLEMENTATION.md) is the starting point. This document does not claim that a serverless deployment exists or authorize a paid plan, cloud provisioning, or public launch.
+Status: local implementation delivered; hosted qualification in progress. The completed [capacity-wait implementation](RESEARCH-CAPACITY-IMPLEMENTATION.md) is the starting point. The owner authorized implementation and account setup with total monthly spending strictly below US$5. That authorization does not establish cost feasibility or production acceptance.
 
 ## Purpose and outcome
 
@@ -100,6 +100,8 @@ An accepted query must survive API termination, missed wakeups, duplicate delive
 7. Define process exit and retry behavior for success, transient infrastructure failure, cancellation, invalid queries, and resource limits. Coordinate Cloud Tasks, Job, and application retries within one finite compute-attempt budget. Deterministic failures and completed queries must not trigger repeated paid enumeration.
 8. Reconcile committed outbox records, uncertain launches, and expired leases without requiring a later visitor request. Under healthy dependencies and available admission, accepted work must start within 60 seconds. After a dispatch failure, recover eligible work within 15 minutes of dependencies becoming healthy. These are proposed launch criteria, not measured guarantees. Changing either bound requires an explicit PRD revision. Record capacity-induced queue wait separately.
 9. Replace the permanent two-second polling loop with bounded executions. Scheduled reconciliation must have a documented cadence, duration, and empty-queue behavior. Measure its database wakeups and billable usage. Do not claim zero idle database cost if reconciliation prevents sleep.
+
+The under-US$5 revision retains the five-minute cadence and adds a private GCS bucket of active-generation hints. Create a durable hint before committing accepted work, with a transaction lock shared by hint cleanup. A successful empty listing may skip all database access; an unavailable listing must fail visibly. PostgreSQL remains authoritative. Delete a hint only under its generation lock after proving there is no active query or outstanding execution for that generation. Keep uncertain launches visible. Restore and existing deployments start paused and repair hints before resuming; hints have no time-based expiry. Cached reads do not create hints. Include this bucket's operations and storage in the total cost worksheet, and test rollback, lost acknowledgements, cleanup races and repair failure. [Cloud Storage consistency](https://docs.cloud.google.com/storage/docs/consistency)
 
 A longer platform timeout must not silently relax the application's 120-second exhaustive-search target. Configure enough task time for startup, the bounded search, persistence, and shutdown. Record platform timeout separately from the application execution limit. [Cloud Run Job timeout](https://docs.cloud.google.com/run/docs/configuring/task-timeout)
 

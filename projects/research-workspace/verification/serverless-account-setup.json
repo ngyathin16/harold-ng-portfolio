@@ -1,0 +1,32 @@
+{
+  "observed_on": "2026-11-25",
+  "google_project_id": "harold-research-20261125",
+  "google_project_active": true,
+  "google_project_billing_enabled": false,
+  "separate_billing_account_verified_open": true,
+  "billing_currency": "HKD",
+  "monthly_all_provider_ceiling_usd": 4.99,
+  "google_account_alert": {
+    "created_and_read_back": true,
+    "currency": "HKD",
+    "amount": 15,
+    "scope": "Dedicated research billing account, all Google services",
+    "thresholds": [0.5, 0.9, 1.0],
+    "basis": "CURRENT_SPEND",
+    "credits": "EXCLUDE_ALL_CREDITS",
+    "conservative_usd_planning_amount": 2,
+    "conversion_basis": "15 / 7.75 is below USD 2; HKMA linked-rate band checked 2026-11-25",
+    "conversion_source": "https://www.hkma.gov.hk/eng/key-functions/money/linked-exchange-rate-system/",
+    "is_hard_spend_cap": false,
+    "email_delivery_tested": false
+  },
+  "owner_confirmed_alert_destination_and_test_permission": true,
+  "neon_authentication_verified": true,
+  "neon_plan": "free",
+  "neon_project_id": "curly-king-79765026",
+  "paid_plan_enabled": false,
+  "cloud_run_deployed": false,
+  "public_launch": false,
+  "private_values_omitted": ["billing account identifier", "email", "credentials", "database URLs"],
+  "pending": ["whole-application cost qualification", "cloud rehearsal", "delivered test alert", "production acceptance"]
+}

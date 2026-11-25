@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from service.app import create_app, network_identity
 from service.config import Settings
+from service.test_dispatch import FakeMarkers
 from service.test_service import service, submission
 from service.admission import record_sample
 
@@ -21,11 +22,18 @@ def test_liveness_never_requires_database():
 def test_serverless_requires_verified_tls_and_conservative_network(monkeypatch):
     monkeypatch.setenv('RESEARCH_DEPLOYMENT_MODE', 'serverless')
     monkeypatch.setenv('RESEARCH_CLIENT_IP_MODE', 'shared')
+    monkeypatch.setenv('RESEARCH_DISPATCH_MARKER_BUCKET', 'fixture-dispatch-markers')
     monkeypatch.setenv('RESEARCH_DATABASE_URL', 'postgresql://fixture@db.invalid/research?sslmode=require')
     with pytest.raises(ValueError, match='verify-full'):
         Settings.from_env()
     monkeypatch.setenv('RESEARCH_DATABASE_URL', 'postgresql://fixture@db.invalid/research?sslmode=verify-full')
     assert Settings.from_env().deployment_mode == 'serverless'
+
+
+def test_serverless_api_requires_dispatch_marker_bucket():
+    with pytest.raises(ValueError, match='[Mm]arker|MARKER'):
+        with TestClient(create_app(Settings(deployment_mode='serverless', client_ip_mode='shared'))):
+            pass
 
 
 def test_forwarding_headers_and_peer_rotation_do_not_change_serverless_quota():
@@ -62,17 +70,20 @@ def test_acceptance_commits_outbox_before_wakeup_and_cache_does_not_dispatch(ser
             assert conn.execute('SELECT 1 FROM research.query_subscriptions WHERE run_id=%s', (run_id,)).fetchone()
         observed.append(run_id)
         raise RuntimeError('simulated task service unavailable')
-    with patch('service.cloud.wake', side_effect=lost_wakeup), TestClient(create_app(settings, pool)) as client:
+    markers = FakeMarkers()
+    with patch('service.cloud.wake', side_effect=lost_wakeup), TestClient(create_app(settings, pool, markers=markers)) as client:
         first = submission(client, pub)
         again = submission(client, pub)
         assert first['query_id'] == again['query_id']
         assert observed == [first['query_id']]
+        assert len(markers.list()) == 1
         with pool.connection() as conn:
             conn.execute("UPDATE research.query_runs SET state='complete',expires_at=now()+interval '1 day' WHERE id=%s", (first['query_id'],))
             conn.execute("UPDATE research.capacity_sample SET measured_at=now()-interval '1 day'")
         cached = submission(client, pub)
         assert cached['state'] == 'complete'
         assert observed == [first['query_id']]
+        assert len(markers.list()) == 1
 
 
 def test_stale_capacity_rejects_without_leaving_accepted_work(service):
@@ -81,7 +92,7 @@ def test_stale_capacity_rejects_without_leaving_accepted_work(service):
     with pool.connection() as conn:
         record_sample(conn, 0, 10**12)
         conn.execute("UPDATE research.capacity_sample SET measured_at=now()-interval '1 day'")
-    with TestClient(create_app(settings, pool)) as client:
+    with TestClient(create_app(settings, pool, markers=FakeMarkers())) as client:
         response = client.post('/v1/queries', json={'publication_id': pub, 'query': {'team_size': {'min': 2, 'max': 2}}})
         assert response.status_code == 503
         assert 'stale' in response.json()['detail']
@@ -94,7 +105,8 @@ def test_shared_quotas_hold_across_apps_hostnames_and_forged_headers(service):
     settings = replace(settings, deployment_mode='serverless', client_ip_mode='shared', max_requests_network=1)
     with pool.connection() as conn:
         record_sample(conn, 0, 10**12)
-    with patch('service.cloud.wake', return_value=False), TestClient(create_app(settings, pool)) as first, TestClient(create_app(settings, pool)) as second:
+    markers = FakeMarkers()
+    with patch('service.cloud.wake', return_value=False), TestClient(create_app(settings, pool, markers=markers)) as first, TestClient(create_app(settings, pool, markers=markers)) as second:
         body = {'publication_id': pub, 'query': {'team_size': {'min': 2, 'max': 2}}}
         assert first.post('/v1/queries', json=body, headers={'host': 'api.example.invalid', 'x-forwarded-for': '1.2.3.4'}).status_code == 202
         assert second.post('/v1/queries', json=body, headers={'host': 'direct.run.app', 'x-forwarded-for': '9.8.7.6'}).status_code == 429
@@ -106,7 +118,7 @@ def test_storage_reservations_are_global_and_pause_keeps_saved_work(service):
                        result_reservation_bytes=100, database_headroom_bytes=10)
     with pool.connection() as conn:
         record_sample(conn, 10, 120)
-    with patch('service.cloud.wake', return_value=False), TestClient(create_app(settings, pool)) as client:
+    with patch('service.cloud.wake', return_value=False), TestClient(create_app(settings, pool, markers=FakeMarkers())) as client:
         accepted = submission(client, pub)
         response = client.post('/v1/queries', json={'publication_id': pub, 'query': {'team_size': {'min': 1, 'max': 1}}})
         assert response.status_code == 503
@@ -120,6 +132,22 @@ def test_storage_reservations_are_global_and_pause_keeps_saved_work(service):
         finally:
             with pool.connection() as conn:
                 conn.execute('UPDATE research.dispatch_control SET paused=false')
+
+
+@pytest.mark.parametrize('stored', [False, True])
+def test_marker_failure_does_not_accept_work_or_request_wakeup(service, stored):
+    _, pool, settings, pub, _ = service
+    settings = replace(settings, deployment_mode='serverless', client_ip_mode='shared')
+    with pool.connection() as conn:
+        record_sample(conn, 0, 10**12)
+    markers = FakeMarkers(TimeoutError('Marker response lost'), store_before_error=stored)
+    with patch('service.cloud.wake') as wake, TestClient(create_app(settings, pool, markers=markers)) as client:
+        response = client.post('/v1/queries', json={'publication_id': pub, 'query': {'team_size': {'min': 2, 'max': 2}}})
+        assert response.status_code == 503
+        wake.assert_not_called()
+    with pool.connection() as conn:
+        assert conn.execute('SELECT count(*) AS n FROM research.query_runs WHERE publication_id=%s', (pub,)).fetchone()['n'] == 0
+    assert len(markers.list()) == int(stored)
 
 
 def test_delayed_capacity_measurement_cannot_undo_newer_accounting(service):

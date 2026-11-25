@@ -10,6 +10,7 @@ from psycopg_pool import ConnectionPool
 from .cloud import CloudRun
 from .config import Settings
 from .dispatch import dispatch_once
+from .markers import GCSMarkers, cleanup
 
 
 class Wakeup(BaseModel):
@@ -18,27 +19,34 @@ class Wakeup(BaseModel):
     generation: int | None = Field(default=None, ge=1)
 
 
-def create_app(settings=None, pool=None, cloud=None):
+def create_app(settings=None, pool=None, cloud=None, markers=None):
     settings = settings or Settings.from_env()
 
     @asynccontextmanager
     async def lifespan(app):
         if not os.environ.get('K_SERVICE') and pool is None:
             raise RuntimeError('Dispatcher requires private Cloud Run IAM ingress; local tests must inject dependencies')
-        if app.state.pool is None:
-            app.state.pool = ConnectionPool(settings.database_url, min_size=0, max_size=2, timeout=3,
-                kwargs={'row_factory': dict_row})
-        if app.state.cloud is None:
-            app.state.cloud = CloudRun(settings)
-        yield
-        if pool is None:
-            app.state.pool.close()
-        if cloud is None:
-            app.state.cloud.close()
+        try:
+            if app.state.markers is None:
+                app.state.markers = GCSMarkers(settings)
+            if app.state.cloud is None:
+                app.state.cloud = CloudRun(settings)
+            if app.state.pool is None:
+                app.state.pool = ConnectionPool(settings.database_url, min_size=0, max_size=2, timeout=3,
+                    kwargs={'row_factory': dict_row})
+            yield
+        finally:
+            if pool is None and app.state.pool is not None:
+                app.state.pool.close()
+            if cloud is None and app.state.cloud is not None:
+                app.state.cloud.close()
+            if markers is None and app.state.markers is not None:
+                app.state.markers.close()
 
     app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     app.state.pool = pool
     app.state.cloud = cloud
+    app.state.markers = markers
 
     @app.get('/health/live')
     def live():
@@ -48,7 +56,12 @@ def create_app(settings=None, pool=None, cloud=None):
     def dispatch(wakeup: Wakeup):
         # The payload is a wakeup hint, never authority to choose a job or command.
         try:
-            return dispatch_once(app.state.pool, settings, app.state.cloud)
+            listed = app.state.markers.list()
+            if not listed:
+                return {'launches': 0, 'idle': True}
+            result = dispatch_once(app.state.pool, settings, app.state.cloud)
+            cleanup(app.state.pool, app.state.markers, listed)
+            return result
         except Exception:
             raise HTTPException(503, 'Dispatch unavailable; durable work remains queued.') from None
 

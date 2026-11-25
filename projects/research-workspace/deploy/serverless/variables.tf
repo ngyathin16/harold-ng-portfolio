@@ -98,6 +98,32 @@ variable "billing_account" {
   type        = string
   description = "Billing account ID for project-scoped alerts. This does not enforce a spending cap."
 }
+variable "google_alert_budget" {
+  type = object({
+    currency_code  = string
+    amount         = number
+    usd_equivalent = number
+  })
+  default     = null
+  description = "Google alert amount in the billing account currency (supported: USD/HKD), with its reviewed USD equivalent inside review.monthly_limit_usd, not an additional allowance. Record currency/FX evidence under review.evidence_reference and review.quote_date. Null derives the existing USD alert from the monthly ceiling and is valid only for a USD billing account."
+  validation {
+    condition = var.google_alert_budget == null ? true : try(
+      contains(["USD", "HKD"], var.google_alert_budget.currency_code) &&
+      var.google_alert_budget.amount > 0 &&
+      floor(var.google_alert_budget.amount * 100) == var.google_alert_budget.amount * 100,
+    false)
+    error_message = "Use the billing account's supported currency code (USD or HKD) and a positive alert amount in whole cents."
+  }
+  validation {
+    condition = var.google_alert_budget == null ? true : try(
+      var.google_alert_budget.usd_equivalent > 0 &&
+      var.google_alert_budget.usd_equivalent <= var.review.monthly_limit_usd &&
+      var.google_alert_budget.usd_equivalent < 5 &&
+      (var.google_alert_budget.currency_code != "USD" || var.google_alert_budget.amount == var.google_alert_budget.usd_equivalent),
+    false)
+    error_message = "The reviewed USD equivalent must be positive and fit inside the same all-provider monthly ceiling below USD 5; a USD alert must equal its USD equivalent."
+  }
+}
 variable "operator_staging_bytes" {
   type    = number
   default = 2147483648

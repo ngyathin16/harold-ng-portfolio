@@ -2,6 +2,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 import time
+import uuid
 from unittest.mock import patch
 
 import httpx
@@ -12,6 +13,7 @@ from psycopg_pool import ConnectionPool
 from service.cloud import CloudRun, wake
 from service.config import Settings
 from service.dispatch import LaunchRejected, dispatch_once, enqueue, reconcile, reserve
+from service.markers import Marker
 from service.test_service import service, submission
 from service.worker import claim, claim_bound, execute
 
@@ -33,12 +35,35 @@ class FakeCloud:
         return self.states.get(reservation['id'], {'state': 'uncertain'})
 
 
+class FakeMarkers:
+    def __init__(self, error=None, store_before_error=False):
+        self.error = error
+        self.store_before_error = store_before_error
+        self.objects = {}
+
+    def create(self, run_id, generation):
+        if self.error and not self.store_before_error:
+            raise self.error
+        name = f'{run_id}/{generation}/{uuid.uuid4().hex}'
+        self.objects[name] = Marker(name, '1', run_id, generation)
+        if self.error:
+            raise self.error
+
+    def list(self):
+        return list(self.objects.values())
+
+    def delete(self, marker):
+        current = self.objects.get(marker.name)
+        if current is not None and current.object_generation == marker.object_generation:
+            del self.objects[marker.name]
+
+
 def queued(service):
     client, pool, settings, publication, _ = service
     run_id = submission(client, publication)['query_id']
     settings = replace(settings, deployment_mode='serverless', max_outstanding=1, dispatch_batch_size=1)
     with pool.connection() as conn:
-        generation = enqueue(conn, run_id, settings)
+        generation = enqueue(conn, run_id, settings, FakeMarkers())
     return pool, settings, run_id, generation
 
 

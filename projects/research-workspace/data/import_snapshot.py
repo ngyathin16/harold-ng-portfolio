@@ -37,9 +37,20 @@ def write(path, value):
     path.write_text(packed(value) + "\n", encoding="utf-8")
 
 
+def resolved_path(path):
+    value = str(Path(path).resolve())
+    if os.name == "nt":
+        # A concurrent mkdir can make Windows return an extended-path spelling.
+        if value.startswith("\\\\?\\UNC\\"):
+            value = "\\\\" + value[8:]
+        elif value.startswith("\\\\?\\"):
+            value = value[4:]
+    return Path(value)
+
+
 def child(root, relative):
-    path = (root / relative.replace("\\", "/")).resolve()
-    if not path.is_relative_to(root.resolve()):
+    path = resolved_path(root / relative.replace("\\", "/"))
+    if not path.is_relative_to(resolved_path(root)):
         raise ValueError("Artifact path leaves its declared root")
     return path
 
@@ -48,6 +59,26 @@ def logical_rows(rows):
     normalized = ([float(value) if isinstance(value, Decimal) else value for value in row] for row in rows)
     ordered = sorted(packed(row) for row in normalized)
     return hashlib.sha256(("\n".join(ordered) + "\n").encode()).hexdigest()
+
+
+def logical_rows_bounded(rows, max_bytes):
+    """The same logical hash, using a size-limited SQLite index for ordering."""
+    if max_bytes < 16384:
+        raise ValueError("Logical verification scratch reservation is too small")
+    with tempfile.TemporaryDirectory(prefix="research-verify-") as directory, closing(sqlite3.connect(Path(directory) / "rows.sqlite")) as scratch:
+        scratch.execute("PRAGMA cache_size=-1024")
+        scratch.execute("PRAGMA journal_mode=OFF")
+        scratch.execute("PRAGMA max_page_count=" + str(max_bytes // 4096))
+        scratch.execute("CREATE TABLE rows(payload TEXT NOT NULL)")
+        scratch.execute("CREATE INDEX sorted_rows ON rows(payload COLLATE BINARY)")
+        scratch.executemany("INSERT INTO rows VALUES(?)", ((packed([float(value) if isinstance(value, Decimal) else value for value in row]),) for row in rows))
+        digest, count = hashlib.sha256(), 0
+        for (payload,) in scratch.execute("SELECT payload FROM rows INDEXED BY sorted_rows ORDER BY payload COLLATE BINARY"):
+            digest.update(payload.encode() + b"\n")
+            count += 1
+        if count == 0:
+            digest.update(b"\n")
+        return digest.hexdigest()
 
 
 def sqlite_rows(connection, name, definition):
@@ -216,27 +247,37 @@ class SupabaseStorage:
 
 
 @contextmanager
-def restored_database(directory, bundle):
+def restored_database(directory, bundle, max_restored_bytes=None):
     artifact = next(a for a in bundle["artifacts"] if a["restored_filename"])
     with tempfile.TemporaryDirectory(prefix="research-import-") as temporary:
         path = Path(temporary) / "source.sqlite"
         with gzip.open(child(Path(directory) / "artifacts", artifact["path"]), "rb") as source, path.open("wb") as target:
-            shutil.copyfileobj(source, target)
+            if max_restored_bytes is None:
+                shutil.copyfileobj(source, target)
+            else:
+                written = 0
+                while block := source.read(1024 * 1024):
+                    written += len(block)
+                    if written > max_restored_bytes:
+                        raise ValueError("Restored import exceeds its configured staging reservation")
+                    target.write(block)
         if sha(path) != bundle["source_sha256"] or sha(path) != artifact["restored_sha256"]:
             raise ValueError("Restored SQLite checksum mismatch")
         yield path
 
 
-def publish(directory, database_url, storage):
+def publish(directory, database_url, storage, *, managed=False, max_restored_bytes=None, max_verification_bytes=None):
     import psycopg
     from psycopg.types.json import Jsonb
+    if managed and (not max_restored_bytes or not max_verification_bytes):
+        raise ValueError("Managed import requires decompression and verification scratch reservations")
     directory = Path(directory).resolve()
     bundle = verify_bundle(directory)
     publication = bundle["publication_id"]
     dataset = bundle["dataset"]
     for artifact in bundle["artifacts"]:
         storage.put_verified(publication + "/" + artifact["path"], child(directory / "artifacts", artifact["path"]), artifact["sha256"], artifact["media_type"])
-    with restored_database(directory, bundle) as database, closing(sqlite3.connect(database)) as source, psycopg.connect(database_url) as target:
+    with restored_database(directory, bundle, max_restored_bytes) as database, closing(sqlite3.connect(database)) as source, psycopg.connect(database_url) as target:
         target.execute("SET LOCAL statement_timeout='120s'")
         target.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s,0))", (dataset["id"],))
         previous = target.execute("SELECT bundle_sha256,status FROM research.publications WHERE id=%s", (publication,)).fetchone()
@@ -255,14 +296,30 @@ def publish(directory, database_url, storage):
             prefix = [column for column in schema.SCOPE if column not in names]
             scope_values = {"publication_id": publication, "dataset_id": dataset["id"], "snapshot_id": bundle["snapshot_id"]}
             columns = ",".join(schema.identifier(c) for c in prefix + names)
-            with target.cursor().copy(f"COPY research_data.{schema.identifier(name)} ({columns}) FROM STDIN") as copy:
-                for row in sqlite_rows(source, name, definition):
-                    copy.write_row(tuple(scope_values[c] for c in prefix) + tuple(row))
+            rows = (tuple(scope_values[c] for c in prefix) + tuple(row) for row in sqlite_rows(source, name, definition))
+            if managed:
+                # COPY FROM cannot apply row policies; keep the importer NOBYPASSRLS.
+                placeholders = ",".join(["%s"] * (len(prefix) + len(names)))
+                with target.cursor() as cursor:
+                    cursor.executemany(f"INSERT INTO research_data.{schema.identifier(name)} ({columns}) VALUES ({placeholders})", rows)
+            else:
+                with target.cursor().copy(f"COPY research_data.{schema.identifier(name)} ({columns}) FROM STDIN") as copy:
+                    for row in rows:
+                        copy.write_row(row)
         target.execute("SET CONSTRAINTS ALL IMMEDIATE")
         for name, definition in bundle["tables"].items():
             columns = ",".join(schema.identifier(c["name"]) for c in definition["columns"])
-            rows = target.execute(f"SELECT {columns} FROM research_data.{schema.identifier(name)} WHERE publication_id=%s", (publication,)).fetchall()
-            if len(rows) != definition["row_count"] or logical_rows(rows) != definition["logical_sha256"]:
+            select = f"SELECT {columns} FROM research_data.{schema.identifier(name)} WHERE publication_id=%s"
+            if managed:
+                row_count = target.execute(f"SELECT count(*) FROM research_data.{schema.identifier(name)} WHERE publication_id=%s", (publication,)).fetchone()[0]
+                with target.cursor(name="verify_" + name) as rows:
+                    rows.itersize = 500
+                    rows.execute(select, (publication,))
+                    checksum = logical_rows_bounded(rows, max_verification_bytes)
+            else:
+                rows = target.execute(select, (publication,)).fetchall()
+                row_count, checksum = len(rows), logical_rows(rows)
+            if row_count != definition["row_count"] or checksum != definition["logical_sha256"]:
                 raise ValueError("Postgres parity failed: " + name)
             if definition["kind"] == "table" and name != "source_documents" and any(c["name"] == "source_id" for c in definition["columns"]):
                 missing = target.execute(f"SELECT count(*) FROM research_data.{schema.identifier(name)} r LEFT JOIN research_data.source_documents s ON s.publication_id=r.publication_id AND s.source_id=r.source_id WHERE r.publication_id=%s AND r.source_id IS NOT NULL AND s.source_id IS NULL", (publication,)).fetchone()[0]

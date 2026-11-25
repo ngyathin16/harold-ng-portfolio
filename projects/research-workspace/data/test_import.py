@@ -15,6 +15,19 @@ import schema
 
 
 class ImportTests(unittest.TestCase):
+    @unittest.skipUnless(os.name == "nt", "Windows extended path spelling")
+    def test_extended_windows_path_keeps_containment_check(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            resolve = Path.resolve
+            def extended(path, *args, **kwargs):
+                value = resolve(path, *args, **kwargs)
+                return Path("\\\\?\\" + str(value)) if path.name == "data.json" else value
+            with mock.patch.object(Path, "resolve", autospec=True, side_effect=extended):
+                self.assertEqual(importer.child(root, "data.json"), root / "data.json")
+                with self.assertRaises(ValueError):
+                    importer.child(root, "../data.json")
+
     def test_paths_cannot_escape_artifact_root(self):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaises(ValueError):

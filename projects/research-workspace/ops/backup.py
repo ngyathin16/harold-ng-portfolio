@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import argparse
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -82,20 +82,20 @@ def require_env(name):
 
 
 class R2Store:
-    def __init__(self):
+    def __init__(self, env_prefix="", namespace=None):
         import boto3
         from botocore.config import Config
-        endpoint = require_env("R2_ENDPOINT")
+        endpoint = require_env(env_prefix + "R2_ENDPOINT")
         parsed = urlparse(endpoint)
         if (parsed.scheme != "https" or not parsed.hostname or not parsed.hostname.endswith(".r2.cloudflarestorage.com")
                 or parsed.username or parsed.password or parsed.query or parsed.fragment or parsed.path not in ("", "/")
                 or parsed.port not in (None, 443)):
             raise ValueError("R2_ENDPOINT must be an HTTPS R2 S3 endpoint")
-        self.bucket = require_env("R2_BUCKET")
-        self.prefix = safe_relative(os.environ.get("RESEARCH_BACKUP_PREFIX", "research-backups").strip("/"))
+        self.bucket = require_env(env_prefix + "R2_BUCKET")
+        self.prefix = safe_relative((namespace or os.environ.get("RESEARCH_BACKUP_PREFIX", "research-backups")).strip("/"))
         self.client = boto3.client("s3", endpoint_url=endpoint, region_name="auto",
-            aws_access_key_id=require_env("R2_ACCESS_KEY_ID"),
-            aws_secret_access_key=require_env("R2_SECRET_ACCESS_KEY"),
+            aws_access_key_id=require_env(env_prefix + "R2_ACCESS_KEY_ID"),
+            aws_secret_access_key=require_env(env_prefix + "R2_SECRET_ACCESS_KEY"),
             config=Config(retries={"max_attempts": 3, "mode": "standard"}, connect_timeout=10, read_timeout=60,
                           request_checksum_calculation="when_required", response_checksum_validation="when_required"))
         self.requests = 0
@@ -148,6 +148,8 @@ def check_stream(store, key, item, destination=None):
         with store.read(key) as stream:
             while block := stream.read(1024 * 1024):
                 size += len(block)
+                if size > item["size"]:
+                    raise ValueError("Backup member exceeds its declared size")
                 digest.update(block)
                 if output:
                     output.write(block)
@@ -197,7 +199,7 @@ def verify_set(store, identity, directory=None):
     return manifest
 
 
-def pg_command(tool, url, arguments):
+def pg_command(tool, url, arguments, *, max_file_bytes=None, timeout=1500):
     executable = str(Path(os.environ["PG_BIN"]) / tool) if os.environ.get("PG_BIN") else tool
     connection = conninfo_to_dict(url)
     environment = dict(os.environ)
@@ -212,7 +214,15 @@ def pg_command(tool, url, arguments):
         environment.pop(key, None)
     environment.update({supported[key]: value for key, value in connection.items()})
     environment["PGCONNECT_TIMEOUT"] = "15"
-    process = subprocess.run([executable, *arguments], env=environment, capture_output=True, text=True)
+    limit = None
+    if max_file_bytes is not None:
+        if os.name != "posix":
+            raise ValueError("Bounded managed dumps require the Linux operator container")
+        def limit():
+            import resource
+            resource.setrlimit(resource.RLIMIT_FSIZE, (max_file_bytes, max_file_bytes))
+    process = subprocess.run([executable, *arguments], env=environment, capture_output=True, text=True,
+                             timeout=timeout, preexec_fn=limit)
     if process.returncode:
         raise RuntimeError(tool + " failed; inspect the isolated database and server logs")
     return process.stdout.strip()
@@ -243,13 +253,32 @@ def role_definitions(connection):
     return {"roles": names, "memberships": [row for row in members if row["role"] in names and row["member"] in names]}
 
 
-def prepare_set(url, objects, directory, identity):
+def table_checks(connection):
+    """Hash every application row, including private/unpublished rows and state."""
+    connection.execute("SET LOCAL timezone='UTC'")
+    tables = connection.execute("""SELECT n.nspname,c.relname FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+        WHERE n.nspname IN ('research','research_data') AND c.relkind='r' ORDER BY 1,2""").fetchall()
+    checks = []
+    for table in tables:
+        digest, count = hashlib.sha256(), 0
+        with connection.cursor(name="all_rows_" + uuid.uuid4().hex) as cursor:
+            cursor.itersize = 1000
+            cursor.execute(sql.SQL('SELECT to_jsonb(t) AS row FROM {} t ORDER BY to_jsonb(t)::text COLLATE "C"').format(sql.Identifier(table["nspname"], table["relname"])))
+            for row in cursor:
+                digest.update(packed(row["row"]) + b"\n")
+                count += 1
+        checks.append({"schema": table["nspname"], "table": table["relname"], "rows": count, "sha256": digest.hexdigest()})
+    return checks
+
+
+def prepare_set(url, objects, directory, identity, *, object_store=None, managed=False,
+                max_staging_bytes=None, max_dump_bytes=None, connection=None):
     commit = require_env("RESEARCH_APP_COMMIT")
     if not re.fullmatch(r"[0-9a-f]{40}", commit):
         raise ValueError("RESEARCH_APP_COMMIT must be a full Git commit ID")
-    directory.mkdir(mode=0o700, parents=True, exist_ok=False)
     started = now()
-    with psycopg.connect(url, autocommit=True, row_factory=dict_row) as connection:
+    context = nullcontext(connection) if connection is not None else psycopg.connect(url, autocommit=True, row_factory=dict_row)
+    with context as connection:
         connection.execute("SET statement_timeout='120s'")
         connection.execute("SELECT pg_advisory_lock(hashtext(%s))", (LOCK_NAME,))
         try:
@@ -260,20 +289,55 @@ def prepare_set(url, objects, directory, identity):
                 inventory = connection.execute("SELECT storage_key,size,sha256 FROM research.artifacts UNION SELECT storage_key,size,sha256 FROM research.query_artifacts ORDER BY storage_key").fetchall()
                 if len({item["storage_key"] for item in inventory}) != len(inventory):
                     raise ValueError("An object key has conflicting registered checksums")
+                if managed:
+                    from deploy.managed import APP_ROLES, ROLE_MAP, SCHEMAS
+                    reader = connection.execute("SELECT current_user AS name,r.rolsuper,r.rolbypassrls FROM pg_roles r WHERE r.rolname=current_user").fetchone()
+                    if reader["name"] != "research_backup_login" or reader["rolsuper"] or reader["rolbypassrls"]:
+                        raise ValueError("Managed backup requires the dedicated non-administrative backup reader")
+                    if not max_staging_bytes or not max_dump_bytes or max_dump_bytes <= 0:
+                        raise ValueError("Managed backup requires explicit staging and dump byte budgets")
+                    if sum(item["size"] for item in inventory) + max_dump_bytes + 16 * 1024 * 1024 > max_staging_bytes:
+                        raise ValueError("Backup exceeds the operator staging budget before writing")
+                    if any(item["size"] > MAX_MEMBER_BYTES for item in inventory):
+                        raise ValueError("Source object exceeds the supported backup member size")
+                    restrictive = connection.execute("""SELECT 1 FROM pg_policy p JOIN pg_class c ON c.oid=p.polrelid
+                        JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname=ANY(%s)
+                        AND NOT p.polpermissive AND p.polcmd IN ('*','r') LIMIT 1""", (list(SCHEMAS),)).fetchone()
+                    if restrictive:
+                        raise ValueError("Restrictive RLS requires explicit private-row qualification before backup")
+                    missing_policy = connection.execute("""SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+                        WHERE n.nspname=ANY(%s) AND c.relkind IN ('r','p') AND c.relrowsecurity
+                        AND NOT EXISTS(SELECT 1 FROM pg_policy p WHERE p.polrelid=c.oid AND p.polname='managed_backup_read'
+                            AND p.polcmd='r' AND p.polpermissive AND pg_get_expr(p.polqual,p.polrelid)='true'
+                            AND 'research_backup_login'::regrole=ANY(p.polroles)) LIMIT 1""", (list(SCHEMAS),)).fetchone()
+                    if missing_policy:
+                        raise ValueError("Backup requires a verified all-row SELECT policy on every RLS table")
+                directory.mkdir(mode=0o700, parents=True, exist_ok=False)
                 publications = connection.execute("SELECT id,dataset_id,snapshot_id,status FROM research.publications ORDER BY id").fetchall()
                 ledger = connection.execute("SELECT to_regclass('public.research_schema_migrations') AS name").fetchone()["name"]
                 applied = connection.execute("SELECT name,sha256,applied_at FROM public.research_schema_migrations ORDER BY name").fetchall() if ledger else None
                 checks = query_checks(connection)
-                write_json(directory / "roles.json", role_definitions(connection))
+                all_tables = table_checks(connection) if managed else None
+                roles = role_definitions(connection)
+                if managed:
+                    roles["roles"] = [name for name in roles["roles"] if name in APP_ROLES]
+                    roles["memberships"] = [item for item in roles["memberships"] if item["role"] in APP_ROLES and item["member"] in APP_ROLES]
+                    roles["provider_role_mapping"] = ROLE_MAP
+                write_json(directory / "roles.json", roles)
                 for item in inventory:
-                    source = child(objects, item["storage_key"])
                     destination = child(directory, "objects/" + item["storage_key"])
                     destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-                    shutil.copyfile(source, destination)
+                    if object_store is not None:
+                        check_stream(object_store, item["storage_key"], item, destination)
+                    else:
+                        source = child(objects, item["storage_key"])
+                        shutil.copyfile(source, destination)
                     os.chmod(destination, 0o600)
                     if destination.stat().st_size != item["size"] or digest_file(destination) != item["sha256"]:
                         raise ValueError("Registered source object is missing or corrupt")
-                pg_command("pg_dump", url, ["--format=custom", "--no-owner", "--snapshot=" + snapshot["id"], "--file=" + str(directory / "database.dump")])
+                options = ["--schema=research", "--schema=research_data", "--enable-row-security"] if managed else []
+                pg_command("pg_dump", url, ["--format=custom", "--no-owner", *options,
+                    "--snapshot=" + snapshot["id"], "--file=" + str(directory / "database.dump")], max_file_bytes=max_dump_bytes if managed else None)
                 os.chmod(directory / "database.dump", 0o600)
                 pg_command("pg_restore", url, ["--list", str(directory / "database.dump")])
         finally:
@@ -286,7 +350,25 @@ def prepare_set(url, objects, directory, identity):
             "prepared_at": now(), "database": snapshot["database"], "server_version": server_version,
             "client_version": pg_command("pg_dump", url, ["--version"]), "application_commit": commit,
             "migration_files": migrations, "applied_migrations": applied,
-            "publications": publications, "query_checks": checks, "members": members}
+            "publications": publications, "query_checks": checks, "members": members, "managed": managed,
+            "table_checks": all_tables, "backup_identity": reader["name"] if managed else None}
+
+
+class OperatorBusy(RuntimeError):
+    pass
+
+
+@contextmanager
+def database_operation_lock(url):
+    """A session lock is released by PostgreSQL when an operator is terminated."""
+    with psycopg.connect(url, autocommit=True, row_factory=dict_row, connect_timeout=10) as connection:
+        acquired = connection.execute("SELECT pg_try_advisory_lock(hashtext(%s)) AS acquired", (LOCK_NAME,)).fetchone()["acquired"]
+        if not acquired:
+            raise OperatorBusy("Another backup, retention, import or cleanup is running")
+        try:
+            yield connection
+        finally:
+            connection.execute("SELECT pg_advisory_unlock(hashtext(%s))", (LOCK_NAME,))
 
 
 def publish_set(store, directory, manifest):

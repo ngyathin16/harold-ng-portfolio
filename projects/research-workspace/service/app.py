@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 import hashlib
 import hmac
 import json
+import logging
 from pathlib import Path
 import secrets
 import sys
@@ -29,6 +30,14 @@ def canonical(value):
 
 def capability_hash(token, secret):
     return hmac.new(secret.encode(), token.encode(), hashlib.sha256).hexdigest()
+
+
+def network_identity(request, settings):
+    # Until hosted ingress is qualified, all Cloud Run visitors share a bucket.
+    # Caller-supplied forwarding headers never establish a quota identity.
+    if settings.client_ip_mode == 'shared':
+        return 'cloudrun-shared-network'
+    return request.client.host if request.client else 'unknown'
 
 
 def require_publication(conn, publication_id):
@@ -168,16 +177,32 @@ def create_app(settings=None, pool=None):
         with app.state.pool.connection() as conn:
             conn.execute("SET LOCAL statement_timeout='5000ms'")
             if request.method == 'GET':
-                network = capability_hash(request.client.host if request.client else 'unknown',settings.session_secret or 'read-rate-limit')
+                network = capability_hash(network_identity(request, settings),settings.session_secret or 'read-rate-limit')
                 rate_limit(conn,'read-network:'+network,600)
                 conn.commit()
                 conn.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY')
                 conn.execute("SET LOCAL statement_timeout='5000ms'")
             yield conn
 
+    @app.get('/live')
+    def live():
+        return {'status': 'ok'}
+
     @app.get('/health')
-    def health(conn=Depends(connection)):
-        conn.execute('SELECT 1')
+    @app.get('/ready')
+    def health():
+        if app.state.pool is None:
+            raise HTTPException(503, 'Research service has no database configured.')
+        with app.state.pool.connection() as conn:
+            conn.execute('SET TRANSACTION READ ONLY')
+            conn.execute("SET LOCAL statement_timeout='1500ms'")
+            conn.execute('SELECT 1')
+            if settings.deployment_mode == 'serverless':
+                stalled = conn.execute("""SELECT EXISTS(SELECT 1 FROM research.query_runs r
+                    LEFT JOIN research.dispatch_outbox o ON o.run_id=r.id AND o.generation=r.dispatch_generation
+                    WHERE (r.state='queued' AND COALESCE(o.created_at,r.created_at)<now()-interval '15 minutes')
+                    OR (r.state='running' AND r.lease_until<now())) AS stalled""").fetchone()['stalled']
+                return {'status': 'ok', 'search': 'stalled' if stalled else 'available'}
         return {'status': 'ok'}
 
     @app.get('/v1/datasets')
@@ -346,7 +371,7 @@ def create_app(settings=None, pool=None):
         if len(token) < 32 or len(token) > 128:
             raise HTTPException(422,'Invalid session capability.')
         session = capability_hash(token,settings.session_secret)
-        network = capability_hash(request.client.host if request.client else 'unknown',settings.session_secret)
+        network = capability_hash(network_identity(request, settings),settings.session_secret)
         rate_limit(conn,'submit-session:'+session,settings.max_requests_session)
         rate_limit(conn,'submit-network:'+network,settings.max_requests_network)
         key = hashlib.sha256(canonical({'query':normalized,'solver_version':SOLVER_VERSION}).encode()).hexdigest()
@@ -374,10 +399,27 @@ def create_app(settings=None, pool=None):
                 conn.execute('''INSERT INTO research.query_runs(id,publication_id,ruleset_version,solver_version,query_hash,definition)
                     VALUES (%s,%s,%s,%s,%s,%s)''',(run_id,body.publication_id,rules_row['version'],SOLVER_VERSION,key,Jsonb(normalized)))
             state = 'queued'
+            if settings.deployment_mode == 'serverless':
+                from .admission import reserve
+                from .dispatch import enqueue
+                try:
+                    reserve(conn, run_id, settings)
+                    generation = enqueue(conn, run_id, settings)
+                except CapacityUnavailable as error:
+                    raise HTTPException(503, str(error), headers={'Retry-After': '60'}) from None
         else:
             run_id,state = existing['id'],existing['state']
         subscription = conn.execute('''INSERT INTO research.query_subscriptions(id,run_id,session_hash) VALUES (%s,%s,%s)
             ON CONFLICT(run_id,session_hash) DO UPDATE SET active=true RETURNING id''',(secrets.token_urlsafe(18),run_id,session)).fetchone()['id']
+        if settings.deployment_mode == 'serverless':
+            conn.commit()
+        if settings.deployment_mode == 'serverless' and not reusable:
+            from .cloud import wake
+            try:
+                wake(settings, run_id, generation)
+            except Exception:
+                # Durable intent survives task API failures and process termination.
+                logging.warning('Dispatch wakeup pending for query %s generation %s', run_id, generation)
         return {'query_id':run_id,'state':state,'subscription_id':subscription,'session_token':token,'query':normalized}
 
     def get_run(conn,query_id):
@@ -421,6 +463,8 @@ def create_app(settings=None, pool=None):
         remaining = conn.execute('SELECT count(*) AS total FROM research.query_subscriptions WHERE run_id=%s AND active',(query_id,)).fetchone()['total']
         if remaining == 0:
             conn.execute("UPDATE research.query_runs SET state='cancelled',finished_at=now(),lease_owner=NULL,lease_until=NULL,expires_at=now()+(%s*interval '1 day'),error='All subscribers cancelled. Results are incomplete.' WHERE id=%s AND state IN ('queued','running')",(settings.result_retention_days,query_id))
+        if settings.deployment_mode == 'serverless':
+            conn.commit()
         return {'subscription_id':body.subscription_id,'cancelled':True,'other_subscribers_active':remaining>0}
 
     return app

@@ -26,10 +26,22 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+      managed-postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: research_managed_test
+          POSTGRES_PASSWORD: ci-managed-fixture-only
+        ports: ['5433:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
       RESEARCH_TEST_DATABASE_URL: postgresql://postgres:ci-fixture-only@localhost:5432/research_test
       RESEARCH_DEPLOY_TEST_DATABASE_URL: postgresql://postgres:ci-fixture-only@localhost:5432/research_deploy_test
       RESEARCH_ADOPT_TEST_DATABASE_URL: postgresql://postgres:ci-fixture-only@localhost:5432/research_adopt_test
+      RESEARCH_MANAGED_TEST_DATABASE_URL: postgresql://postgres:ci-managed-fixture-only@localhost:5433/research_managed_test
     defaults:
       run:
         working-directory: projects/research-workspace
@@ -49,8 +61,16 @@ jobs:
               conn.execute('CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role')
               conn.execute('CREATE DATABASE research_deploy_test')
               conn.execute('CREATE DATABASE research_adopt_test')
-              for name in ['migrations/001_publications.sql', 'migrations/002_source_tables.sql', 'migrations/003_source_views.sql', 'service/migrations/002_queries.sql', 'migrations/005_service_roles.sql', 'migrations/006_private_artifacts.sql']:
+              from deploy.migrate import MIGRATIONS
+              for name in MIGRATIONS:
                   conn.execute(Path(name).read_text())
+          from psycopg.rows import dict_row
+          from deploy.managed import apply, provider_baseline, LOGIN_GROUPS
+          with psycopg.connect(os.environ['RESEARCH_MANAGED_TEST_DATABASE_URL'], row_factory=dict_row) as conn:
+              baseline = provider_baseline(conn)
+              passwords = {name: name + '-ci-fixture-' + 'x' * 30 for name in LOGIN_GROUPS}
+              apply(conn, passwords, baseline)
+              assert apply(conn, passwords, baseline)['applied'] == []
           PY
       - run: python -m unittest discover -s data -p test_import.py -v
       - run: python -m unittest discover -s ops -p 'test_*.py' -v

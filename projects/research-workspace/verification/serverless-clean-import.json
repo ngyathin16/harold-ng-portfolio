@@ -1,0 +1,895 @@
+{
+  "postgres_version_num": 170011,
+  "tables": [
+    {
+      "schema": "research",
+      "name": "artifacts",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 81920,
+      "index_bytes": 65536,
+      "total_bytes": 147456
+    },
+    {
+      "schema": "research",
+      "name": "capacity_reservations",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 8192,
+      "index_bytes": 8192,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "research",
+      "name": "capacity_sample",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 0,
+      "index_bytes": 8192,
+      "total_bytes": 8192
+    },
+    {
+      "schema": "research",
+      "name": "datasets",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research",
+      "name": "dispatch_control",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 24576
+    },
+    {
+      "schema": "research",
+      "name": "dispatch_outbox",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 24576
+    },
+    {
+      "schema": "research",
+      "name": "execution_reservations",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 8192,
+      "index_bytes": 24576,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research",
+      "name": "publications",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 73728,
+      "index_bytes": 81920,
+      "total_bytes": 155648
+    },
+    {
+      "schema": "research",
+      "name": "query_artifact_gc",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 8192,
+      "index_bytes": 8192,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "research",
+      "name": "query_artifacts",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 8192,
+      "index_bytes": 8192,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "research",
+      "name": "query_results",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 8192,
+      "index_bytes": 32768,
+      "total_bytes": 40960
+    },
+    {
+      "schema": "research",
+      "name": "query_runs",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 8192,
+      "index_bytes": 24576,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research",
+      "name": "query_subscriptions",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 24576
+    },
+    {
+      "schema": "research",
+      "name": "request_limits",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 8192,
+      "index_bytes": 8192,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "research",
+      "name": "rulesets",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 65536,
+      "index_bytes": 16384,
+      "total_bytes": 81920
+    },
+    {
+      "schema": "research",
+      "name": "table_definitions",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 114688,
+      "index_bytes": 16384,
+      "total_bytes": 131072
+    },
+    {
+      "schema": "research_data",
+      "name": "abilities",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 65536,
+      "index_bytes": 57344,
+      "total_bytes": 122880
+    },
+    {
+      "schema": "research_data",
+      "name": "ability_values",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 1212416,
+      "index_bytes": 573440,
+      "total_bytes": 1785856
+    },
+    {
+      "schema": "research_data",
+      "name": "assertions",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 23232512,
+      "index_bytes": 33513472,
+      "total_bytes": 56745984
+    },
+    {
+      "schema": "research_data",
+      "name": "assets",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 360448,
+      "index_bytes": 368640,
+      "total_bytes": 729088
+    },
+    {
+      "schema": "research_data",
+      "name": "augments",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 196608,
+      "index_bytes": 106496,
+      "total_bytes": 303104
+    },
+    {
+      "schema": "research_data",
+      "name": "change_events",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 8192,
+      "index_bytes": 8192,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "research_data",
+      "name": "collection_inventory",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 81920,
+      "index_bytes": 73728,
+      "total_bytes": 155648
+    },
+    {
+      "schema": "research_data",
+      "name": "condition_nodes",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 106496,
+      "index_bytes": 32768,
+      "total_bytes": 139264
+    },
+    {
+      "schema": "research_data",
+      "name": "condition_predicates",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 49152,
+      "index_bytes": 16384,
+      "total_bytes": 65536
+    },
+    {
+      "schema": "research_data",
+      "name": "coverage_entries",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research_data",
+      "name": "curated_records",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 65536,
+      "index_bytes": 16384,
+      "total_bytes": 81920
+    },
+    {
+      "schema": "research_data",
+      "name": "curated_values",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 360448,
+      "index_bytes": 221184,
+      "total_bytes": 581632
+    },
+    {
+      "schema": "research_data",
+      "name": "discrepancies",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research_data",
+      "name": "effect_values",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 3309568,
+      "index_bytes": 3284992,
+      "total_bytes": 6594560
+    },
+    {
+      "schema": "research_data",
+      "name": "entities",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 2162688,
+      "index_bytes": 1236992,
+      "total_bytes": 3399680
+    },
+    {
+      "schema": "research_data",
+      "name": "entity_aliases",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 688128,
+      "index_bytes": 1253376,
+      "total_bytes": 1941504
+    },
+    {
+      "schema": "research_data",
+      "name": "entity_relationships",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 196608,
+      "index_bytes": 172032,
+      "total_bytes": 368640
+    },
+    {
+      "schema": "research_data",
+      "name": "field_gaps",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 360448,
+      "index_bytes": 221184,
+      "total_bytes": 581632
+    },
+    {
+      "schema": "research_data",
+      "name": "item_recipes",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 57344,
+      "index_bytes": 40960,
+      "total_bytes": 98304
+    },
+    {
+      "schema": "research_data",
+      "name": "items",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 90112,
+      "index_bytes": 65536,
+      "total_bytes": 155648
+    },
+    {
+      "schema": "research_data",
+      "name": "loot_entries",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 8192,
+      "index_bytes": 8192,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "research_data",
+      "name": "loot_tables",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 65536,
+      "index_bytes": 49152,
+      "total_bytes": 114688
+    },
+    {
+      "schema": "research_data",
+      "name": "mechanics",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 65536,
+      "index_bytes": 49152,
+      "total_bytes": 114688
+    },
+    {
+      "schema": "research_data",
+      "name": "observation_comps",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 196608,
+      "index_bytes": 16384,
+      "total_bytes": 212992
+    },
+    {
+      "schema": "research_data",
+      "name": "observation_item_recommendations",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 196608,
+      "index_bytes": 40960,
+      "total_bytes": 237568
+    },
+    {
+      "schema": "research_data",
+      "name": "observation_memberships",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 196608,
+      "index_bytes": 122880,
+      "total_bytes": 319488
+    },
+    {
+      "schema": "research_data",
+      "name": "observation_metrics",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 90112,
+      "index_bytes": 49152,
+      "total_bytes": 139264
+    },
+    {
+      "schema": "research_data",
+      "name": "observation_payloads",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 114688,
+      "index_bytes": 16384,
+      "total_bytes": 131072
+    },
+    {
+      "schema": "research_data",
+      "name": "observation_placements",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 106496,
+      "index_bytes": 73728,
+      "total_bytes": 180224
+    },
+    {
+      "schema": "research_data",
+      "name": "observation_recommended_items",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 196608,
+      "index_bytes": 98304,
+      "total_bytes": 294912
+    },
+    {
+      "schema": "research_data",
+      "name": "observation_samples",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 57344,
+      "index_bytes": 16384,
+      "total_bytes": 73728
+    },
+    {
+      "schema": "research_data",
+      "name": "roles",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research_data",
+      "name": "snapshots",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research_data",
+      "name": "source_collections",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research_data",
+      "name": "source_documents",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 49152,
+      "index_bytes": 16384,
+      "total_bytes": 65536
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_armory_choices",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 139264,
+      "index_bytes": 16384,
+      "total_bytes": 155648
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_armory_items",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 1212416,
+      "index_bytes": 1081344,
+      "total_bytes": 2293760
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_augment_distribution",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_baron_ensemble",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_beach_pop_instruments",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_cashouts",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 49152,
+      "index_bytes": 16384,
+      "total_bytes": 65536
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_collab_members",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 98304,
+      "index_bytes": 65536,
+      "total_bytes": 163840
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_collections",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 212992,
+      "index_bytes": 16384,
+      "total_bytes": 229376
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_curves",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 90112,
+      "index_bytes": 57344,
+      "total_bytes": 147456
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_encounters",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_loot_nodes",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 3325952,
+      "index_bytes": 1269760,
+      "total_bytes": 4595712
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_recommended_items",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 81920,
+      "index_bytes": 57344,
+      "total_bytes": 139264
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_recommended_tables",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_rounds",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 49152,
+      "index_bytes": 16384,
+      "total_bytes": 65536
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_shop_pool",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_unit_recommendations",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 73728,
+      "index_bytes": 49152,
+      "total_bytes": 122880
+    },
+    {
+      "schema": "research_data",
+      "name": "supplemental_values",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 12288000,
+      "index_bytes": 16850944,
+      "total_bytes": 29138944
+    },
+    {
+      "schema": "research_data",
+      "name": "trait_breakpoints",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 81920,
+      "index_bytes": 49152,
+      "total_bytes": 131072
+    },
+    {
+      "schema": "research_data",
+      "name": "traits",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 49152,
+      "index_bytes": 16384,
+      "total_bytes": 65536
+    },
+    {
+      "schema": "research_data",
+      "name": "unit_stats",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 393216,
+      "index_bytes": 466944,
+      "total_bytes": 860160
+    },
+    {
+      "schema": "research_data",
+      "name": "unit_traits",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 81920,
+      "index_bytes": 131072,
+      "total_bytes": 212992
+    },
+    {
+      "schema": "research_data",
+      "name": "units",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 65536,
+      "index_bytes": 65536,
+      "total_bytes": 131072
+    },
+    {
+      "schema": "research_data",
+      "name": "unlock_rules",
+      "rls": true,
+      "owner": "postgres",
+      "table_bytes": 81920,
+      "index_bytes": 16384,
+      "total_bytes": 98304
+    }
+  ],
+  "categories_bytes": {
+    "source": 57999360,
+    "evidence": 56745984,
+    "saved_definitions": 139264,
+    "result_cache": 40960,
+    "other": 622592
+  },
+  "database_allocated_bytes": 125466291,
+  "provider_billed_storage_bytes": null,
+  "provider_storage_note": "Obtain billed history, branches and storage from the exact provider plan separately.",
+  "roles": [
+    {
+      "rolname": "research_api",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "research_api_login",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "research_backup_login",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": true,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "research_dispatcher",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "research_importer_login",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": true,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "research_worker",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "research_worker_login",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolconnlimit": -1
+    }
+  ],
+  "permission_violations": [
+    "research_api_login: connection budget differs",
+    "research_backup_login: administrative privilege",
+    "research_backup_login: connection budget differs",
+    "research_importer_login: administrative privilege",
+    "research_importer_login: connection budget differs",
+    "research_worker_login: connection budget differs"
+  ],
+  "provider_baseline": {
+    "schemas": [
+      "public"
+    ],
+    "relations": [],
+    "routines": [],
+    "extensions": [
+      {
+        "extname": "plpgsql",
+        "extversion": "1.0"
+      }
+    ],
+    "roles": [
+      {
+        "rolname": "anon",
+        "rolsuper": false,
+        "rolcreatedb": false,
+        "rolcreaterole": false,
+        "rolreplication": false,
+        "rolbypassrls": false
+      },
+      {
+        "rolname": "authenticated",
+        "rolsuper": false,
+        "rolcreatedb": false,
+        "rolcreaterole": false,
+        "rolreplication": false,
+        "rolbypassrls": false
+      },
+      {
+        "rolname": "postgres",
+        "rolsuper": true,
+        "rolcreatedb": true,
+        "rolcreaterole": true,
+        "rolreplication": true,
+        "rolbypassrls": true
+      },
+      {
+        "rolname": "service_role",
+        "rolsuper": false,
+        "rolcreatedb": false,
+        "rolcreaterole": false,
+        "rolreplication": false,
+        "rolbypassrls": false
+      }
+    ]
+  },
+  "qualified": false,
+  "pending": [
+    "clean import",
+    "backup private-row comparison",
+    "direct/pooled concurrency and exhaustion",
+    "hosted latency and sleep",
+    "provider quote",
+    "R2 recovery drill"
+  ],
+  "environment": "Local Windows PostgreSQL 17; VM grants; not provider qualification",
+  "clean_import_seconds": 5.839,
+  "publication": {
+    "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+    "status": "published",
+    "parity": "all_tables_and_views_verified",
+    "tables_and_views": 75
+  },
+  "source_bundle_sha256": "6e22b9248587fbc58e4b2aa85649b74464f60e42b23b489db85535e46f5a1365",
+  "fresh_general_search": {
+    "seconds": 97.171,
+    "state": {
+      "state": "complete",
+      "result_count": 280543,
+      "champion_set_count": 211961,
+      "progress": {
+        "query": {
+          "cost": {
+            "max": 4,
+            "min": null
+          },
+          "exclude": [],
+          "include": [
+            "tft19:unit:DA_Jhin19"
+          ],
+          "team_size": {
+            "max": 8,
+            "min": 8
+          },
+          "dataset_id": "tft-set-19",
+          "total_cost": {
+            "max": null,
+            "min": null
+          },
+          "board_slots": 8,
+          "snapshot_id": "set19-pbe-6e47c2f3fdf1f5ca",
+          "include_locked": true,
+          "publication_id": "tft-set-19--set19-pbe-6e47c2f3fdf1f5ca--6e22b9248587fbc5",
+          "schema_version": 1,
+          "required_traits": [],
+          "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+          "forbidden_traits": [],
+          "min_active_traits": 8
+        },
+        "state": "complete",
+        "reason": null,
+        "complete": true,
+        "query_hash": "bf82c67874ad978eed23b8206213bc358f108bbca7bc15f91456a9462799d63e",
+        "visited_nodes": 147086980,
+        "solver_version": "native-dfs-v1",
+        "elapsed_seconds": 96.40860139997676,
+        "ruleset_version": "set19-0d0e40c4f6796cd82b34",
+        "champion_set_count": 211961,
+        "completeness_scope": "All matches under these recorded rules and assumptions",
+        "configuration_count": 280543
+      }
+    },
+    "independent_counts": {
+      "configurations": 280543,
+      "champion_sets": 211961
+    },
+    "after_database_bytes": 841512627,
+    "growth_bytes": 716046336,
+    "categories_bytes": {
+      "source": 56786944,
+      "evidence": 56754176,
+      "saved_definitions": 417792,
+      "result_cache": 716652544,
+      "other": 638976
+    },
+    "scope": "Windows worker claim through persistence; not hosted Cloud Run timing"
+  },
+  "fresh_jazz_search": {
+    "worker_database_seconds": 11.159998,
+    "solver_seconds": 10.86217730003409,
+    "state": "complete",
+    "independent_counts": {
+      "configurations": 38809,
+      "champion_sets": 30935
+    },
+    "not_in_general": 0,
+    "after_database_bytes": 936752819,
+    "scope": "Local Windows database started_at through finished_at; not Cloud Run timing",
+    "verification_note": "Initial unindexed cross-run anti-join was cancelled; rerun with run-scoped EXCEPT completed."
+  }
+}

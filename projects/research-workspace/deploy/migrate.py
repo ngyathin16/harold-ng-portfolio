@@ -13,6 +13,8 @@ MIGRATIONS = (
     "service/migrations/002_queries.sql",
     "migrations/005_service_roles.sql",
     "migrations/006_private_artifacts.sql",
+    "migrations/007_serverless.sql",
+    "migrations/008_managed_capacity.sql",
 )
 LOCK = "research-schema-migrations"
 LOGIN_ROLES = {

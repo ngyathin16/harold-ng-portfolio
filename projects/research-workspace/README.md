@@ -105,3 +105,6 @@ Monitor ordinary-read latency, errors, active database connections, queue age, w
 Back up Postgres and object storage **separately**. Retain source SQLite bundles and their hashes outside both services. Test restoration into an isolated database and private bucket, replay a named snapshot, compare its logical rows and objects, and reopen a saved query definition. A Postgres backup does not restore storage objects. Record recovery time and tolerated data-loss windows with the selected hosting plan.
 
 For a website rollback, redeploy the previous portfolio release while preserving the API contract and immutable publications. For an API rollback, deploy the previous compatible service image; keep source data intact. A changed source schema requires a reviewed additive migration and a newly verified publication. Never overwrite existing snapshots or run a destructive reverse migration to roll back the interface.
+## Serverless deployment
+
+The Cloud Run migration package is in `deploy/serverless/`. Read the [implementation evidence](../../docs/RESEARCH-SERVERLESS-IMPLEMENTATION.md), [runbook](../../docs/RESEARCH-SERVERLESS.md), and [cost worksheet](../../docs/RESEARCH-SERVERLESS-COST.md) before provisioning. Local behavior is implemented; managed-provider qualification and hosted acceptance are pending. The existing VM deployment remains available.

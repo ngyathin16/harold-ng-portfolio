@@ -3,6 +3,8 @@ import logging
 import json
 import secrets
 
+from psycopg.types.json import Jsonb
+
 
 OUTSTANDING = ('launching', 'uncertain', 'running')
 TERMINAL_QUERY = ('complete', 'cancelled', 'failed', 'resource_limited')
@@ -30,7 +32,9 @@ def enqueue(conn, run_id, settings, markers=None):
     return generation
 
 
-def reserve(pool, settings):
+def reserve(pool, settings, launch_protocol='legacy'):
+    if launch_protocol not in ('legacy', 'token-v1'):
+        raise ValueError('Unknown launch protocol')
     with pool.connection() as conn:
         conn.execute('SELECT pg_advisory_xact_lock(hashtext(%s))', ('research-dispatch-admission',))
         if conn.execute('SELECT paused FROM research.dispatch_control WHERE singleton').fetchone()['paused']:
@@ -38,6 +42,10 @@ def reserve(pool, settings):
         outstanding = conn.execute("SELECT count(*) AS n FROM research.execution_reservations WHERE state=ANY(%s)", (list(OUTSTANDING),)).fetchone()['n']
         launches = conn.execute("SELECT count(*) AS n FROM research.execution_reservations WHERE created_at>now()-interval '1 minute'").fetchone()['n']
         if outstanding >= min(settings.max_outstanding, settings.worker_concurrency) or launches >= settings.max_launches_per_minute:
+            return None
+        if launch_protocol == 'token-v1' and conn.execute("""SELECT 1 FROM research.execution_reservations
+                WHERE launch_protocol='token-v1' AND launch_confirmed_at IS NULL
+                AND state=ANY(%s) LIMIT 1""", (list(OUTSTANDING),)).fetchone():
             return None
         row = conn.execute("""SELECT o.* FROM research.dispatch_outbox o
             JOIN research.query_runs r ON r.id=o.run_id AND r.dispatch_generation=o.generation
@@ -52,8 +60,8 @@ def reserve(pool, settings):
         if settings.budget_window_id:
             from .budget import authorize_launch
             authorize_launch(conn, settings.budget_window_id, row['run_id'], row['generation'], row['launch_attempts'] + 1)
-        reservation = conn.execute("""INSERT INTO research.execution_reservations(id,run_id,generation,state)
-            VALUES(%s,%s,%s,'launching') RETURNING *""", (secrets.token_hex(16), row['run_id'], row['generation'])).fetchone()
+        reservation = conn.execute("""INSERT INTO research.execution_reservations(id,run_id,generation,state,launch_protocol)
+            VALUES(%s,%s,%s,'launching',%s) RETURNING *""", (secrets.token_hex(16), row['run_id'], row['generation'], launch_protocol)).fetchone()
         conn.execute("UPDATE research.dispatch_outbox SET state='reserved',launch_attempts=launch_attempts+1 WHERE run_id=%s", (row['run_id'],))
         return reservation
 
@@ -81,27 +89,72 @@ def settle(conn, reservation, settings, outcome):
         conn.execute("UPDATE research.dispatch_outbox SET state='pending',eligible_at=now()+interval '15 seconds' WHERE run_id=%s", (run['id'],))
 
 
+def token_progress(pool, cloud, reservation):
+    """Replay one persisted conditional mutation, never an unrecorded jobs.run."""
+    if reservation.get('launch_spec') is None:
+        spec = cloud.prepare(reservation)
+        with pool.connection() as conn:
+            conn.execute("""UPDATE research.execution_reservations SET launch_spec=%s
+                WHERE id=%s AND launch_spec IS NULL AND state=ANY(%s)""",
+                (Jsonb(spec), reservation['id'], list(OUTSTANDING)))
+            reservation = conn.execute('SELECT * FROM research.execution_reservations WHERE id=%s',
+                                       (reservation['id'],)).fetchone()
+    if reservation['state'] not in OUTSTANDING:
+        return {'state': reservation['state']}
+    status = cloud.observe(reservation)
+    spec = status.get('retry_spec')
+    if spec is None:
+        return status
+    with pool.connection() as conn:
+        # Concurrent reconcilers may propose different status-only etags. Only
+        # the winner of this comparison can send its persisted request.
+        current = conn.execute("""UPDATE research.execution_reservations SET launch_spec=%s
+            WHERE id=%s AND launch_spec=%s AND state=ANY(%s)
+            AND launch_confirmed_at IS NULL RETURNING *""",
+            (Jsonb(spec), reservation['id'], Jsonb(reservation['launch_spec']), list(OUTSTANDING))).fetchone()
+    if current is None:
+        return {'state': 'uncertain'}
+    operation = cloud.launch(current)
+    if operation:
+        with pool.connection() as conn:
+            conn.execute('UPDATE research.execution_reservations SET operation_name=%s WHERE id=%s',
+                         (operation, reservation['id']))
+    return cloud.observe(current)
+
+
+def save_observation(pool, settings, reservation, status):
+    with pool.connection() as conn:
+        conn.execute('SELECT pg_advisory_xact_lock(hashtext(%s))', ('research-dispatch-admission',))
+        current = conn.execute('SELECT * FROM research.execution_reservations WHERE id=%s FOR UPDATE', (reservation['id'],)).fetchone()
+        if current is None or current['state'] not in OUTSTANDING:
+            return
+        if status['state'] in ('terminal', 'rejected'):
+            if status.get('execution_name'):
+                conn.execute("""UPDATE research.execution_reservations SET execution_name=%s,
+                    launch_confirmed_at=COALESCE(launch_confirmed_at,now()) WHERE id=%s""",
+                    (status['execution_name'], current['id']))
+            settle(conn, current, settings, status['state'])
+        elif not (current.get('launch_confirmed_at') and status['state'] != 'running'):
+            conn.execute("""UPDATE research.execution_reservations SET state=%s,
+                execution_name=COALESCE(%s,execution_name),checked_at=now(),
+                launch_confirmed_at=CASE WHEN %s::text IS NOT NULL THEN COALESCE(launch_confirmed_at,now())
+                                        ELSE launch_confirmed_at END WHERE id=%s""",
+                ('running' if status['state'] == 'running' else 'uncertain',
+                 status.get('execution_name'), status.get('execution_name'), current['id']))
+
+
 def reconcile(pool, settings, cloud):
     with pool.connection() as conn:
         rows = conn.execute("""SELECT * FROM research.execution_reservations WHERE state=ANY(%s)
             ORDER BY checked_at NULLS FIRST,created_at LIMIT %s""", (list(OUTSTANDING), settings.max_outstanding)).fetchall()
     for reservation in rows:
         try:
-            status = cloud.observe(reservation)
+            status = (token_progress(pool, cloud, reservation) if reservation.get('launch_protocol') == 'token-v1'
+                      else cloud.observe(reservation))
         except Exception:
             logging.warning('Dispatch observation unavailable reservation=%s', reservation['id'])
             continue
-        with pool.connection() as conn:
-            conn.execute('SELECT pg_advisory_xact_lock(hashtext(%s))', ('research-dispatch-admission',))
-            current = conn.execute('SELECT * FROM research.execution_reservations WHERE id=%s FOR UPDATE', (reservation['id'],)).fetchone()
-            if current['state'] not in OUTSTANDING:
-                continue
-            if status['state'] in ('terminal', 'rejected'):
-                settle(conn, current, settings, status['state'])
-            else:
-                conn.execute("""UPDATE research.execution_reservations SET state=%s,
-                    execution_name=COALESCE(%s,execution_name),checked_at=now() WHERE id=%s""",
-                    ('running' if status['state'] == 'running' else 'uncertain', status.get('execution_name'), current['id']))
+        save_observation(pool, settings, reservation, status)
     with pool.connection() as conn:
         conn.execute("""UPDATE research.dispatch_outbox o SET state='done' FROM research.query_runs r
             WHERE r.id=o.run_id AND r.state=ANY(%s) AND o.state='pending'""", (list(TERMINAL_QUERY),))
@@ -111,9 +164,19 @@ def dispatch_once(pool, settings, cloud):
     reconcile(pool, settings, cloud)
     launched = 0
     for _ in range(settings.dispatch_batch_size):
-        reservation = reserve(pool, settings)
+        reservation = reserve(pool, settings, getattr(cloud, 'launch_protocol', 'legacy'))
         if reservation is None:
             break
+        if reservation.get('launch_protocol') == 'token-v1':
+            try:
+                status = token_progress(pool, cloud, reservation)
+                save_observation(pool, settings, reservation, status)
+                launched += int(status['state'] in ('running', 'terminal'))
+            except Exception:
+                with pool.connection() as conn:
+                    conn.execute("UPDATE research.execution_reservations SET state='uncertain' WHERE id=%s AND state='launching'", (reservation['id'],))
+                logging.warning('Conditional launch reconciliation deferred reservation=%s', reservation['id'])
+            continue
         try:
             operation = cloud.launch(reservation)
         except LaunchRejected:
@@ -133,6 +196,9 @@ def dispatch_once(pool, settings, cloud):
             (SELECT count(*) FROM research.dispatch_outbox WHERE state='pending') AS pending,
             (SELECT count(*) FROM research.execution_reservations WHERE state='uncertain') AS uncertain,
             (SELECT count(*) FROM research.execution_reservations WHERE state=ANY(%s)) AS outstanding,
+            EXISTS(SELECT 1 FROM research.execution_reservations
+                   WHERE launch_protocol='token-v1' AND launch_confirmed_at IS NULL
+                   AND state IN ('launching','uncertain','running')) AS retry_pending,
             (SELECT count(*) FROM research.query_runs WHERE state='running' AND lease_until<now()) AS expired_leases,
             (SELECT COALESCE(extract(epoch FROM now()-min(o.created_at)),0)::integer
              FROM research.dispatch_outbox o JOIN research.query_runs r ON r.id=o.run_id AND r.dispatch_generation=o.generation

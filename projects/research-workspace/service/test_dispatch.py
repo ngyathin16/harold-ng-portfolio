@@ -223,7 +223,7 @@ def test_serverless_worker_refuses_generic_queue_claim():
         claim(None, Settings(deployment_mode='serverless'))
 
 
-def test_cloud_launch_is_allowlisted_and_does_not_retry_uncertain_response():
+def test_cloud_launch_rejects_unrecorded_request_and_untrusted_job():
     settings = Settings(dispatch_job='projects/example-project/locations/asia-east1/jobs/search')
     calls = []
     def handler(request):
@@ -233,9 +233,9 @@ def test_cloud_launch_is_allowlisted_and_does_not_retry_uncertain_response():
         return httpx.Response(503)
     client = httpx.Client(transport=httpx.MockTransport(handler))
     cloud = CloudRun(settings, client)
-    with pytest.raises(httpx.HTTPStatusError):
+    with pytest.raises(ValueError, match='durable'):
         cloud.launch({'run_id': 'query', 'generation': 1, 'id': 'reservation'})
-    assert len([call for call in calls if call.method == 'POST']) == 1
+    assert calls == []
     with pytest.raises(ValueError):
         CloudRun(Settings(dispatch_job='https://untrusted.example/run'))
 

@@ -164,7 +164,7 @@ def create_app(settings=None, pool=None, markers=None):
                     conn.commit()
                 app.state.budget_pool = ConnectionPool(settings.database_url, min_size=0, max_size=1,
                     timeout=3, kwargs={'row_factory': dict_row, 'connect_timeout': 3},
-                    configure=configure_budget_connection, open=True)
+                    configure=configure_budget_connection, check=ConnectionPool.check_connection, open=True)
                 app.state.budget = Budget(app.state.budget_pool, settings.budget_window_id)
             if settings.result_storage_mode == 'objects':
                 from .result_objects import ResultObjects
@@ -180,7 +180,7 @@ def create_app(settings=None, pool=None, markers=None):
                     app.state.markers = GCSMarkers(settings)
             if app.state.pool is None and settings.database_url:
                 app.state.pool = ConnectionPool(settings.database_url, min_size=0, max_size=settings.pool_size,
-                    timeout=3, kwargs={'row_factory': dict_row}, open=True)
+                    timeout=3, kwargs={'row_factory': dict_row}, check=ConnectionPool.check_connection, open=True)
             yield
         finally:
             with ExitStack() as cleanup:

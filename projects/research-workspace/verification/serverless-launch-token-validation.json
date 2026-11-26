@@ -1,0 +1,14 @@
+{
+  "at": "2026-11-26T01:00:26.348460+00:00",
+  "job": "projects/harold-research-20261125/locations/asia-southeast1/jobs/research-staging-search",
+  "validation_only": true,
+  "execution_created": false,
+  "control_calls": 3,
+  "status": 200,
+  "request_bytes": 2663,
+  "job_unchanged": true,
+  "app_commit": "3cf19b188961ffacfc480509d87c139ee1f07cb2",
+  "source_sha256": "b48e87abfff129e063208a515648a2b75f60ece91b410b0c07f3748bf28d979d",
+  "passed": true,
+  "scope": "Owner credential validates request shape; dispatcher IAM, actual naming and conditional replay remain unqualified."
+}

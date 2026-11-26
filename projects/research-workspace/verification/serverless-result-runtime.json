@@ -1,0 +1,63 @@
+{
+  "checked_at": "2026-11-25T09:33:58.843173+00:00",
+  "app_commit": "3cf19b188961ffacfc480509d87c139ee1f07cb2",
+  "images": {
+    "service": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/service@sha256:95cc18516616be906c446abe21ab22979ffa80dfae9b1b8d1d4ea027f99a9f24",
+    "operator": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/operator@sha256:436cd5c32b0c6236681af9e820a73bd4306697fa589f98aa4cb1b43fd92188d7"
+  },
+  "public_api": false,
+  "search_admission_paused": true,
+  "operator_schedules_paused": true,
+  "services": [
+    {
+      "name": "research-staging-api",
+      "uri": "https://research-staging-api-5kkbasiboq-as.a.run.app",
+      "revision": "projects/harold-research-20261125/locations/asia-southeast1/services/research-staging-api/revisions/research-staging-api-00003-ks2",
+      "ready": true
+    },
+    {
+      "name": "research-staging-dispatcher",
+      "uri": "https://research-staging-dispatcher-5kkbasiboq-as.a.run.app",
+      "revision": "projects/harold-research-20261125/locations/asia-southeast1/services/research-staging-dispatcher/revisions/research-staging-dispatcher-00003-2zw",
+      "ready": true
+    }
+  ],
+  "jobs": [
+    {
+      "name": "research-staging-cleanup",
+      "image": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/operator@sha256:436cd5c32b0c6236681af9e820a73bd4306697fa589f98aa4cb1b43fd92188d7"
+    },
+    {
+      "name": "research-staging-backup",
+      "image": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/operator@sha256:436cd5c32b0c6236681af9e820a73bd4306697fa589f98aa4cb1b43fd92188d7"
+    },
+    {
+      "name": "research-staging-prune",
+      "image": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/operator@sha256:436cd5c32b0c6236681af9e820a73bd4306697fa589f98aa4cb1b43fd92188d7"
+    },
+    {
+      "name": "research-staging-search",
+      "image": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/service@sha256:95cc18516616be906c446abe21ab22979ffa80dfae9b1b8d1d4ea027f99a9f24"
+    },
+    {
+      "name": "research-staging-restore",
+      "image": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/operator@sha256:436cd5c32b0c6236681af9e820a73bd4306697fa589f98aa4cb1b43fd92188d7"
+    },
+    {
+      "name": "research-staging-verify",
+      "image": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/operator@sha256:436cd5c32b0c6236681af9e820a73bd4306697fa589f98aa4cb1b43fd92188d7"
+    },
+    {
+      "name": "research-staging-import",
+      "image": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/operator@sha256:436cd5c32b0c6236681af9e820a73bd4306697fa589f98aa4cb1b43fd92188d7"
+    }
+  ],
+  "restricted_api_capacity": {
+    "used_bytes": 258678784,
+    "limit_bytes": 1073741824,
+    "measured_at": "2026-11-25 09:34:01.189974+00:00"
+  },
+  "api_accounting_write_denied": true,
+  "runtime_fence_released": true,
+  "passed": true
+}

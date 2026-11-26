@@ -1,0 +1,29 @@
+{
+  "app_commit": "3cf19b188961ffacfc480509d87c139ee1f07cb2",
+  "checks": [
+    {
+      "path": "/live",
+      "status": 200,
+      "seconds": 0.172
+    },
+    {
+      "path": "/ready",
+      "status": 200,
+      "seconds": 0.328
+    },
+    {
+      "path": "/v1/queries/Aik3xa_zJwXVM3h80Z6vKeSB/results?sort=active_traits&page=1&page_size=7",
+      "status": 200,
+      "seconds": 1.016,
+      "exact_payload_and_order_match": true
+    },
+    {
+      "path": "/v1/queries/zvhvotLPIM70pbUhbX_KWa_i/results?sort=champions&page=2&page_size=7",
+      "status": 200,
+      "seconds": 0.594,
+      "exact_payload_and_order_match": true
+    }
+  ],
+  "search_admission_enabled": false,
+  "passed": true
+}

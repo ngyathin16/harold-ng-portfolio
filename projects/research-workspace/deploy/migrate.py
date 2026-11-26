@@ -18,6 +18,7 @@ MIGRATIONS = (
     "migrations/009_result_objects.sql",
     "migrations/010_budget.sql",
     "migrations/011_neon_capacity.sql",
+    "migrations/012_launch_tokens.sql",
 )
 LOCK = "research-schema-migrations"
 LOGIN_ROLES = {

@@ -122,7 +122,8 @@ def execute(pool, settings, run):
         if settings.budget_window_id:
             from .budget import Budget
             budget_pool = resources.enter_context(ConnectionPool(settings.database_url, min_size=0, max_size=1, timeout=3,
-                kwargs={'row_factory': dict_row, 'connect_timeout': 5, 'options': '-c statement_timeout=5000 -c lock_timeout=3000'}))
+                kwargs={'row_factory': dict_row, 'connect_timeout': 5, 'options': '-c statement_timeout=5000 -c lock_timeout=3000'},
+                check=ConnectionPool.check_connection))
             budget = Budget(budget_pool, settings.budget_window_id)
         with LeaseHeartbeat(pool, run) as heartbeat:
             return execute_leased(pool, settings, run, heartbeat, budget=budget)
@@ -256,7 +257,8 @@ def main():
     if settings.deployment_mode == 'serverless' and not (args.bound or args.cleanup):
         parser.error('Serverless workers require --bound; use a separate operator Job for cleanup')
     with ConnectionPool(settings.database_url,min_size=1,max_size=1 if settings.budget_window_id else 2,timeout=3,
-                        kwargs={'row_factory':dict_row, 'connect_timeout': 5, 'options': '-c statement_timeout=15000 -c lock_timeout=10000'}) as pool:
+                        kwargs={'row_factory':dict_row, 'connect_timeout': 5, 'options': '-c statement_timeout=15000 -c lock_timeout=10000'},
+                        check=ConnectionPool.check_connection) as pool:
         if args.cleanup:
             cleanup(pool,settings)
             return

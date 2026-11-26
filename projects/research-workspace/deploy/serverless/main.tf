@@ -148,7 +148,7 @@ resource "google_cloud_tasks_queue" "dispatch" {
   }
   retry_config {
     max_attempts       = 5
-    max_retry_duration = "600s"
+    max_retry_duration = "0s"
     min_backoff        = "5s"
     max_backoff        = "60s"
     max_doublings      = 3
@@ -210,11 +210,18 @@ resource "google_cloud_run_v2_service" "dispatcher" {
   depends_on = [google_secret_manager_secret_iam_member.access, google_storage_bucket_iam_member.dispatch_markers["dispatcher"]]
 }
 resource "google_cloud_run_v2_service_iam_member" "dispatch" {
-  for_each = toset(["tasks", "scheduler"])
+  for_each = local.reconciliation_enabled ? toset(["tasks"]) : toset(["tasks", "scheduler"])
   name     = google_cloud_run_v2_service.dispatcher.name
   location = var.region
   role     = "roles/run.invoker"
   member   = "serviceAccount:${google_service_account.identity[each.key].email}"
+  dynamic "condition" {
+    for_each = local.reconciliation_enabled ? [local.reconciliation_deadline_condition] : []
+    content {
+      title      = condition.value.title
+      expression = condition.value.expression
+    }
+  }
 }
 
 resource "google_cloud_run_v2_service" "api" {
@@ -335,13 +342,18 @@ resource "google_cloud_run_v2_job" "search" {
 resource "google_project_iam_custom_role" "launch" {
   role_id     = "research_${var.environment}_launch"
   title       = "Research bound search launch"
-  permissions = ["run.jobs.run", "run.jobs.runWithOverrides", "run.executions.get", "run.executions.list"]
+  permissions = ["run.jobs.get", "run.jobs.update", "run.jobs.run", "run.executions.get", "run.executions.list"]
 }
 resource "google_cloud_run_v2_job_iam_member" "launch" {
   name     = google_cloud_run_v2_job.search.name
   location = var.region
   role     = google_project_iam_custom_role.launch.name
   member   = "serviceAccount:${google_service_account.identity["dispatcher"].email}"
+}
+resource "google_service_account_iam_member" "search_identity" {
+  service_account_id = google_service_account.identity["search"].name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.identity["dispatcher"].email}"
 }
 resource "google_project_iam_custom_role" "operations" {
   role_id     = "research_${var.environment}_operations"
@@ -411,6 +423,13 @@ resource "google_cloud_run_v2_job_iam_member" "operator_schedule" {
   location = var.region
   role     = "roles/run.invoker"
   member   = "serviceAccount:${google_service_account.identity["scheduler"].email}"
+  dynamic "condition" {
+    for_each = local.reconciliation_enabled ? [local.reconciliation_window_condition] : []
+    content {
+      title      = condition.value.title
+      expression = condition.value.expression
+    }
+  }
 }
 resource "google_cloud_run_v2_job_iam_member" "recovery" {
   for_each = local.operator_commands
@@ -436,15 +455,25 @@ resource "google_cloud_scheduler_job" "reconcile" {
   }
   http_target {
     http_method = "POST"
-    uri         = "${google_cloud_run_v2_service.dispatcher.uri}/dispatch"
+    uri         = local.reconciliation_enabled ? local.reconciliation_execution_uri : "${google_cloud_run_v2_service.dispatcher.uri}/dispatch"
     body        = base64encode("{}")
     headers     = { "Content-Type" = "application/json" }
-    oidc_token {
-      service_account_email = google_service_account.identity["scheduler"].email
-      audience              = google_cloud_run_v2_service.dispatcher.uri
+    dynamic "oidc_token" {
+      for_each = local.reconciliation_enabled ? [] : [true]
+      content {
+        service_account_email = google_service_account.identity["scheduler"].email
+        audience              = google_cloud_run_v2_service.dispatcher.uri
+      }
+    }
+    dynamic "oauth_token" {
+      for_each = local.reconciliation_enabled ? [true] : []
+      content {
+        service_account_email = google_service_account.identity["scheduler"].email
+      }
     }
   }
-  depends_on = [google_cloud_run_v2_service_iam_member.dispatch]
+  depends_on = [google_cloud_run_v2_service_iam_member.dispatch, google_workflows_workflow.reconciliation,
+  google_project_iam_member.reconciliation_execute, google_monitoring_alert_policy.reconciliation]
 }
 resource "google_cloud_scheduler_job" "operator" {
   for_each         = { backup = "0 3 * * *", prune = "0 5 * * *", cleanup = "0 6 * * *" }

@@ -1,0 +1,20 @@
+{
+  "recorded_at": "2026-11-26T01:03:22.786595+00:00",
+  "scope": "Cumulative attested 494/607/3cf content; no credit for garbage collection",
+  "attested_manifests": 6,
+  "retained_storage_bytes_floor": 923179605,
+  "prune_completed": true,
+  "prune_http_requests": 10,
+  "deleted_images": [
+    "projects/harold-research-20261125/locations/asia-southeast1/repositories/research-staging/packages/service/versions/sha256:40c209588a204a3a7f8c773ef7de6c65bcdba921023554b675261ba4dd733062",
+    "projects/harold-research-20261125/locations/asia-southeast1/repositories/research-staging/packages/operator/versions/sha256:88ca25ca6c1dd811dec160888dddc31e794ad0cc01ed16f36f73499a6d746b35"
+  ],
+  "protected_images": [
+    "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/operator@sha256:436cd5c32b0c6236681af9e820a73bd4306697fa589f98aa4cb1b43fd92188d7",
+    "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/service@sha256:95cc18516616be906c446abe21ab22979ffa80dfae9b1b8d1d4ea027f99a9f24"
+  ],
+  "maximum_total_bytes": 2147483648,
+  "maximum_retained_digests": 4,
+  "next_build_qualified": false,
+  "next_build_requirement": "Validate exact compressed archives and their digests locally; cumulative floor plus complete archive sizes must fit 2 GiB before any push."
+}

@@ -140,6 +140,52 @@ variable "enable_reconciliation" {
   type    = bool
   default = false
 }
+variable "finite_reconciliation" {
+  type = object({
+    starts_at                 = string
+    expires_at                = string
+    dispatch_limit            = number
+    accepted_queries          = number
+    other_service_cpu_seconds = number
+    other_service_gib_seconds = number
+    other_service_requests    = number
+    evidence_reference        = string
+    deadline_tasks_evidence   = optional(string, "")
+  })
+  default     = null
+  description = "Optional reviewed window of at most 26 hours: up to two hours of qualification followed by 24 idle hours. Reserves task retries and Workflow dispatches inside the same 10000 CPU-second/5000 GiB-second/500-request rehearsal allowance. Null creates no gate or timer identity. This is admission accounting, not a hard provider invoice cap."
+  validation {
+    condition = var.finite_reconciliation == null ? true : try(
+      var.budget_window_id != "" && length(trimspace(var.finite_reconciliation.evidence_reference)) > 3 &&
+      can(regex("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$", var.finite_reconciliation.starts_at)) &&
+      can(regex("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$", var.finite_reconciliation.expires_at)) &&
+      timecmp(var.finite_reconciliation.expires_at, var.finite_reconciliation.starts_at) > 0 &&
+      timecmp(var.finite_reconciliation.expires_at, timeadd(var.finite_reconciliation.starts_at, "26h")) <= 0,
+    false)
+    error_message = "Finite reconciliation needs a reviewed resource window, evidence and valid UTC start/expiry no more than 26 hours apart."
+  }
+  validation {
+    condition = var.finite_reconciliation == null ? true : (
+      var.finite_reconciliation.dispatch_limit >= 1 && var.finite_reconciliation.dispatch_limit <= 8 &&
+      floor(var.finite_reconciliation.dispatch_limit) == var.finite_reconciliation.dispatch_limit &&
+      var.finite_reconciliation.accepted_queries >= 0 && var.finite_reconciliation.accepted_queries <= 2 &&
+      floor(var.finite_reconciliation.accepted_queries) == var.finite_reconciliation.accepted_queries &&
+      var.finite_reconciliation.other_service_cpu_seconds >= 0 && var.finite_reconciliation.other_service_gib_seconds >= 0 &&
+      var.finite_reconciliation.other_service_requests >= 0 && floor(var.finite_reconciliation.other_service_requests) == var.finite_reconciliation.other_service_requests &&
+      (var.finite_reconciliation.accepted_queries * 5 + var.finite_reconciliation.dispatch_limit) * 430 + var.finite_reconciliation.other_service_cpu_seconds <= 10000 &&
+      (var.finite_reconciliation.accepted_queries * 5 + var.finite_reconciliation.dispatch_limit) * 215 + var.finite_reconciliation.other_service_gib_seconds <= 5000 &&
+      var.finite_reconciliation.accepted_queries * 5 + var.finite_reconciliation.dispatch_limit + var.finite_reconciliation.other_service_requests <= 500
+    )
+    error_message = "Reserve 0..2 accepted queries times 5 task deliveries plus 1..8 gate dispatches together at 430 CPU seconds/215 GiB seconds each; all prior/manual/deployment work must fit the same 10000/5000/500 envelope."
+  }
+  validation {
+    condition = var.finite_reconciliation == null ? true : (
+      length(var.notification_channels) > 0 &&
+      (!(var.enable_reconciliation || var.enable_operator_schedules) || length(trimspace(var.finite_reconciliation.deadline_tasks_evidence)) > 3)
+    )
+    error_message = "A finite gate requires verified notification channels; enabling any schedule also requires readback evidence for all four cloud pause tasks and time-limited IAM grants."
+  }
+}
 variable "enable_operator_schedules" {
   type    = bool
   default = false

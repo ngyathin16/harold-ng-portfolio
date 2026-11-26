@@ -1,0 +1,69 @@
+main:
+  steps:
+    - check_window:
+        switch:
+          - condition: $${sys.now() < time.parse("${starts_at}") or sys.now() >= time.parse("${expires_at}")}
+            next: stopped
+    - list_markers:
+        call: http.get
+        args:
+          url: https://storage.googleapis.com/storage/v1/b/${marker_bucket}/o
+          auth: {type: OAuth2}
+          timeout: 5
+          query:
+            prefix: dispatch/
+            maxResults: 1
+            fields: items(name),nextPageToken
+        result: markers
+    - check_markers:
+        switch:
+          - condition: $${len(default(map.get(markers.body, "items"), [])) == 0 and map.get(markers.body, "nextPageToken") == null}
+            next: idle
+    - read_permit:
+        call: http.get
+        args:
+          url: ${counter_url}
+          auth: {type: OAuth2}
+          timeout: 5
+          query: {fields: "generation,metageneration,metadata"}
+        result: permit
+    - validate_permit:
+        switch:
+          - condition: $${permit.body.metadata.window != "${window}" or permit.body.metadata.deadline != "${expires_at}" or int(permit.body.metadata.remaining) <= 0 or int(permit.body.metadata.remaining) > ${dispatch_limit}}
+            next: exhausted
+    - consume_permit:
+        call: http.patch
+        args:
+          url: ${counter_url}
+          auth: {type: OAuth2}
+          timeout: 5
+          query:
+            ifGenerationMatch: $${permit.body.generation}
+            ifMetagenerationMatch: $${permit.body.metageneration}
+          body:
+            metadata:
+              window: "${window}"
+              deadline: "${expires_at}"
+              remaining: $${string(int(permit.body.metadata.remaining) - 1)}
+              last_execution: $${sys.get_env("GOOGLE_CLOUD_WORKFLOW_EXECUTION_ID")}
+        result: receipt
+    - check_dispatch_deadline:
+        switch:
+          - condition: $${sys.now() >= time.parse("${expires_at}")}
+            next: stopped
+    - dispatch_once:
+        call: http.post
+        args:
+          url: ${dispatcher_uri}/dispatch
+          auth: {type: OIDC, audience: "${dispatcher_uri}"}
+          timeout: 180
+          body: {}
+        result: dispatch
+    - completed:
+        return: $${dispatch.body}
+    - idle:
+        return: {idle: true, dispatcher_invocations: 0}
+    - stopped:
+        return: {window_closed: true, dispatcher_invocations: 0}
+    - exhausted:
+        raise: "Reconciliation allowance exhausted or window mismatch; manual review required."

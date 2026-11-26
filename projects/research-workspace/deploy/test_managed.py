@@ -88,6 +88,14 @@ def assert_ledger_writes_denied(url, role, passwords):
                 connection.execute(sql.SQL('UPDATE research.{} SET ' + assignment).format(sql.Identifier(table)))
 
 
+def assert_worker_launch_permissions(url, passwords):
+    with psycopg.connect(**role_options(url, 'worker', passwords)) as connection:
+        connection.execute("UPDATE research.execution_reservations SET state='running',claimed_at=now() WHERE false")
+        for assignment in ("launch_spec='{}'", "launch_protocol='legacy'", 'launch_confirmed_at=now()', "operation_name='forged'"):
+            with pytest.raises(psycopg.errors.InsufficientPrivilege), connection.transaction():
+                connection.execute('UPDATE research.execution_reservations SET ' + assignment + ' WHERE false')
+
+
 def test_managed_importer_can_import_but_cannot_edit_any_ledger_table(managed_database):
     values = managed_database
     assert_ledger_writes_denied(values['url'], 'importer', values['passwords'])
@@ -133,6 +141,8 @@ def test_runtime_logins_cannot_create_operator_storage_receipts(managed_database
     budget = login_budget(values['url'], role, values['window'], values['passwords'])
     with pytest.raises(psycopg.errors.InsufficientPrivilege):
         budget.prepare_object('a'*64, 1, 'b'*64)
+    if role == 'worker':
+        assert_worker_launch_permissions(values['url'], values['passwords'])
 
 
 def test_actual_backup_restore_preserves_permissions_and_disarms_copied_allowance(managed_database, tmp_path):
@@ -171,6 +181,7 @@ def test_actual_backup_restore_preserves_permissions_and_disarms_copied_allowanc
         assert managed.audit(connection)['permission_violations'] == []
     assert_ledger_writes_denied(target, 'importer', values['passwords'])
     assert_ledger_writes_denied(target, 'backup', values['passwords'])
+    assert_worker_launch_permissions(target, values['passwords'])
     with pytest.raises(BudgetUnavailable):
         login_budget(target, 'backup', values['window'], values['passwords']).result_charge('get')
     login_budget(values['url'], 'backup', values['window'], values['passwords']).result_charge('get')

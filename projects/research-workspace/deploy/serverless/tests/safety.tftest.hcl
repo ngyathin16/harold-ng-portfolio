@@ -26,6 +26,36 @@ variables {
   r2_namespaces = { objects = "staging/objects/", backups = "staging/backups/", reports = "staging/reports/" }
 }
 
+run "deterministic_launch_permissions_are_scoped" {
+  command = plan
+  override_resource {
+    target          = google_service_account.identity["search"]
+    override_during = plan
+    values = {
+      name = "projects/research-offline-fixture/serviceAccounts/research-staging-search@research-offline-fixture.iam.gserviceaccount.com"
+    }
+  }
+  override_resource {
+    target          = google_service_account.identity["dispatcher"]
+    override_during = plan
+    values          = { email = "research-staging-dispatcher@research-offline-fixture.iam.gserviceaccount.com" }
+  }
+  assert {
+    condition = google_project_iam_custom_role.launch.permissions == toset([
+      "run.jobs.get", "run.jobs.update", "run.jobs.run", "run.executions.get", "run.executions.list"
+    ]) && google_cloud_run_v2_job_iam_member.launch.name == "research-staging-search"
+    error_message = "Conditional execution launch may update only the existing search Job and observe its executions."
+  }
+  assert {
+    condition = (
+      google_service_account_iam_member.search_identity.service_account_id == "projects/research-offline-fixture/serviceAccounts/research-staging-search@research-offline-fixture.iam.gserviceaccount.com" &&
+      google_service_account_iam_member.search_identity.member == "serviceAccount:research-staging-dispatcher@research-offline-fixture.iam.gserviceaccount.com" &&
+      google_service_account_iam_member.search_identity.role == "roles/iam.serviceAccountUser"
+    )
+    error_message = "The dispatcher may act as only the search identity while updating that Job."
+  }
+}
+
 run "bounded_private_defaults" {
   command = plan
   assert {

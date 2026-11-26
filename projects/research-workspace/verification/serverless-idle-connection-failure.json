@@ -1,0 +1,51 @@
+{
+  "captured_at": "2026-11-25T09:55:57.323451+00:00",
+  "service": "research-staging-api",
+  "revision": "research-staging-api-00003-ks2",
+  "scope": "One read-only Cloud Logging request for this revision over the preceding ten minutes; no application, database or ledger mutation.",
+  "logging_request_count": 1,
+  "logging_page_limit": 100,
+  "logging_entries": 4,
+  "logging_more": false,
+  "private_capture_sha256": "ba766503ee6c8b36c1fc1639726b0810f4688b7b0cc78783560529d76a30d608",
+  "entries": [
+    {
+      "timestamp": "2026-11-25T09:48:42.310844Z",
+      "kind": "request",
+      "method": "GET",
+      "status": 503,
+      "latency": "0.007551379s"
+    },
+    {
+      "timestamp": "2026-11-25T09:48:42.334247Z",
+      "kind": "database_pool_warning",
+      "message": "discarding closed connection: <psycopg.Connection [BAD]>"
+    },
+    {
+      "timestamp": "2026-11-25T09:49:46.094766Z",
+      "kind": "request",
+      "method": "GET",
+      "status": 503,
+      "latency": "0.044473931s"
+    },
+    {
+      "timestamp": "2026-11-25T09:49:46.144711Z",
+      "kind": "database_pool_warning",
+      "message": "discarding closed connection: <psycopg.Connection [BAD]>"
+    }
+  ],
+  "readiness_body": {
+    "bytes": 102,
+    "sha256": "b7a50e0d05e117e17ff74bec4a8eabcdea2327d4f7ab9399c720336f7db5606d",
+    "source": "Expected BudgetHTTPMiddleware denial; root separately observed this exact hash from the two live responses."
+  },
+  "diagnosis": "Both readiness failures are immediately followed by a dead-connection warning. PostgreSQL termination tests reproduced the same 503 in each API and dispatcher pool before checkout checking. The logs do not establish the reason PostgreSQL closed these connections.",
+  "fix": "Validate connections at checkout before handing them to application or budget transactions. No transaction or network-effect retries were added.",
+  "validation": {
+    "reproduction": "service/test_idle_connections.py: 4 failed before the fix; every failure was 503 after terminating an idle server backend.",
+    "focused": "service/test_idle_connections.py service/test_budget_http.py: 37 passed after the fix.",
+    "dispatch_and_serverless": "service/test_dispatch.py service/test_serverless_api.py: 31 passed after the fix.",
+    "budget_proof": "Each recovered API request consumes exactly one invocation and its encoded response/overhead bytes. Each recovered dispatcher request consumes one invocation and one GCS allowance; no jobs are launched. An empty dispatch stays idle without another debit."
+  },
+  "documentation": "https://www.psycopg.org/psycopg3/docs/advanced/pool.html#connection-quality"
+}

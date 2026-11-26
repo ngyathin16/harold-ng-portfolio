@@ -66,6 +66,8 @@ jobs:
           from pathlib import Path
           import re
           import subprocess
+          if os.environ.get('GITHUB_RUN_ATTEMPT') != '1':
+              raise SystemExit('Build reruns are blocked: review any prior uploads and retained storage, then submit a new reviewed build request.')
           if os.environ['GITHUB_EVENT_NAME'] == 'push':
               path = Path('.github/research-image-build-request.json')
               if not path.is_file():
@@ -132,7 +134,7 @@ jobs:
           target: service
           platforms: linux/amd64
           push: false
-          load: true
+          outputs: type=oci,dest=${{ runner.temp }}/research-service.oci.tar,oci-mediatypes=false,compression=gzip,force-compression=true
           provenance: false
           sbom: false
           tags: ${{ steps.destination.outputs.repository }}/service:${{ github.sha }}
@@ -154,7 +156,7 @@ jobs:
           target: operator
           platforms: linux/amd64
           push: false
-          load: true
+          outputs: type=oci,dest=${{ runner.temp }}/research-operator.oci.tar,oci-mediatypes=false,compression=gzip,force-compression=true
           provenance: false
           sbom: false
           tags: ${{ steps.destination.outputs.repository }}/operator:${{ github.sha }}
@@ -166,31 +168,44 @@ jobs:
             org.research.source-state=clean
             org.research.download-contract=disabled-v1
 
-      - name: Enforce the reviewed image storage allowance before any push
+      - name: Validate both exact archives before registry authentication
         if: steps.destination.outputs.enabled == 'true'
         id: size
         env:
           IMAGE_REPOSITORY: ${{ steps.destination.outputs.repository }}
         shell: bash
         run: |
+          python projects/research-workspace/deploy/image_artifact.py validate \
+            --service "$RUNNER_TEMP/research-service.oci.tar" \
+            --operator "$RUNNER_TEMP/research-operator.oci.tar" \
+            --repository "$IMAGE_REPOSITORY" --commit "$GITHUB_SHA" --report image-artifacts.json
           python - <<'PY'
+          import json
           import os
-          import subprocess
-          sizes = {}
-          for name in ('service', 'operator'):
-              image = os.environ['IMAGE_REPOSITORY'] + '/' + name + ':' + os.environ['GITHUB_SHA']
-              sizes[name] = int(subprocess.check_output(['docker', 'image', 'inspect', image, '--format', '{{.Size}}'], text=True))
-              if sizes[name] <= 0:
-                  raise SystemExit('Image size inspection returned an invalid value')
-          total = sum(sizes.values())
-          limit = 2147483648
+          from pathlib import Path
+          report = json.loads(Path('image-artifacts.json').read_text())
+          sizes = {name: item['uncompressed_layer_bytes'] for name, item in report['artifacts'].items()}
+          archives = {name: item['archive_bytes'] for name, item in report['artifacts'].items()}
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
-              summary.write(f'Combined uncompressed image size: {total:,} bytes; maximum: {limit:,} bytes.\n\n')
-          if total > limit:
-              raise SystemExit('Both images exceed the reviewed 2 GiB registry allowance; nothing was pushed')
+              summary.write(f'Exact compressed archive bytes: {sum(archives.values()):,}; uncompressed layer bytes: {sum(sizes.values()):,}. Each pair is independently limited to 2 GiB.\n\n')
           with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
-              output.write(f"service_bytes={sizes['service']}\noperator_bytes={sizes['operator']}\ntotal_bytes={total}\n")
+              output.write(f"service_bytes={sizes['service']}\noperator_bytes={sizes['operator']}\ntotal_bytes={sum(archives.values())}\n")
           PY
+
+      - name: Prove digest-preserving local copy compatibility
+        if: steps.destination.outputs.enabled == 'true'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends skopeo
+          skopeo copy --preserve-digests --retry-times 0 \
+            "oci-archive:$RUNNER_TEMP/research-service.oci.tar:$GITHUB_SHA" "dir:$RUNNER_TEMP/research-service-copy"
+          skopeo copy --preserve-digests --retry-times 0 \
+            "oci-archive:$RUNNER_TEMP/research-operator.oci.tar:$GITHUB_SHA" "dir:$RUNNER_TEMP/research-operator-copy"
+          python projects/research-workspace/deploy/image_artifact.py copy-check \
+            --service "$RUNNER_TEMP/research-service-copy" --operator "$RUNNER_TEMP/research-operator-copy" \
+            --report image-artifacts.json \
+            --skopeo-version "$(skopeo --version); package $(dpkg-query -W -f='${Version}' skopeo)"
 
       - name: Exchange GitHub OIDC for a short-lived build identity
         if: steps.destination.outputs.enabled == 'true'
@@ -221,15 +236,22 @@ jobs:
           DESTINATION_PROJECT: ${{ steps.destination.outputs.project }}
           DESTINATION_REGION: ${{ steps.destination.outputs.region }}
           DESTINATION_ENVIRONMENT: ${{ steps.destination.outputs.environment }}
-          NEW_IMAGE_BYTES: ${{ steps.size.outputs.total_bytes }}
           REVIEWED_RETAINED_STORAGE_BYTES: ${{ steps.destination.outputs.retained_storage_bytes }}
         shell: bash
         run: |
           python - <<'PY'
           import json
           import os
+          from pathlib import Path
+          import sys
           import urllib.parse
           import urllib.request
+          sys.path.insert(0, 'projects/research-workspace')
+          from deploy.image_artifact import storage_projection
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, *args, **kwargs):
+                  raise RuntimeError('Registry inventory redirected outside the reviewed request')
+          opener = urllib.request.build_opener(NoRedirect)
           path = '/v1/projects/' + os.environ['DESTINATION_PROJECT'] + '/locations/' + os.environ['DESTINATION_REGION']
           path += '/repositories/research-' + os.environ['DESTINATION_ENVIRONMENT'] + '/dockerImages'
           images = {}
@@ -240,33 +262,34 @@ jobs:
                   params['pageToken'] = token
               request = urllib.request.Request('https://artifactregistry.googleapis.com' + path + '?' + urllib.parse.urlencode(params),
                   headers={'Authorization': 'Bearer ' + os.environ['GOOGLE_BUILD_ACCESS_TOKEN']})
-              with urllib.request.urlopen(request, timeout=5) as response:
-                  page = json.load(response)
+              with opener.open(request, timeout=5) as response:
+                  raw = response.read(1048577)
+                  if len(raw) > 1048576:
+                      raise SystemExit('Registry inventory response exceeds 1 MiB')
+                  page = json.loads(raw)
               for image in page.get('dockerImages', []):
                   size = int(image['imageSizeBytes'])
-                  if size < 0:
+                  if size < 0 or image.get('imageManifests'):
                       raise SystemExit('Registry returned an invalid image size')
+                  if not image['uri'].startswith(os.environ['DESTINATION_REGION'] + '-docker.pkg.dev/' + os.environ['DESTINATION_PROJECT'] + '/research-' + os.environ['DESTINATION_ENVIRONMENT'] + '/'):
+                      raise SystemExit('Registry inventory contains an unexpected image location')
+                  if image['uri'] in images:
+                      raise SystemExit('Registry inventory repeated a digest')
                   images[image['uri']] = size
               token = page.get('nextPageToken')
               if not token:
                   break
           else:
               raise SystemExit('Registry inventory exceeded its bounded scan; nothing was pushed')
-          existing_bytes = sum(images.values())
-          retained_floor = int(os.environ['REVIEWED_RETAINED_STORAGE_BYTES'])
-          if not 0 <= retained_floor <= 2147483648:
-              raise SystemExit('Reviewed retained storage floor is outside the 0 to 2 GiB allowance')
-          accounted_existing_bytes = max(existing_bytes, retained_floor)
-          projected_bytes = accounted_existing_bytes + int(os.environ['NEW_IMAGE_BYTES'])
-          projected_images = len(images) + 2
-          if projected_bytes > 2147483648:
-              raise SystemExit('Retained storage or observed registry bytes plus this uncompressed image pair exceed the reviewed 2 GiB aggregate allowance; nothing was pushed.')
-          if projected_images > 4:
-              raise SystemExit('Existing registry images plus this pair exceed the reviewed two-release, four-digest allowance; nothing was pushed. Review retained releases before retrying.')
+          report = json.loads(Path('image-artifacts.json').read_text())
+          projection = storage_projection(images, int(os.environ['REVIEWED_RETAINED_STORAGE_BYTES']), report)
+          report['registry_projection'] = projection
+          Path('image-artifacts.json').write_text(json.dumps(report, indent=2) + '\n')
           with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
-              output.write(f'existing_bytes={existing_bytes}\nexisting_images={len(images)}\nretained_storage_bytes={retained_floor}\naccounted_existing_bytes={accounted_existing_bytes}\nprojected_bytes={projected_bytes}\n')
+              for key, value in projection.items():
+                  output.write(f'{key}={value}\n')
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
-              summary.write(f'Observed registry image bytes: {existing_bytes:,}; reviewed retained storage floor: {retained_floor:,}; conservative total after this pair: {projected_bytes:,} bytes.\n\n')
+              summary.write(f"Observed registry bytes: {projection['existing_bytes']:,}; retained floor: {projection['retained_storage_bytes']:,}; conservative total with both complete archives: {projection['projected_bytes']:,} bytes.\n\n")
           PY
 
       - name: Push the qualified images and resolve their immutable digests
@@ -277,20 +300,37 @@ jobs:
         shell: bash
         run: |
           python - <<'PY'
+          from datetime import datetime, timezone
           import json
           import os
-          import re
+          from pathlib import Path
           import subprocess
+          import sys
+          sys.path.insert(0, 'projects/research-workspace')
+          from deploy.image_artifact import check_archive, require
+          path = Path('image-artifacts.json')
+          report = json.loads(path.read_text())
+          require(report['repository'] == os.environ['IMAGE_REPOSITORY'] and report['app_commit'] == os.environ['GITHUB_SHA'], 'Qualified image identity differs')
+          require(report['copy_verified'] and 'registry_projection' in report and not report.get('upload_intents'), 'Upload requires completed local and storage qualification without a previous intent')
+          for name in ('service', 'operator'):
+              check_archive(Path(os.environ['RUNNER_TEMP']) / ('research-' + name + '.oci.tar'), report['artifacts'][name])
           for name in ('service', 'operator'):
               repository = os.environ['IMAGE_REPOSITORY'] + '/' + name
               image = repository + ':' + os.environ['GITHUB_SHA']
-              subprocess.run(['docker', 'push', image], check=True)
-              digests = json.loads(subprocess.check_output(['docker', 'image', 'inspect', image, '--format', '{{json .RepoDigests}}'], text=True))
-              matches = [value.removeprefix(repository + '@') for value in digests if value.startswith(repository + '@')]
-              if len(matches) != 1 or not re.fullmatch(r'sha256:[0-9a-f]{64}', matches[0]):
-                  raise SystemExit('Registry did not return one immutable image digest')
+              archive = Path(os.environ['RUNNER_TEMP']) / ('research-' + name + '.oci.tar')
+              check_archive(archive, report['artifacts'][name])
+              report.setdefault('upload_intents', {})[name] = {'image': image, 'started_at': datetime.now(timezone.utc).isoformat()}
+              path.write_text(json.dumps(report, indent=2) + '\n')
+              digest_path = Path(os.environ['RUNNER_TEMP']) / (name + '-pushed-digest.txt')
+              subprocess.run(['skopeo', 'copy', '--preserve-digests', '--retry-times', '0',
+                  '--dest-authfile', str(Path.home() / '.docker/config.json'), '--digestfile', str(digest_path),
+                  'oci-archive:' + str(archive) + ':' + os.environ['GITHUB_SHA'], 'docker://' + image], check=True, timeout=300)
+              digest = digest_path.read_text().strip()
+              require(digest == report['artifacts'][name]['manifest_digest'], 'Pushed digest differs from the qualified archive')
+              report['upload_intents'][name]['verified_digest'] = digest
+              path.write_text(json.dumps(report, indent=2) + '\n')
               with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
-                  output.write(name + '_digest=' + matches[0] + '\n')
+                  output.write(name + '_digest=' + digest + '\n')
           PY
 
       - name: Record immutable image references
@@ -320,11 +360,19 @@ jobs:
               if not re.fullmatch(r'sha256:[0-9a-f]{64}', digest):
                   raise SystemExit('Builder did not return an immutable image digest')
               images[name] = os.environ['IMAGE_REPOSITORY'] + '/' + name + '@' + digest
-          report = {'app_commit': os.environ['GITHUB_SHA'], 'source_state': 'clean',
+          qualified = json.loads(Path('image-artifacts.json').read_text())
+          report = {'schema_version': 2, 'app_commit': os.environ['GITHUB_SHA'], 'source_state': 'clean',
                     'platform': 'linux/amd64', 'images': images,
                     'request_id': os.environ['BUILD_REQUEST_ID'],
                     'uncompressed_image_bytes': {name: int(os.environ[name.upper() + '_BYTES']) for name in ('service', 'operator')},
+                    'uncompressed_measurement': 'Sum of gzip-expanded layer stream bytes, including repeated references',
                     'maximum_combined_image_bytes': 2147483648,
+                    'storage_accounting': qualified['storage_accounting'],
+                    'compressed_archive_bytes': {name: item['archive_bytes'] for name, item in qualified['artifacts'].items()},
+                    'archive_sha256': {name: item['archive_sha256'] for name, item in qualified['artifacts'].items()},
+                    'archive_artifacts': qualified['artifacts'],
+                    'local_copy_verified': qualified['copy_verified'],
+                    'skopeo_version': qualified['skopeo_version'],
                     'existing_registry_image_bytes': int(os.environ['EXISTING_IMAGE_BYTES']),
                     'existing_registry_image_count': int(os.environ['EXISTING_IMAGE_COUNT']),
                     'retained_storage_bytes': int(os.environ['RETAINED_STORAGE_BYTES']),
@@ -341,11 +389,13 @@ jobs:
                   summary.write('- ' + name + ': `' + image + '`\n')
           PY
 
-      - name: Preserve the small digest report
-        if: steps.destination.outputs.enabled == 'true'
+      - name: Preserve digest and storage records, including uncertain uploads
+        if: always() && steps.destination.outputs.enabled == 'true' && steps.size.outcome == 'success'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: research-image-digests-${{ github.sha }}-${{ github.run_attempt }}
-          path: image-digests.json
+          path: |
+            image-digests.json
+            image-artifacts.json
           if-no-files-found: error
           retention-days: 1

@@ -99,7 +99,7 @@ jobs:
               conn.execute('ALTER DATABASE research_managed_test OWNER TO managed_fixture_owner')
               conn.execute('CREATE DATABASE research_managed_restore_test OWNER managed_fixture_owner')
           PY
-      - run: python -m pytest deploy/test_managed.py -q
+      - run: python -m pytest deploy/test_managed.py deploy/test_image_artifact.py -q
       - run: python -m unittest discover -s data -p test_import.py -v
       - run: python -m pytest ops -q
       - run: python -m unittest deploy.test_deploy -v

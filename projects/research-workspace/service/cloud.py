@@ -177,35 +177,28 @@ class CloudRun:
 
     def observe_token(self, reservation):
         name = self.execution_name(reservation)
-        response = self.request('GET', name)
-        if response.status_code != 404:
-            response.raise_for_status()
-            value = response.json()
-            if value.get('name') != name:
-                raise ValueError('Unexpected deterministic execution identity')
-            self.validate_binding(value.get('template', {}), reservation)
-            return self.execution_status(value)
         spec = reservation.get('launch_spec')
-        if not spec:
+        if spec:
+            self.validate_spec(reservation, spec)
+            value = self.read_job()
+            token = value.get('startExecutionToken') or value.get('runExecutionToken')
+            if (token != reservation['id'] and value['uid'] == spec['uid'] and str(value['generation']) == spec['generation']
+                    and token == spec['previous_token']
+                    and self.fingerprint(self.job_body(value)) == spec['previous_sha256']):
+                # The persisted prior desired state authorizes this conditional
+                # replay without reading an execution that does not exist yet.
+                retry_spec = copy.deepcopy(spec)
+                retry_spec['body']['etag'] = value['etag']
+                return {'state': 'uncertain', 'retry_spec': retry_spec}
+        response = self.request('GET', name)
+        if response.status_code == 404:
             return {'state': 'uncertain'}
-        self.validate_spec(reservation, spec)
-        value = self.read_job()
-        token = value.get('startExecutionToken') or value.get('runExecutionToken')
-        if token == reservation['id']:
-            # The desired state was accepted. Allow its execution to appear;
-            # overwriting this token could supersede an unfinished reconciliation.
-            return {'state': 'uncertain'}
-        if (value['uid'] != spec['uid'] or str(value['generation']) != spec['generation']
-                or token != spec['previous_token']
-                or self.fingerprint(self.job_body(value)) != spec['previous_sha256']):
-            # A deployment or another writer changed desired state. No age or
-            # empty list permits us to overwrite that change or release capacity.
-            return {'state': 'uncertain'}
-        retry_spec = copy.deepcopy(spec)
-        # Status-only changes may rotate etag without changing desired state.
-        # Persist the replacement before sending; old requests retain their etag.
-        retry_spec['body']['etag'] = value['etag']
-        return {'state': 'uncertain', 'retry_spec': retry_spec}
+        response.raise_for_status()
+        value = response.json()
+        if value.get('name') != name:
+            raise ValueError('Unexpected deterministic execution identity')
+        self.validate_binding(value.get('template', {}), reservation)
+        return self.execution_status(value)
 
     def observe_legacy(self, reservation):
         execution = reservation.get('execution_name')

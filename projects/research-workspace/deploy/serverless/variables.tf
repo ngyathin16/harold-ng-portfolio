@@ -24,6 +24,18 @@ variable "images" {
     error_message = "Both Linux amd64 images must be pinned by digest."
   }
 }
+variable "dispatcher_release" {
+  type        = object({ image = string, app_commit = string })
+  default     = null
+  description = "Optional atomic dispatcher-only image and source commit. Null inherits the base release without changing the API, search Job, or operators. Image provenance must independently bind this commit to this digest."
+  validation {
+    condition = var.dispatcher_release == null ? true : (
+      can(regex("^[0-9a-f]{40}$", var.dispatcher_release.app_commit)) &&
+      can(regex("^${var.region}-docker\\.pkg\\.dev/${var.project_id}/research-${var.environment}/service@sha256:[0-9a-f]{64}$", var.dispatcher_release.image))
+    )
+    error_message = "A dispatcher override requires both a complete source commit and a service image digest in this environment's regional repository."
+  }
+}
 variable "review" {
   type = object({
     experiment_limit_usd = number

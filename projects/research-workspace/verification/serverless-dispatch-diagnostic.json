@@ -1,0 +1,71 @@
+{
+  "recorded_at": "2026-11-26T03:46:50Z",
+  "deployed_app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+  "accepted_uncached_queries": 2,
+  "search_executions_observed": 0,
+  "normal_start_target_passed": false,
+  "combined_load_target_passed": false,
+  "admission_and_reconciliation_paused": true,
+  "accepted_identities_and_launch_spec_preserved": true,
+  "dispatcher_identity_diagnostic": {
+    "job_get_status": 200,
+    "nonexistent_execution_get_status": 403,
+    "execution_get_denied_permission": "run.executions.get",
+    "exact_persisted_patch_validate_only_status": 403,
+    "patch_denied_permission": "artifactregistry.repositories.downloadArtifacts",
+    "job_identity_generation_tokens_execution_count_and_configuration_unchanged": true,
+    "http_attempts": 17,
+    "maximum_http_attempts": 20,
+    "temporary_owner_mint_grant_removed": true,
+    "temporary_custom_role_soft_deleted": true,
+    "access_token_persisted": false,
+    "workloads_launched": 0
+  },
+  "after_repository_permission_correction": {
+    "permission_scope": "roles/artifactregistry.reader on the staging image repository for the dispatcher only",
+    "terraform_plan_sha256": "91b2dd67dc3928a5c3df544d81fe85ec4c1468bb88b5fd6f92ff9c720cbbccdb",
+    "terraform_changes": "One IAM member created; no Cloud Run resources or output changes in the saved plan",
+    "dispatcher_job_get_status": 200,
+    "nonexistent_execution_get_status": 403,
+    "exact_persisted_patch_validate_only_status": 200,
+    "job_unchanged": true,
+    "http_attempts": 17,
+    "temporary_owner_mint_grant_removed": true,
+    "temporary_custom_role_soft_deleted": true,
+    "access_token_persisted": false,
+    "workloads_launched": 0,
+    "limitations": "Validates the exact request and dispatcher permissions without proving actual execution or stale-request rejection."
+  },
+  "local_correction_validation": {
+    "targeted_tests_passed": 88,
+    "targeted_tests_skipped": 0,
+    "seconds": 21.81,
+    "postgresql_fixture_scope": "Two new isolated local databases, migrations 001 through 012",
+    "new_missing_execution_403_regression_fails_with_previous_code": true,
+    "terraform_mocked_plans_passed": 65,
+    "hosted_corrected_dispatcher_tested": false
+  },
+  "browsing_only_load": {
+    "started_at": "2026-11-26T03:10:06.645725+00:00",
+    "finished_at": "2026-11-26T03:20:06.650501+00:00",
+    "wall_seconds": 600,
+    "logical_clients": 50,
+    "requests_per_client": 2,
+    "successful_requests": 100,
+    "errors": 0,
+    "offered_requests_per_second": 0.16666666666666666,
+    "peak_concurrent_http_requests": 2,
+    "catalog_p95_seconds": 0.219,
+    "catalog_maximum_seconds": 11.125,
+    "cached_results_p95_seconds": 0.75,
+    "cached_results_maximum_seconds": 5.844,
+    "response_body_bytes": 6578325,
+    "executing_search_overlap": false,
+    "limitations": [
+      "Fifty logical clients do not establish fifty simultaneous requests.",
+      "Two initial reads were much slower; this does not qualify the cold first-screen target.",
+      "Observed body bytes are not provider-billed egress.",
+      "The failed start and missing search overlap remain failed acceptance observations."
+    ]
+  }
+}

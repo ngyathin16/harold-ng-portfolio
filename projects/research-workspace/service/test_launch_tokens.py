@@ -12,7 +12,7 @@ from psycopg.errors import InsufficientPrivilege
 from psycopg.types.json import Jsonb
 
 from service.cloud import CloudRun
-from service.dispatch import dispatch_once, enqueue, reconcile, reserve, save_observation
+from service.dispatch import diagnostic_fields, dispatch_once, enqueue, reconcile, reserve, save_observation
 from service.dispatcher import create_app
 from service.test_dispatch import FakeMarkers, queued, row
 from service.test_service import service, submission
@@ -35,17 +35,21 @@ class GoogleFixture:
         self.patches = []
         self.failure = None
         self.hide_executions = False
+        self.missing_execution_status = 404
+        self.requests = []
 
     def __call__(self, request):
         with self.lock:
             if request.url.host == 'metadata.google.internal':
                 return httpx.Response(200, json={'access_token': 'fixture'})
             path = request.url.path.removeprefix('/v2/')
+            self.requests.append((request.method, path))
             if request.method == 'GET' and path == JOB:
                 return httpx.Response(200, json=copy.deepcopy(self.job))
             if request.method == 'GET' and '/executions/' in path:
                 value = self.executions.get(path)
-                return httpx.Response(200, json=copy.deepcopy(value)) if value and not self.hide_executions else httpx.Response(404)
+                return (httpx.Response(200, json=copy.deepcopy(value)) if value and not self.hide_executions
+                        else httpx.Response(self.missing_execution_status))
             if request.method == 'PATCH' and path == JOB:
                 body = json.loads(request.content)
                 self.patches.append(body)
@@ -97,10 +101,12 @@ def test_crash_before_request_recovers_same_reservation(service, persist_request
         assert conn.execute('SELECT launch_attempts FROM research.dispatch_outbox WHERE run_id=%s', (run_id,)).fetchone()['launch_attempts'] == 1
 
 
+@pytest.mark.parametrize('missing_status', [403, 404])
 @pytest.mark.parametrize('failure', ['before', 'after'])
-def test_uncertain_request_replay_creates_only_one_paid_execution(service, failure):
+def test_uncertain_request_replay_creates_only_one_paid_execution(service, failure, missing_status):
     pool, settings, _, _ = queued(service)
     provider = GoogleFixture()
+    provider.missing_execution_status = missing_status
     provider.failure = failure
     cloud = provider.cloud(settings)
     assert dispatch_once(pool, settings, cloud)['retry_pending']
@@ -167,7 +173,8 @@ def test_three_terminal_attempts_exhaust_budget_without_fourth_execution(service
     assert row(pool, run_id)['state'] == 'failed'
 
 
-def test_two_searches_never_exceed_two_outstanding_or_six_paid_attempts(service):
+@pytest.mark.parametrize('missing_status', [403, 404])
+def test_two_searches_never_exceed_two_outstanding_or_six_paid_attempts(service, missing_status):
     client, pool, settings, publication, _ = service
     settings = replace(settings, deployment_mode='serverless', max_outstanding=2, dispatch_batch_size=2)
     run_ids = [submission(client, publication)['query_id'], submission(client, publication, include=['1'])['query_id']]
@@ -175,6 +182,7 @@ def test_two_searches_never_exceed_two_outstanding_or_six_paid_attempts(service)
         for run_id in run_ids:
             enqueue(conn, run_id, settings, FakeMarkers())
     provider = GoogleFixture()
+    provider.missing_execution_status = missing_status
     cloud = provider.cloud(settings)
     for _ in range(5):
         report = dispatch_once(pool, settings, cloud)
@@ -262,3 +270,118 @@ def test_allowlisted_job_name_must_fit_execution_suffix():
     from service.config import Settings
     with pytest.raises(ValueError, match='insufficient room'):
         CloudRun(Settings(dispatch_job='projects/fixture/locations/asia-east1/jobs/' + 'x' * 31))
+
+
+def test_existing_uncertain_reservation_recovers_when_missing_execution_get_is_forbidden(service):
+    pool, settings, run_id, _ = queued(service)
+    provider = GoogleFixture()
+    provider.missing_execution_status = 403
+    cloud = provider.cloud(settings)
+    reservation = reserve(pool, settings, cloud.launch_protocol)
+    spec = cloud.prepare(reservation)
+    with pool.connection() as conn:
+        conn.execute("UPDATE research.execution_reservations SET state='uncertain',launch_spec=%s WHERE id=%s",
+                     (Jsonb(spec), reservation['id']))
+    provider.requests.clear()
+    result = dispatch_once(pool, settings, cloud)
+    assert not result['retry_pending']
+    assert provider.requests[:2] == [('GET', JOB), ('PATCH', JOB)]
+    current = reservation_row(pool, reservation['id'])
+    assert current['state'] == 'running' and current['launch_confirmed_at']
+    assert current['launch_spec'] == spec
+    assert current['run_id'] == run_id and current['generation'] == reservation['generation']
+    assert len(provider.executions) == len(provider.patches) == 1
+    with pool.connection() as conn:
+        assert conn.execute('SELECT launch_attempts FROM research.dispatch_outbox WHERE run_id=%s',
+                            (run_id,)).fetchone()['launch_attempts'] == 1
+        assert conn.execute('SELECT count(*) AS n FROM research.execution_reservations').fetchone()['n'] == 1
+
+
+@pytest.mark.parametrize('field,value', [
+    ('uid', 'replacement-job'), ('generation', '2'),
+    ('startExecutionToken', 'foreign-token'), ('labels', {'deployment': 'later'}),
+])
+@pytest.mark.parametrize('missing_status', [403, 404])
+def test_changed_job_never_authorizes_replay_of_persisted_prior_state(service, field, value, missing_status):
+    pool, settings, _, _ = queued(service)
+    provider = GoogleFixture()
+    provider.missing_execution_status = missing_status
+    cloud = provider.cloud(settings)
+    reservation = reserve(pool, settings, cloud.launch_protocol)
+    reservation['launch_spec'] = cloud.prepare(reservation)
+    provider.job[field] = value
+    if missing_status == 403:
+        with pytest.raises(httpx.HTTPStatusError):
+            cloud.observe(reservation)
+    else:
+        assert cloud.observe(reservation) == {'state': 'uncertain'}
+    assert not provider.patches and not provider.executions
+
+
+def test_completed_execution_remains_observable_after_later_job_deployment(service):
+    pool, settings, _, _ = queued(service)
+    provider = GoogleFixture()
+    cloud = provider.cloud(settings)
+    reservation = reserve(pool, settings, cloud.launch_protocol)
+    dispatch_once(pool, settings, cloud)
+    provider.complete()
+    provider.job.update(generation='3', etag='deployed', labels={'deployment': 'later'})
+    current = reservation_row(pool, reservation['id'])
+    assert cloud.observe(current) == {'state': 'terminal', 'execution_name': cloud.execution_name(current)}
+    reconcile(pool, settings, cloud)
+    assert reservation_row(pool, reservation['id'])['state'] == 'terminal'
+    assert len(provider.patches) == len(provider.executions) == 1
+
+
+@pytest.mark.parametrize('missing_status', [403, 404])
+def test_accepted_token_with_hidden_execution_never_repeats_patch(service, missing_status):
+    pool, settings, _, _ = queued(service)
+    provider = GoogleFixture()
+    provider.missing_execution_status = missing_status
+    provider.hide_executions = True
+    cloud = provider.cloud(settings)
+    for _ in range(3):
+        assert dispatch_once(pool, settings, cloud)['retry_pending']
+    assert len(provider.patches) == len(provider.executions) == 1
+
+
+@pytest.mark.parametrize('method,url,phase', [
+    ('GET', 'https://run.googleapis.com/v2/' + JOB, 'job_read'),
+    ('GET', 'https://run.googleapis.com/v2/' + JOB + '/executions/example', 'execution_read'),
+    ('PATCH', 'https://run.googleapis.com/v2/' + JOB, 'conditional_job_update'),
+    ('GET', 'http://metadata.google.internal/token', 'metadata_token'),
+])
+def test_diagnostics_exclude_private_exception_request_and_response(method, url, phase):
+    request = httpx.Request(method, url + '?secret=never-log', headers={'Authorization': 'Bearer never-log'})
+    response = httpx.Response(403, json={'error': 'never-log'}, request=request)
+    error = httpx.HTTPStatusError('never-log', request=request, response=response)
+    assert diagnostic_fields(error, JOB) == {
+        'exception_category': 'HTTPStatusError', 'http_status': 403, 'phase': phase}
+
+
+def test_diagnostics_allow_transport_error_without_request_and_sqlstate():
+    assert diagnostic_fields(httpx.ConnectError('never-log'), JOB) == {'exception_category': 'ConnectError'}
+    assert diagnostic_fields(InsufficientPrivilege('never-log'), JOB) == {
+        'exception_category': 'InsufficientPrivilege', 'sqlstate': '42501'}
+
+
+def test_denied_launch_preserves_reservation_and_logs_only_sanitized_diagnostic(service, monkeypatch, caplog):
+    pool, settings, _, _ = queued(service)
+    provider = GoogleFixture()
+    cloud = provider.cloud(settings)
+    request = httpx.Request('PATCH', 'https://run.googleapis.com/v2/' + JOB + '?secret=never-log',
+                            headers={'Authorization': 'Bearer never-log'})
+    response = httpx.Response(403, json={'error': 'never-log'}, request=request)
+
+    def denied(reservation):
+        assert reservation['launch_spec']
+        raise httpx.HTTPStatusError('never-log', request=request, response=response)
+
+    monkeypatch.setattr(cloud, 'launch', denied)
+    assert dispatch_once(pool, settings, cloud)['retry_pending']
+    with pool.connection() as conn:
+        rows = conn.execute('SELECT * FROM research.execution_reservations').fetchall()
+    assert len(rows) == 1 and rows[0]['state'] == 'uncertain' and rows[0]['launch_spec']
+    assert not provider.patches and not provider.executions
+    assert '"http_status": 403' in caplog.text and '"phase": "conditional_job_update"' in caplog.text
+    assert 'never-log' not in caplog.text and 'https://' not in caplog.text

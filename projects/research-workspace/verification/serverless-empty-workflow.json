@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "captured_at": "2026-11-26T03:09:46.629644+00:00",
+  "execution_started_at": "2026-11-26T03:05:00.940219081Z",
+  "execution_ended_at": "2026-11-26T03:05:01.244031569Z",
+  "control_plane_attempts": 22,
+  "manual_invocations": 0,
+  "database_connections": 0,
+  "exact_qualified_revision_succeeded": true,
+  "idle_result": true,
+  "remaining_permits": 8,
+  "counter_unchanged": true,
+  "markers_empty_before_and_after": true,
+  "neon_idle_before_and_after": true,
+  "neon_last_active_unchanged": true,
+  "neon_continuous_observation": false,
+  "scheduler_log_entries": 2,
+  "execution_creator_proven": false,
+  "trigger_attribution": "First execution after enabling the scheduled target; timestamps and Scheduler logs retained for correlation",
+  "source_proof": "The exact deployed idle branch lists markers and returns before read_permit and dispatch_once; it has no Neon or Cloud Run request",
+  "monitoring": "Not yet sampled; absence or delayed samples cannot prove no requests",
+  "provider_invoice_hard_cap": false
+}

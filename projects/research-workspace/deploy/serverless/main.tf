@@ -1,5 +1,8 @@
 locals {
   prefix = "research-${var.environment}"
+  dispatcher_release = var.dispatcher_release == null ? {
+    image = var.images.service, app_commit = var.app_commit
+  } : var.dispatcher_release
   google_alert_budget = var.google_alert_budget == null ? {
     currency_code  = "USD"
     amount         = var.review.monthly_limit_usd
@@ -104,6 +107,13 @@ resource "google_artifact_registry_repository" "images" {
   vulnerability_scanning_config { enablement_config = "DISABLED" }
   depends_on = [google_project_service.api]
 }
+resource "google_artifact_registry_repository_iam_member" "dispatcher_images" {
+  project    = var.project_id
+  location   = google_artifact_registry_repository.images.location
+  repository = google_artifact_registry_repository.images.repository_id
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${google_service_account.identity["dispatcher"].email}"
+}
 
 resource "google_storage_bucket" "dispatch_markers" {
   name                        = "${var.project_id}-${local.prefix}-dispatch"
@@ -181,7 +191,7 @@ resource "google_cloud_run_v2_service" "dispatcher" {
     timeout                          = "180s"
     max_instance_request_concurrency = 1
     containers {
-      image   = var.images.service
+      image   = local.dispatcher_release.image
       command = ["python", "-m", "uvicorn"]
       args    = ["service.dispatcher:app", "--host", "0.0.0.0", "--port", "8080", "--no-access-log", "--no-proxy-headers"]
       resources {
@@ -190,7 +200,10 @@ resource "google_cloud_run_v2_service" "dispatcher" {
         cpu_idle          = true
       }
       dynamic "env" {
-        for_each = merge(local.common_env, local.dispatch_marker_env, { RESEARCH_POOL_SIZE = "2", RESEARCH_DISPATCH_JOB = google_cloud_run_v2_job.search.id })
+        for_each = merge(local.common_env, local.dispatch_marker_env, {
+          RESEARCH_POOL_SIZE  = "2", RESEARCH_DISPATCH_JOB = google_cloud_run_v2_job.search.id,
+          RESEARCH_APP_COMMIT = local.dispatcher_release.app_commit
+        })
         content {
           name  = env.key
           value = env.value
@@ -207,7 +220,8 @@ resource "google_cloud_run_v2_service" "dispatcher" {
       }
     }
   }
-  depends_on = [google_secret_manager_secret_iam_member.access, google_storage_bucket_iam_member.dispatch_markers["dispatcher"]]
+  depends_on = [google_secret_manager_secret_iam_member.access, google_storage_bucket_iam_member.dispatch_markers["dispatcher"],
+  google_artifact_registry_repository_iam_member.dispatcher_images]
 }
 resource "google_cloud_run_v2_service_iam_member" "dispatch" {
   for_each = local.reconciliation_enabled ? toset(["tasks"]) : toset(["tasks", "scheduler"])

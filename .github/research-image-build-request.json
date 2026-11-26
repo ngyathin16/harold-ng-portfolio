@@ -2,6 +2,6 @@
   "project_id": "harold-research-20261125",
   "region": "asia-southeast1",
   "environment": "staging",
-  "request_id": "20261126-resilience-05",
-  "retained_storage_bytes": "923179605"
+  "request_id": "20261126-dispatcher-recovery-06",
+  "retained_storage_bytes": "1390668885"
 }

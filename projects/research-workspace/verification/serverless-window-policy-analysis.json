@@ -1,0 +1,193 @@
+{
+  "passed": true,
+  "qualification_kind": "provider_policy_analysis_at_supplied_times",
+  "observed_actual_expiry": false,
+  "captured_at": "2026-11-26T02:39:50.890413+00:00",
+  "control_plane_attempts": 23,
+  "analyses": 21,
+  "starts_at": "2026-11-26T03:00:00Z",
+  "expires_at": "2026-11-27T05:00:00Z",
+  "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+  "plan_sha256": "322a04a4887824ea0c96b17253d605932aa69c1a3d2cf7cc3144a4c4aafb36c4",
+  "results": [
+    {
+      "label": "scheduler_workflow_before",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJDaRoPo=",
+      "response_sha256": "fe4a6da6191515b5d50a3dcfe78a113d17cdaae6713d662feaa15f439349ef83"
+    },
+    {
+      "label": "scheduler_workflow_during",
+      "expected_access": "CAN_ACCESS",
+      "actual_access": "CAN_ACCESS",
+      "condition_value": true,
+      "policy_etag": "BwZhJDaRoPo=",
+      "response_sha256": "edd7023221abe22952ab1beb41aec63a827dae6c5b269570527b0c00157b9d29"
+    },
+    {
+      "label": "scheduler_workflow_after",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJDaRoPo=",
+      "response_sha256": "33e3c31318febf9dc781437f26aaf57ddd7d6bb75f845d98dfa72ec8fff8900f"
+    },
+    {
+      "label": "gate_dispatcher_before",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJBQR7sE=",
+      "response_sha256": "4844c7a2a6cf6a17409c95a1e21e7ef779690bd91fe5b59252fefd8c31ead87b"
+    },
+    {
+      "label": "gate_dispatcher_during",
+      "expected_access": "CAN_ACCESS",
+      "actual_access": "CAN_ACCESS",
+      "condition_value": true,
+      "policy_etag": "BwZhJBQR7sE=",
+      "response_sha256": "d1e7ed73652061a9c627f9e57b7d342670984bceff230e9270d7b65f7e3f0982"
+    },
+    {
+      "label": "gate_dispatcher_after",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJBQR7sE=",
+      "response_sha256": "b1a7b8bbd5b075ff0d7620d4e4350eb921122ced476fb341b9edaeb9aef6205c"
+    },
+    {
+      "label": "tasks_dispatcher_before",
+      "expected_access": "CAN_ACCESS",
+      "actual_access": "CAN_ACCESS",
+      "condition_value": true,
+      "policy_etag": "BwZhJBQR7sE=",
+      "response_sha256": "8e75149b79363ead1d597618f81d8ea7a9b83172b2e52871670bd9d423a76f81"
+    },
+    {
+      "label": "tasks_dispatcher_during",
+      "expected_access": "CAN_ACCESS",
+      "actual_access": "CAN_ACCESS",
+      "condition_value": true,
+      "policy_etag": "BwZhJBQR7sE=",
+      "response_sha256": "1e816a2180a1992496bdeb585e6873eb6d4d05912de4cbc51f17d43b39d34554"
+    },
+    {
+      "label": "tasks_dispatcher_after",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJBQR7sE=",
+      "response_sha256": "0e9b963eccc182f42dcbfd85e9e75a7b84c5b635a6d6a3d164587620efd932cf"
+    },
+    {
+      "label": "scheduler_backup_before",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJBI73vs=",
+      "response_sha256": "429314fa4c60c8fcf093a27b4cfd4850eeb3f5f0d27aee331b273335e6e3d4f1"
+    },
+    {
+      "label": "scheduler_backup_during",
+      "expected_access": "CAN_ACCESS",
+      "actual_access": "CAN_ACCESS",
+      "condition_value": true,
+      "policy_etag": "BwZhJBI73vs=",
+      "response_sha256": "244dd43a6b7e7ab7303312748d5b0c9449af355025522efe58b6bcf1fad4e5e0"
+    },
+    {
+      "label": "scheduler_backup_after",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJBI73vs=",
+      "response_sha256": "b58fb06a031c6bf4c7226f5f76fd099692b8f5374e3b2a939298b13e02a1cc07"
+    },
+    {
+      "label": "scheduler_prune_before",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJBI78hI=",
+      "response_sha256": "6cf094a60e852298927f59956d6f3bea015b3e4bcd2a3b0a0db24b29b4acc56b"
+    },
+    {
+      "label": "scheduler_prune_during",
+      "expected_access": "CAN_ACCESS",
+      "actual_access": "CAN_ACCESS",
+      "condition_value": true,
+      "policy_etag": "BwZhJBI78hI=",
+      "response_sha256": "2337f1a09cb08ac499cdc9c6ea8885ac6e193cc4af42fb5dfa6d66bd9726b3ee"
+    },
+    {
+      "label": "scheduler_prune_after",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJBI78hI=",
+      "response_sha256": "d52197031ef0d231ac7ecce510b040e4b850bd0315c3776b6b680ba5e9b56ed3"
+    },
+    {
+      "label": "scheduler_cleanup_before",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJBI8BmU=",
+      "response_sha256": "dd99440db90912c2e023ca0d7645e605e6456a090d23959cfae2059a17ca729c"
+    },
+    {
+      "label": "scheduler_cleanup_during",
+      "expected_access": "CAN_ACCESS",
+      "actual_access": "CAN_ACCESS",
+      "condition_value": true,
+      "policy_etag": "BwZhJBI8BmU=",
+      "response_sha256": "22c6bddac4ab678720f46e6fe613a02d4fd5229b1712ab91afc907aae44278a1"
+    },
+    {
+      "label": "scheduler_cleanup_after",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJBI8BmU=",
+      "response_sha256": "e033ecb6b125e30c8d8d88dde63f3d45fcf3c4b54aa1804093c3d349ebb29c44"
+    },
+    {
+      "label": "stopper_project_before",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJDaRoPo=",
+      "response_sha256": "32dc61e357e97dde13335120584024c06b62929f2e7aefc2f6d4620b3301d28c"
+    },
+    {
+      "label": "stopper_project_during",
+      "expected_access": "CAN_ACCESS",
+      "actual_access": "CAN_ACCESS",
+      "condition_value": true,
+      "policy_etag": "BwZhJDaRoPo=",
+      "response_sha256": "80dd361fa2df37a938c825741e35c140027af95ffdad32b23ac5f2e45eeac646"
+    },
+    {
+      "label": "stopper_project_after",
+      "expected_access": "CANNOT_ACCESS",
+      "actual_access": "CANNOT_ACCESS",
+      "condition_value": false,
+      "policy_etag": "BwZhJDaRoPo=",
+      "response_sha256": "d2bfbd687707a216f21f6d9e77bebf3928511324520ba0bacf9c0bd058b3596c"
+    }
+  ],
+  "ready_to_enable_schedules": false,
+  "resource_scope_analyses": 18,
+  "project_scope_analyses": 3,
+  "stopper_project_grant_shared_targets": 4,
+  "rejected_job_scope_attempts": 1,
+  "scope": "Project-level cloudscheduler.jobs.pause grant shared by four reviewed Scheduler jobs",
+  "limits": [
+    "Current-policy analysis at supplied times, not actual future expiry observation",
+    "Stopper tested at project grant scope; Scheduler-job resource request returned400",
+    "No workload invocation, token minting, ingress, Scheduler delivery or invoice hard-cap proof"
+  ]
+}

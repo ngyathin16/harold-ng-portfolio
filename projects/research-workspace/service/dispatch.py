@@ -14,6 +14,34 @@ class LaunchRejected(Exception):
     """A definitive cloud rejection: no execution was created."""
 
 
+def diagnostic_fields(error, job):
+    """Fixed diagnostic fields exclude exception messages and credential material."""
+    result = {'exception_category': type(error).__name__}
+    sqlstate = getattr(error, 'sqlstate', None)
+    if isinstance(sqlstate, str) and len(sqlstate) == 5 and sqlstate.isalnum():
+        result['sqlstate'] = sqlstate
+    response = getattr(error, 'response', None)
+    status = getattr(response, 'status_code', None)
+    if type(status) is int and 100 <= status <= 599:
+        result['http_status'] = status
+    try:
+        request = getattr(error, 'request', None)
+    except RuntimeError:
+        request = None
+    if request is not None:
+        if request.url.host == 'metadata.google.internal':
+            result['phase'] = 'metadata_token'
+        elif request.url.host == 'run.googleapis.com':
+            path = request.url.path.removeprefix('/v2/')
+            if request.method == 'GET' and path == job:
+                result['phase'] = 'job_read'
+            elif request.method == 'GET' and path.startswith(job + '/executions/'):
+                result['phase'] = 'execution_read'
+            elif request.method == 'PATCH' and path == job:
+                result['phase'] = 'conditional_job_update'
+    return result
+
+
 def enqueue(conn, run_id, settings, markers=None):
     """Call in the acceptance transaction, once for each new search generation."""
     run = conn.execute("""UPDATE research.query_runs SET dispatch_generation=dispatch_generation+1
@@ -151,8 +179,9 @@ def reconcile(pool, settings, cloud):
         try:
             status = (token_progress(pool, cloud, reservation) if reservation.get('launch_protocol') == 'token-v1'
                       else cloud.observe(reservation))
-        except Exception:
-            logging.warning('Dispatch observation unavailable reservation=%s', reservation['id'])
+        except Exception as error:
+            logging.warning('Dispatch observation unavailable reservation=%s diagnostic=%s', reservation['id'],
+                            json.dumps(diagnostic_fields(error, getattr(cloud, 'job', ''))))
             continue
         save_observation(pool, settings, reservation, status)
     with pool.connection() as conn:
@@ -172,10 +201,11 @@ def dispatch_once(pool, settings, cloud):
                 status = token_progress(pool, cloud, reservation)
                 save_observation(pool, settings, reservation, status)
                 launched += int(status['state'] in ('running', 'terminal'))
-            except Exception:
+            except Exception as error:
                 with pool.connection() as conn:
                     conn.execute("UPDATE research.execution_reservations SET state='uncertain' WHERE id=%s AND state='launching'", (reservation['id'],))
-                logging.warning('Conditional launch reconciliation deferred reservation=%s', reservation['id'])
+                logging.warning('Conditional launch reconciliation deferred reservation=%s diagnostic=%s', reservation['id'],
+                                json.dumps(diagnostic_fields(error, getattr(cloud, 'job', ''))))
             continue
         try:
             operation = cloud.launch(reservation)
@@ -183,10 +213,11 @@ def dispatch_once(pool, settings, cloud):
             with pool.connection() as conn:
                 conn.execute('SELECT pg_advisory_xact_lock(hashtext(%s))', ('research-dispatch-admission',))
                 settle(conn, reservation, settings, 'rejected')
-        except Exception:
+        except Exception as error:
             with pool.connection() as conn:
                 conn.execute("UPDATE research.execution_reservations SET state='uncertain' WHERE id=%s AND state='launching'", (reservation['id'],))
-            logging.warning('Dispatch acknowledgement uncertain reservation=%s', reservation['id'])
+            logging.warning('Dispatch acknowledgement uncertain reservation=%s diagnostic=%s', reservation['id'],
+                            json.dumps(diagnostic_fields(error, getattr(cloud, 'job', ''))))
         else:
             with pool.connection() as conn:
                 conn.execute("UPDATE research.execution_reservations SET operation_name=%s WHERE id=%s", (operation, reservation['id']))

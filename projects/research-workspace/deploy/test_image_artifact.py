@@ -225,6 +225,34 @@ def test_pair_keeps_the_independent_uncompressed_limit(tmp_path, monkeypatch):
         module.validate_pair(service, operator, REPOSITORY, COMMIT)
 
 
+@pytest.mark.parametrize('value', [None, [], ['unknown'], ['service', 'service'], ['service', 'operator', 'service'],
+                                 'service', {'service': True}, [True]])
+def test_component_selection_rejects_empty_unknown_duplicate_or_nonarray(value):
+    with pytest.raises(ValueError, match='distinct service/operator'):
+        module.selected_components(value)
+
+
+@pytest.mark.parametrize('selected', [['service'], ['operator']])
+def test_one_component_counts_one_manifest_and_charges_its_complete_archive(tmp_path, selected):
+    name = selected[0]
+    archive = write_archive(tmp_path/(name + '.tar'), fixture_files(name))
+    report = module.validate_components({name: archive}, REPOSITORY, COMMIT, selected)
+    assert report['schema_version'] == 2 and report['components'] == selected
+    assert module.report_components(report) == selected
+    report['copy_verified'] = True
+    floor = module.MAX_BYTES - archive.stat().st_size
+    assert module.storage_projection({'old1': 1, 'old2': 2, 'old3': 3}, floor, report)['projected_bytes'] == module.MAX_BYTES
+    with pytest.raises(ValueError, match='2 GiB'):
+        module.storage_projection({}, floor + 1, report)
+    with pytest.raises(ValueError, match='four-manifest'):
+        module.storage_projection(dict.fromkeys(('old1', 'old2', 'old3', 'old4'), 1), 0, report)
+    with pytest.raises(ValueError, match='paths differ'):
+        module.validate_components({'service': archive, 'operator': archive}, REPOSITORY, COMMIT, selected)
+    report['artifacts']['unreviewed'] = report['artifacts'][name]
+    with pytest.raises(ValueError, match='artifacts differ'):
+        module.storage_projection({}, 0, report)
+
+
 def workflow_script(name):
     workflow = Path(__file__).resolve().parents[3]/'.github/workflows/research-image-build.yml'
     step = workflow.read_text().split('      - name: ' + name + '\n', 1)[1].split('\n      - name:', 1)[0]
@@ -246,19 +274,49 @@ def test_workflow_rerun_is_rejected_before_source_or_request_access(monkeypatch,
         exec(compile(script, 'workflow-destination', 'exec'), {})
 
 
-def test_workflow_first_attempt_accepts_a_new_reviewed_destination(tmp_path, monkeypatch):
+@pytest.mark.parametrize('components', ['service,operator', 'service', '', 'unknown', 'service,service'])
+def test_workflow_first_attempt_accepts_only_reviewed_destination_components(tmp_path, monkeypatch, components):
     script = workflow_script('Validate destination and clean source')
     environment = dict(GITHUB_RUN_ATTEMPT='1', GITHUB_EVENT_NAME='workflow_dispatch', GITHUB_RUN_ID='fixture-run',
         GITHUB_SHA=COMMIT, GITHUB_OUTPUT=str(tmp_path/'output'), BUILD_PROJECT='research-fixture',
         BUILD_REGION='asia-southeast1', BUILD_ENVIRONMENT='staging', BUILD_RETAINED_STORAGE_BYTES='923179605',
+        BUILD_COMPONENTS=components,
         BUILD_SERVICE_ACCOUNT='research-staging-build@research-fixture.iam.gserviceaccount.com',
         BUILD_WIF_PROVIDER='projects/12345/locations/global/workloadIdentityPools/research-staging-build/providers/github')
     for key, value in environment.items():
         monkeypatch.setenv(key, value)
     monkeypatch.setattr(subprocess, 'check_output', lambda command, **kwargs: COMMIT if command[1] == 'rev-parse' else '')
+    if components not in ('service,operator', 'service'):
+        with pytest.raises(ValueError, match='distinct service/operator'):
+            exec(compile(script, 'workflow-destination', 'exec'), {})
+        assert not (tmp_path/'output').exists()
+        return
     exec(compile(script, 'workflow-destination', 'exec'), {})
     output = (tmp_path/'output').read_text()
     assert 'enabled=true\n' in output and 'retained_storage_bytes=923179605\n' in output
+    assert 'components=' + json.dumps(components.split(','), separators=(',', ':')) + '\n' in output
+
+
+@pytest.mark.parametrize('components', [None, [], ['invalid'], ['service', 'service'], ['service'], ['operator'], ['service', 'operator']])
+def test_push_request_component_allowlist_before_build(tmp_path, monkeypatch, components):
+    request = dict(project_id='research-fixture', region='asia-southeast1', environment='staging', request_id='reviewed',
+                   retained_storage_bytes='1858163285', components=components)
+    directory = tmp_path/'.github'; directory.mkdir()
+    (directory/'research-image-build-request.json').write_text(json.dumps(request))
+    monkeypatch.chdir(tmp_path)
+    for key, value in dict(GITHUB_RUN_ATTEMPT='1', GITHUB_EVENT_NAME='push', GITHUB_SHA=COMMIT,
+        GITHUB_OUTPUT=str(tmp_path/'output'), BUILD_SERVICE_ACCOUNT='research-staging-build@research-fixture.iam.gserviceaccount.com',
+        BUILD_WIF_PROVIDER='projects/12345/locations/global/workloadIdentityPools/research-staging-build/providers/github').items():
+        monkeypatch.setenv(key, value)
+    monkeypatch.setattr(subprocess, 'check_output', lambda command, **kwargs: COMMIT if command[1] == 'rev-parse' else '')
+    script = workflow_script('Validate destination and clean source')
+    if components in (['service'], ['operator'], ['service', 'operator']):
+        exec(compile(script, 'workflow-destination', 'exec'), {})
+        assert 'components=' + json.dumps(components, separators=(',', ':')) + '\n' in (tmp_path/'output').read_text()
+    else:
+        with pytest.raises(ValueError, match='distinct service/operator'):
+            exec(compile(script, 'workflow-destination', 'exec'), {})
+        assert not (tmp_path/'output').exists()
 
 
 @pytest.fixture
@@ -271,7 +329,8 @@ def workflow_upload(tmp_path, monkeypatch):
     (tmp_path/'image-artifacts.json').write_text(json.dumps(report))
     monkeypatch.chdir(tmp_path)
     for key, value in dict(IMAGE_REPOSITORY=REPOSITORY, GITHUB_SHA=COMMIT,
-                           RUNNER_TEMP=str(tmp_path), GITHUB_OUTPUT=str(tmp_path/'outputs')).items():
+                           RUNNER_TEMP=str(tmp_path), GITHUB_OUTPUT=str(tmp_path/'outputs'),
+                           SELECTED_COMPONENTS='["service","operator"]').items():
         monkeypatch.setenv(key, value)
     return tmp_path, paths, report, workflow_script('Push the qualified images and resolve their immutable digests')
 
@@ -325,3 +384,120 @@ def test_workflow_checks_both_archives_before_first_upload(workflow_upload, monk
     monkeypatch.setattr(subprocess, 'run', lambda *args, **kwargs: pytest.fail('No upload may run'))
     with pytest.raises(ValueError, match='changed after'):
         exec(compile(script, 'workflow-push', 'exec'), {})
+
+
+def select_service(workflow_upload, monkeypatch):
+    root, paths, _, _ = workflow_upload
+    report = module.validate_components({'service': paths['service']}, REPOSITORY, COMMIT, ['service'])
+    report['copy_verified'] = True
+    report['registry_projection'] = module.storage_projection({'old1': 1, 'old2': 2, 'old3': 3}, 1858163285, report)
+    (root/'image-artifacts.json').write_text(json.dumps(report))
+    monkeypatch.setenv('SELECTED_COMPONENTS', '["service"]')
+    return report
+
+
+def test_service_only_upload_and_final_report_never_include_unreviewed_operator(workflow_upload, monkeypatch):
+    root, paths, _, script = workflow_upload
+    report = select_service(workflow_upload, monkeypatch)
+    paths['operator'].write_bytes(b'unreviewed, invalid archive must never be opened or uploaded')
+    calls = []
+    def copied(command, **options):
+        assert command[-1] == 'docker://' + REPOSITORY + '/service:' + COMMIT
+        saved = json.loads((root/'image-artifacts.json').read_text())
+        assert set(saved['upload_intents']) == {'service'}
+        Path(command[command.index('--digestfile') + 1]).write_text(report['artifacts']['service']['manifest_digest'])
+        calls.append(command)
+    monkeypatch.setattr(subprocess, 'run', copied)
+    exec(compile(script, 'workflow-push', 'exec'), {})
+    assert len(calls) == 1
+    saved = json.loads((root/'image-artifacts.json').read_text())
+    saved['skopeo_version'] = 'fixture qualified local copy'
+    (root/'image-artifacts.json').write_text(json.dumps(saved))
+    for key, value in dict(BUILD_REQUEST_ID='service-only-reviewed', SERVICE_DIGEST=report['artifacts']['service']['manifest_digest'],
+        OPERATOR_DIGEST='', EXISTING_IMAGE_BYTES='6', EXISTING_IMAGE_COUNT='3', RETAINED_STORAGE_BYTES='1858163285',
+        ACCOUNTED_EXISTING_BYTES='1858163285', PROJECTED_IMAGE_BYTES=str(report['registry_projection']['projected_bytes']),
+        GITHUB_RUN_ID='new-reviewed-run', GITHUB_RUN_ATTEMPT='1', GITHUB_STEP_SUMMARY=str(root/'summary')).items():
+        monkeypatch.setenv(key, value)
+    record = workflow_script('Record immutable image references')
+    exec(compile(record, 'workflow-record', 'exec'), {})
+    final = json.loads((root/'image-digests.json').read_text())
+    assert final['schema_version'] == 3 and final['components'] == ['service']
+    assert all(set(final[key]) == {'service'} for key in ('images', 'archive_artifacts', 'compressed_archive_bytes',
+                                                       'uncompressed_image_bytes', 'archive_sha256'))
+    assert final['existing_registry_image_count'] == 3
+    with pytest.raises(ValueError, match='previous intent'):
+        exec(compile(script, 'workflow-push', 'exec'), {})
+    assert len(calls) == 1
+
+
+def test_unreviewed_component_cannot_be_injected_into_upload_report(workflow_upload, monkeypatch):
+    _, _, _, script = workflow_upload
+    monkeypatch.setenv('SELECTED_COMPONENTS', '["service"]')
+    monkeypatch.setattr(subprocess, 'run', lambda *args, **kwargs: pytest.fail('Unreviewed component cannot upload'))
+    with pytest.raises(ValueError, match='selection differs'):
+        exec(compile(script, 'workflow-push', 'exec'), {})
+
+
+@pytest.mark.parametrize('failure', ['lost_ack', 'wrong_digest'])
+def test_service_only_uncertain_upload_is_never_reissued(workflow_upload, monkeypatch, failure):
+    root, _, _, script = workflow_upload
+    select_service(workflow_upload, monkeypatch)
+    calls = []
+    def failed(command, **options):
+        calls.append(command)
+        if failure == 'lost_ack':
+            raise subprocess.CalledProcessError(1, ['skopeo'])
+        Path(command[command.index('--digestfile') + 1]).write_text('sha256:' + 'f' * 64)
+    monkeypatch.setattr(subprocess, 'run', failed)
+    with pytest.raises((subprocess.CalledProcessError, ValueError)):
+        exec(compile(script, 'workflow-push', 'exec'), {})
+    saved = json.loads((root/'image-artifacts.json').read_text())
+    assert set(saved['upload_intents']) == {'service'} and 'verified_digest' not in saved['upload_intents']['service']
+    with pytest.raises(ValueError, match='previous intent'):
+        exec(compile(script, 'workflow-push', 'exec'), {})
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize('selected', [['service'], ['service', 'operator']])
+def test_workflow_local_copy_checks_only_selected_exact_blobs_before_qualification(workflow_upload, monkeypatch, selected):
+    root, _, pair, _ = workflow_upload
+    report = select_service(workflow_upload, monkeypatch) if selected == ['service'] else pair
+    report['copy_verified'] = False
+    (root/'image-artifacts.json').write_text(json.dumps(report))
+    calls = []
+    def copied(command, **options):
+        name = 'service' if command[-1].endswith('research-service-copy') else 'operator'
+        assert name in selected
+        assert command[:5] == ['skopeo', 'copy', '--preserve-digests', '--retry-times', '0']
+        copy_directory(Path(command[-1].removeprefix('dir:')), fixture_files(name), report['artifacts'][name])
+        assert json.loads((root/'image-artifacts.json').read_text())['copy_verified'] is False
+        calls.append(name)
+    monkeypatch.setattr(subprocess, 'run', copied)
+    monkeypatch.setattr(subprocess, 'check_output', lambda *args, **kwargs: 'fixture version')
+    script = workflow_script('Prove digest-preserving local copy compatibility')
+    exec(compile(script, 'workflow-local-copy', 'exec'), {})
+    assert calls == selected
+    assert json.loads((root/'image-artifacts.json').read_text())['copy_verified'] is True
+
+
+def test_default_pair_final_report_retains_legacy_schema_and_exact_components(workflow_upload, monkeypatch):
+    root, _, report, _ = workflow_upload
+    report['skopeo_version'] = 'fixture qualified local copy'
+    report['upload_intents'] = {name: {'verified_digest': item['manifest_digest']} for name, item in report['artifacts'].items()}
+    (root/'image-artifacts.json').write_text(json.dumps(report))
+    for key, value in dict(BUILD_REQUEST_ID='pair-reviewed', SERVICE_DIGEST=report['artifacts']['service']['manifest_digest'],
+        OPERATOR_DIGEST=report['artifacts']['operator']['manifest_digest'], EXISTING_IMAGE_BYTES='0', EXISTING_IMAGE_COUNT='0',
+        RETAINED_STORAGE_BYTES='923179605', ACCOUNTED_EXISTING_BYTES='923179605',
+        PROJECTED_IMAGE_BYTES=str(report['registry_projection']['projected_bytes']),
+        GITHUB_RUN_ID='pair-reviewed-run', GITHUB_RUN_ATTEMPT='1', GITHUB_STEP_SUMMARY=str(root/'summary')).items():
+        monkeypatch.setenv(key, value)
+    script = workflow_script('Record immutable image references')
+    exec(compile(script, 'workflow-record', 'exec'), {})
+    final = json.loads((root/'image-digests.json').read_text())
+    assert final['schema_version'] == 2 and 'components' not in final
+    assert set(final['images']) == {'service', 'operator'}
+    assert report['schema_version'] == 1 and 'components' not in report
+    report['upload_intents']['operator'].pop('verified_digest')
+    (root/'image-artifacts.json').write_text(json.dumps(report))
+    with pytest.raises(ValueError, match='digest differs'):
+        exec(compile(script, 'workflow-record', 'exec'), {})

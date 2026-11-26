@@ -2,6 +2,7 @@
   "project_id": "harold-research-20261125",
   "region": "asia-southeast1",
   "environment": "staging",
-  "request_id": "20261126-dispatcher-recovery-06",
-  "retained_storage_bytes": "1390668885"
+  "request_id": "20261126-api-deadline-07",
+  "retained_storage_bytes": "1858163285",
+  "components": ["service"]
 }

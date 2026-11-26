@@ -1,0 +1,23 @@
+{
+  "recorded_at": "2026-11-26T04:14:09.993646+00:00",
+  "verified": true,
+  "dispatcher_commit": "a1fd32d3a2a2ce732f3952693032eb45db2c3b98",
+  "dispatcher_image": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/service@sha256:a7eeeab832b62419d4bc2a9bb7783410298b3b96e39be5323ee0b08c6f77cb64",
+  "dispatcher_ready_revision": "projects/harold-research-20261125/locations/asia-southeast1/services/research-staging-dispatcher/revisions/research-staging-dispatcher-00005-hb4",
+  "dispatcher_ready_traffic_percent": 100,
+  "search_job_full_provider_record_unchanged": true,
+  "search_job_uid": "3f182ce1-4a5c-4785-b9db-a7758e11e67e",
+  "search_job_generation": "4",
+  "other_runtime_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+  "accepted_work_still_paused": true,
+  "plan_binary_sha256": "381608c3bb92ef5138e139a67af1544e915afae8e5d9797d39766caf7fc21b56",
+  "plan_scope": "One dispatcher image/commit update; every included dependency no-op; not a full infrastructure drift audit",
+  "image_build_run": "https://github.com/ngyathin16/harold-ng-portfolio/actions/runs/45751500537",
+  "linux_checks_run": "https://github.com/ngyathin16/harold-ng-portfolio/actions/runs/45751500530",
+  "retained_image_storage_floor_bytes": 1858163285,
+  "maximum_retained_image_bytes": 2147483648,
+  "limitations": [
+    "No hosted search execution is established by this deployment readback",
+    "No financial counters, accepted query identities or deadlines were reset"
+  ]
+}

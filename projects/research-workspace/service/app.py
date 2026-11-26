@@ -4,6 +4,7 @@ import hashlib
 import hmac
 import json
 import logging
+import os
 from pathlib import Path
 import secrets
 import sys
@@ -204,6 +205,9 @@ def create_app(settings=None, pool=None, markers=None):
     from .budget_http import BudgetHTTPMiddleware
     app.add_middleware(BudgetHTTPMiddleware, state=app.state, allow_origins=settings.allowed_origins,
                        required=bool(settings.budget_window_id))
+    from .api_deadline import APIRequestDeadline
+    app.add_middleware(APIRequestDeadline,
+                       enabled=settings.deployment_mode == 'serverless' and bool(os.environ.get('K_SERVICE')))
 
     @app.exception_handler(psycopg.Error)
     @app.exception_handler(PoolTimeout)

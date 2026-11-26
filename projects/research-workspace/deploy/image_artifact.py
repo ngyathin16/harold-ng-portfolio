@@ -29,6 +29,7 @@ INDEX = 'application/vnd.oci.image.index.v1+json'
 DIGEST = re.compile(r'sha256:[0-9a-f]{64}')
 BLOB = re.compile(r'blobs/sha256/[0-9a-f]{64}')
 REPOSITORY = re.compile(r'[a-z]+-[a-z]+[0-9]+-docker\.pkg\.dev/[a-z][a-z0-9-]{4,28}[a-z0-9]/research-(staging|production)')
+COMPONENTS = ['service', 'operator']
 
 
 def require(condition, message):
@@ -197,14 +198,43 @@ def validate_archive(path, image, commit, *, max_uncompressed_bytes=MAX_BYTES):
                 blobs=sorted(blobs.values(), key=lambda value: value['digest']))
 
 
-def validate_pair(service, operator, repository, commit):
+def selected_components(value):
+    require(type(value) is list and 0 < len(value) <= len(COMPONENTS)
+            and all(type(name) is str and name in COMPONENTS for name in value)
+            and len(set(value)) == len(value), 'Select distinct service/operator components')
+    return [name for name in COMPONENTS if name in value]
+
+
+def report_components(report):
+    require(report.get('storage_accounting') == 'full-compressed-oci-archives-v1', 'Unsupported artifact accounting')
+    if report.get('schema_version') == 1:
+        require('components' not in report, 'Legacy artifact component selection is implicit')
+        selected = COMPONENTS
+    else:
+        require(report.get('schema_version') == 2, 'Unsupported artifact report')
+        selected = selected_components(report.get('components'))
+    require(set(report.get('artifacts', {})) == set(selected), 'Qualified artifacts differ from selected components')
+    return selected
+
+
+def validate_components(paths, repository, commit, components):
+    selected = selected_components(components)
+    require(set(paths) == set(selected), 'Archive paths differ from selected components')
     artifacts, remaining = {}, MAX_BYTES
-    for kind, path in (('service', service), ('operator', operator)):
+    for kind in selected:
+        path = paths[kind]
         artifacts[kind] = validate_archive(path, repository + '/' + kind + ':' + commit, commit, max_uncompressed_bytes=remaining)
         remaining -= artifacts[kind]['uncompressed_layer_bytes']
     require(sum(value['archive_bytes'] for value in artifacts.values()) <= MAX_BYTES, 'Combined archives exceed the storage allowance')
-    return dict(schema_version=1, storage_accounting='full-compressed-oci-archives-v1', app_commit=commit,
-                repository=repository, artifacts=artifacts, copy_verified=False)
+    report = dict(schema_version=1, storage_accounting='full-compressed-oci-archives-v1', app_commit=commit,
+                  repository=repository, artifacts=artifacts, copy_verified=False)
+    if selected != COMPONENTS:
+        report.update(schema_version=2, components=selected)
+    return report
+
+
+def validate_pair(service, operator, repository, commit):
+    return validate_components({'service': service, 'operator': operator}, repository, commit, COMPONENTS)
 
 
 def check_archive(path, artifact):
@@ -227,20 +257,19 @@ def verify_copy_directory(path, artifact):
 def storage_projection(images, retained_bytes, report):
     require(type(images) is dict and all(type(uri) is str and whole(size) for uri, size in images.items()), 'Invalid registry inventory')
     require(whole(retained_bytes), 'Invalid retained storage floor')
-    require(report.get('schema_version') == 1 and report.get('storage_accounting') == 'full-compressed-oci-archives-v1'
-            and report.get('copy_verified') is True, 'Local digest-preserving copy must be qualified first')
-    require(set(report['artifacts']) == {'service', 'operator'}, 'Two qualified artifacts are required')
+    require(report.get('copy_verified') is True, 'Local digest-preserving copy must be qualified first')
+    selected = report_components(report)
     require(all(whole(item.get('archive_bytes')) and item['archive_bytes'] > 0
                 and whole(item.get('uncompressed_layer_bytes')) and item['uncompressed_layer_bytes'] > 0
                 for item in report['artifacts'].values()), 'Artifact sizes must be positive bounded integers')
     new_bytes = sum(item['archive_bytes'] for item in report['artifacts'].values())
     require(sum(item['uncompressed_layer_bytes'] for item in report['artifacts'].values()) <= MAX_BYTES,
-            'Uncompressed image pair exceeds its independent allowance')
+            'Uncompressed selected images exceed their independent allowance')
     require(whole(new_bytes) and new_bytes > 0, 'Invalid archive storage allowance')
     observed = sum(images.values())
     accounted = max(observed, retained_bytes)
     require(accounted + new_bytes <= MAX_BYTES, 'Retained storage plus exact archives exceed the 2 GiB allowance')
-    require(len(images) + 2 <= 4, 'Retained image count exceeds the four-manifest allowance')
+    require(len(images) + len(selected) <= 4, 'Retained image count exceeds the four-manifest allowance')
     return dict(existing_bytes=observed, existing_images=len(images), retained_storage_bytes=retained_bytes,
                 accounted_existing_bytes=accounted, projected_bytes=accounted + new_bytes)
 
@@ -248,22 +277,25 @@ def storage_projection(images, retained_bytes, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('mode', choices=('validate', 'copy-check', 'check-files'))
-    parser.add_argument('--service', required=True)
-    parser.add_argument('--operator', required=True)
+    parser.add_argument('--service')
+    parser.add_argument('--operator')
+    parser.add_argument('--components', default='["service","operator"]', help='Reviewed JSON array of selected components')
     parser.add_argument('--report', required=True)
     parser.add_argument('--repository')
     parser.add_argument('--commit')
     parser.add_argument('--skopeo-version')
     args = parser.parse_args()
+    selected = selected_components(parse_json(args.components.encode()))
+    paths = {kind: getattr(args, kind) for kind in COMPONENTS if getattr(args, kind) is not None}
+    require(set(paths) == set(selected), 'Archive paths differ from selected components')
     report_path = Path(args.report)
     if args.mode == 'validate':
-        report = validate_pair(args.service, args.operator, args.repository, args.commit)
+        report = validate_components(paths, args.repository, args.commit, selected)
     else:
         require(report_path.stat().st_size <= MAX_METADATA, 'Artifact report exceeds its bound')
         report = parse_json(report_path.read_bytes())
-        require(report.get('schema_version') == 1 and report.get('storage_accounting') == 'full-compressed-oci-archives-v1'
-                and set(report.get('artifacts', {})) == {'service', 'operator'}, 'Unsupported artifact report')
-        for kind in ('service', 'operator'):
+        require(report_components(report) == selected, 'Artifact report differs from selected components')
+        for kind in selected:
             if args.mode == 'copy-check':
                 verify_copy_directory(getattr(args, kind), report['artifacts'][kind])
             else:

@@ -3,6 +3,9 @@ locals {
   dispatcher_release = var.dispatcher_release == null ? {
     image = var.images.service, app_commit = var.app_commit
   } : var.dispatcher_release
+  api_release = var.api_release == null ? {
+    image = var.images.service, app_commit = var.app_commit
+  } : var.api_release
   google_alert_budget = var.google_alert_budget == null ? {
     currency_code  = "USD"
     amount         = var.review.monthly_limit_usd
@@ -252,7 +255,7 @@ resource "google_cloud_run_v2_service" "api" {
     timeout                          = "15s"
     max_instance_request_concurrency = 16
     containers {
-      image   = var.images.service
+      image   = local.api_release.image
       command = ["python", "-m", "uvicorn"]
       args    = ["service.app:app", "--host", "0.0.0.0", "--port", "8080", "--no-access-log", "--no-proxy-headers"]
       resources {
@@ -261,6 +264,10 @@ resource "google_cloud_run_v2_service" "api" {
         cpu_idle          = true
       }
       startup_probe {
+        initial_delay_seconds = 0
+        timeout_seconds       = 1
+        period_seconds        = 10
+        failure_threshold     = 3
         http_get { path = "/live" }
       }
       liveness_probe {
@@ -271,6 +278,7 @@ resource "google_cloud_run_v2_service" "api" {
           RESEARCH_POOL_SIZE            = var.budget_window_id == "" ? "4" : "3", RESEARCH_CLIENT_IP_MODE = "shared", RESEARCH_ALLOWED_ORIGINS = join(",", var.allowed_origins),
           RESEARCH_TASK_QUEUE           = google_cloud_tasks_queue.dispatch.id, RESEARCH_DISPATCHER_URL = google_cloud_run_v2_service.dispatcher.uri,
           RESEARCH_TASK_SERVICE_ACCOUNT = google_service_account.identity["tasks"].email
+          RESEARCH_APP_COMMIT           = local.api_release.app_commit
         })
         content {
           name  = env.key

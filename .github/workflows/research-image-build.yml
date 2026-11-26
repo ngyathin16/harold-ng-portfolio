@@ -25,6 +25,12 @@ on:
         description: Reviewed storage bytes still retained, including layers from deleted manifests (0 to 2147483648)
         required: true
         type: string
+      components:
+        description: Reviewed components to build and upload
+        required: false
+        default: service,operator
+        type: choice
+        options: ['service,operator', service, operator]
 
 permissions:
   contents: read
@@ -46,6 +52,7 @@ jobs:
       BUILD_REGION: ${{ inputs.region }}
       BUILD_ENVIRONMENT: ${{ inputs.environment }}
       BUILD_RETAINED_STORAGE_BYTES: ${{ inputs.retained_storage_bytes }}
+      BUILD_COMPONENTS: ${{ inputs.components }}
       BUILD_WIF_PROVIDER: ${{ vars.RESEARCH_BUILD_WIF_PROVIDER }}
       BUILD_SERVICE_ACCOUNT: ${{ vars.RESEARCH_BUILD_SERVICE_ACCOUNT }}
       DOCKER_BUILD_RECORD_UPLOAD: 'false'
@@ -66,8 +73,11 @@ jobs:
           from pathlib import Path
           import re
           import subprocess
+          import sys
           if os.environ.get('GITHUB_RUN_ATTEMPT') != '1':
               raise SystemExit('Build reruns are blocked: review any prior uploads and retained storage, then submit a new reviewed build request.')
+          sys.path.insert(0, 'projects/research-workspace')
+          from deploy.image_artifact import COMPONENTS, parse_json, selected_components
           if os.environ['GITHUB_EVENT_NAME'] == 'push':
               path = Path('.github/research-image-build-request.json')
               if not path.is_file():
@@ -76,11 +86,13 @@ jobs:
                   raise SystemExit(0)
               if path.stat().st_size > 4096:
                   raise SystemExit('Build request exceeds the 4 KiB limit')
-              request = json.loads(path.read_text(encoding='utf-8'))
-              if not isinstance(request, dict) or set(request) != {'project_id', 'region', 'environment', 'request_id', 'retained_storage_bytes'}:
-                  raise SystemExit('Build request must contain exactly project_id, region, environment, request_id, retained_storage_bytes')
-              if not all(isinstance(value, str) for value in request.values()):
+              request = parse_json(path.read_bytes())
+              required = {'project_id', 'region', 'environment', 'request_id', 'retained_storage_bytes'}
+              if not isinstance(request, dict) or not required <= set(request) or set(request) - required - {'components'}:
+                  raise SystemExit('Build request must contain the five destination fields and optional components')
+              if not all(isinstance(request[key], str) for key in required):
                   raise SystemExit('Build request fields must be strings')
+              components = selected_components(request.get('components', COMPONENTS))
               project, region, environment = request['project_id'], request['region'], request['environment']
               request_id = request['request_id']
               retained_storage = request['retained_storage_bytes']
@@ -90,6 +102,7 @@ jobs:
               environment = os.environ['BUILD_ENVIRONMENT']
               request_id = 'manual-' + os.environ['GITHUB_RUN_ID'] + '-' + os.environ['GITHUB_RUN_ATTEMPT']
               retained_storage = os.environ['BUILD_RETAINED_STORAGE_BYTES']
+              components = selected_components(os.environ.get('BUILD_COMPONENTS', 'service,operator').split(','))
           else:
               raise SystemExit('Unsupported build event')
           if not re.fullmatch(r'0|[1-9][0-9]{0,9}', retained_storage) or int(retained_storage) > 2147483648:
@@ -118,6 +131,7 @@ jobs:
           repository = f'{registry}/{project}/research-{environment}'
           with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
               output.write(f'enabled=true\nproject={project}\nregion={region}\nenvironment={environment}\nregistry={registry}\nrepository={repository}\nrequest_id={request_id}\nretained_storage_bytes={retained_storage_bytes}\n')
+              output.write('components=' + json.dumps(components, separators=(',', ':')) + '\n')
           PY
 
       - name: Configure the Linux builder
@@ -125,7 +139,7 @@ jobs:
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
       - name: Build the service image locally
-        if: steps.destination.outputs.enabled == 'true'
+        if: steps.destination.outputs.enabled == 'true' && contains(fromJSON(steps.destination.outputs.components), 'service')
         id: service
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
@@ -147,7 +161,7 @@ jobs:
             org.research.download-contract=disabled-v1
 
       - name: Build the operator image locally
-        if: steps.destination.outputs.enabled == 'true'
+        if: steps.destination.outputs.enabled == 'true' && contains(fromJSON(steps.destination.outputs.components), 'operator')
         id: operator
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
@@ -168,44 +182,66 @@ jobs:
             org.research.source-state=clean
             org.research.download-contract=disabled-v1
 
-      - name: Validate both exact archives before registry authentication
+      - name: Validate selected exact archives before registry authentication
         if: steps.destination.outputs.enabled == 'true'
         id: size
         env:
           IMAGE_REPOSITORY: ${{ steps.destination.outputs.repository }}
+          SELECTED_COMPONENTS: ${{ steps.destination.outputs.components }}
         shell: bash
         run: |
-          python projects/research-workspace/deploy/image_artifact.py validate \
-            --service "$RUNNER_TEMP/research-service.oci.tar" \
-            --operator "$RUNNER_TEMP/research-operator.oci.tar" \
-            --repository "$IMAGE_REPOSITORY" --commit "$GITHUB_SHA" --report image-artifacts.json
           python - <<'PY'
           import json
           import os
           from pathlib import Path
-          report = json.loads(Path('image-artifacts.json').read_text())
+          import sys
+          sys.path.insert(0, 'projects/research-workspace')
+          from deploy.image_artifact import selected_components, validate_components
+          selected = selected_components(json.loads(os.environ['SELECTED_COMPONENTS']))
+          paths = {name: Path(os.environ['RUNNER_TEMP']) / ('research-' + name + '.oci.tar') for name in selected}
+          report = validate_components(paths, os.environ['IMAGE_REPOSITORY'], os.environ['GITHUB_SHA'], selected)
+          Path('image-artifacts.json').write_text(json.dumps(report, indent=2) + '\n')
           sizes = {name: item['uncompressed_layer_bytes'] for name, item in report['artifacts'].items()}
           archives = {name: item['archive_bytes'] for name, item in report['artifacts'].items()}
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
-              summary.write(f'Exact compressed archive bytes: {sum(archives.values()):,}; uncompressed layer bytes: {sum(sizes.values()):,}. Each pair is independently limited to 2 GiB.\n\n')
+              summary.write(f'Exact compressed archive bytes: {sum(archives.values()):,}; uncompressed layer bytes: {sum(sizes.values()):,}. Each total is independently limited to 2 GiB.\n\n')
           with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
-              output.write(f"service_bytes={sizes['service']}\noperator_bytes={sizes['operator']}\ntotal_bytes={sum(archives.values())}\n")
+              for name, size in sizes.items():
+                  output.write(f'{name}_bytes={size}\n')
+              output.write(f'total_bytes={sum(archives.values())}\n')
           PY
 
       - name: Prove digest-preserving local copy compatibility
         if: steps.destination.outputs.enabled == 'true'
+        env:
+          SELECTED_COMPONENTS: ${{ steps.destination.outputs.components }}
         shell: bash
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends skopeo
-          skopeo copy --preserve-digests --retry-times 0 \
-            "oci-archive:$RUNNER_TEMP/research-service.oci.tar:$GITHUB_SHA" "dir:$RUNNER_TEMP/research-service-copy"
-          skopeo copy --preserve-digests --retry-times 0 \
-            "oci-archive:$RUNNER_TEMP/research-operator.oci.tar:$GITHUB_SHA" "dir:$RUNNER_TEMP/research-operator-copy"
-          python projects/research-workspace/deploy/image_artifact.py copy-check \
-            --service "$RUNNER_TEMP/research-service-copy" --operator "$RUNNER_TEMP/research-operator-copy" \
-            --report image-artifacts.json \
-            --skopeo-version "$(skopeo --version); package $(dpkg-query -W -f='${Version}' skopeo)"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+          sys.path.insert(0, 'projects/research-workspace')
+          from deploy.image_artifact import check_archive, report_components, require, selected_components, verify_copy_directory
+          path = Path('image-artifacts.json')
+          report = json.loads(path.read_text())
+          selected = selected_components(json.loads(os.environ['SELECTED_COMPONENTS']))
+          require(report_components(report) == selected, 'Local copy component selection differs')
+          for name in selected:
+              archive = Path(os.environ['RUNNER_TEMP']) / ('research-' + name + '.oci.tar')
+              target = Path(os.environ['RUNNER_TEMP']) / ('research-' + name + '-copy')
+              check_archive(archive, report['artifacts'][name])
+              subprocess.run(['skopeo', 'copy', '--preserve-digests', '--retry-times', '0',
+                  'oci-archive:' + str(archive) + ':' + os.environ['GITHUB_SHA'], 'dir:' + str(target)], check=True, timeout=300)
+              verify_copy_directory(target, report['artifacts'][name])
+          report.update(copy_verified=True, skopeo_version=subprocess.check_output(['skopeo', '--version'], text=True).strip()
+              + '; package ' + subprocess.check_output(['dpkg-query', '-W', '-f=${Version}', 'skopeo'], text=True).strip())
+          path.write_text(json.dumps(report, indent=2) + '\n')
+          PY
 
       - name: Exchange GitHub OIDC for a short-lived build identity
         if: steps.destination.outputs.enabled == 'true'
@@ -237,6 +273,7 @@ jobs:
           DESTINATION_REGION: ${{ steps.destination.outputs.region }}
           DESTINATION_ENVIRONMENT: ${{ steps.destination.outputs.environment }}
           REVIEWED_RETAINED_STORAGE_BYTES: ${{ steps.destination.outputs.retained_storage_bytes }}
+          SELECTED_COMPONENTS: ${{ steps.destination.outputs.components }}
         shell: bash
         run: |
           python - <<'PY'
@@ -247,7 +284,9 @@ jobs:
           import urllib.parse
           import urllib.request
           sys.path.insert(0, 'projects/research-workspace')
-          from deploy.image_artifact import storage_projection
+          from deploy.image_artifact import report_components, require, selected_components, storage_projection
+          report = json.loads(Path('image-artifacts.json').read_text())
+          require(report_components(report) == selected_components(json.loads(os.environ['SELECTED_COMPONENTS'])), 'Storage component selection differs')
           class NoRedirect(urllib.request.HTTPRedirectHandler):
               def redirect_request(self, *args, **kwargs):
                   raise RuntimeError('Registry inventory redirected outside the reviewed request')
@@ -281,7 +320,6 @@ jobs:
                   break
           else:
               raise SystemExit('Registry inventory exceeded its bounded scan; nothing was pushed')
-          report = json.loads(Path('image-artifacts.json').read_text())
           projection = storage_projection(images, int(os.environ['REVIEWED_RETAINED_STORAGE_BYTES']), report)
           report['registry_projection'] = projection
           Path('image-artifacts.json').write_text(json.dumps(report, indent=2) + '\n')
@@ -289,7 +327,7 @@ jobs:
               for key, value in projection.items():
                   output.write(f'{key}={value}\n')
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
-              summary.write(f"Observed registry bytes: {projection['existing_bytes']:,}; retained floor: {projection['retained_storage_bytes']:,}; conservative total with both complete archives: {projection['projected_bytes']:,} bytes.\n\n")
+              summary.write(f"Observed registry bytes: {projection['existing_bytes']:,}; retained floor: {projection['retained_storage_bytes']:,}; conservative total with selected complete archives: {projection['projected_bytes']:,} bytes.\n\n")
           PY
 
       - name: Push the qualified images and resolve their immutable digests
@@ -297,6 +335,7 @@ jobs:
         id: push
         env:
           IMAGE_REPOSITORY: ${{ steps.destination.outputs.repository }}
+          SELECTED_COMPONENTS: ${{ steps.destination.outputs.components }}
         shell: bash
         run: |
           python - <<'PY'
@@ -307,14 +346,16 @@ jobs:
           import subprocess
           import sys
           sys.path.insert(0, 'projects/research-workspace')
-          from deploy.image_artifact import check_archive, require
+          from deploy.image_artifact import check_archive, report_components, require, selected_components
           path = Path('image-artifacts.json')
           report = json.loads(path.read_text())
           require(report['repository'] == os.environ['IMAGE_REPOSITORY'] and report['app_commit'] == os.environ['GITHUB_SHA'], 'Qualified image identity differs')
           require(report['copy_verified'] and 'registry_projection' in report and not report.get('upload_intents'), 'Upload requires completed local and storage qualification without a previous intent')
-          for name in ('service', 'operator'):
+          selected = selected_components(json.loads(os.environ['SELECTED_COMPONENTS']))
+          require(report_components(report) == selected, 'Upload component selection differs')
+          for name in selected:
               check_archive(Path(os.environ['RUNNER_TEMP']) / ('research-' + name + '.oci.tar'), report['artifacts'][name])
-          for name in ('service', 'operator'):
+          for name in selected:
               repository = os.environ['IMAGE_REPOSITORY'] + '/' + name
               image = repository + ':' + os.environ['GITHUB_SHA']
               archive = Path(os.environ['RUNNER_TEMP']) / ('research-' + name + '.oci.tar')
@@ -338,10 +379,9 @@ jobs:
         env:
           BUILD_REQUEST_ID: ${{ steps.destination.outputs.request_id }}
           IMAGE_REPOSITORY: ${{ steps.destination.outputs.repository }}
+          SELECTED_COMPONENTS: ${{ steps.destination.outputs.components }}
           SERVICE_DIGEST: ${{ steps.push.outputs.service_digest }}
           OPERATOR_DIGEST: ${{ steps.push.outputs.operator_digest }}
-          SERVICE_BYTES: ${{ steps.size.outputs.service_bytes }}
-          OPERATOR_BYTES: ${{ steps.size.outputs.operator_bytes }}
           EXISTING_IMAGE_BYTES: ${{ steps.registry.outputs.existing_bytes }}
           EXISTING_IMAGE_COUNT: ${{ steps.registry.outputs.existing_images }}
           RETAINED_STORAGE_BYTES: ${{ steps.registry.outputs.retained_storage_bytes }}
@@ -354,17 +394,25 @@ jobs:
           import os
           from pathlib import Path
           import re
+          import sys
+          sys.path.insert(0, 'projects/research-workspace')
+          from deploy.image_artifact import COMPONENTS, report_components, require, selected_components
+          qualified = json.loads(Path('image-artifacts.json').read_text())
+          selected = selected_components(json.loads(os.environ['SELECTED_COMPONENTS']))
+          require(report_components(qualified) == selected and set(qualified.get('upload_intents', {})) == set(selected),
+              'Recorded uploads differ from reviewed components')
           images = {}
-          for name in ('service', 'operator'):
+          for name in selected:
               digest = os.environ[name.upper() + '_DIGEST']
               if not re.fullmatch(r'sha256:[0-9a-f]{64}', digest):
                   raise SystemExit('Builder did not return an immutable image digest')
+              require(digest == qualified['artifacts'][name]['manifest_digest'] == qualified['upload_intents'][name].get('verified_digest'),
+                  'Recorded upload digest differs from qualified archive')
               images[name] = os.environ['IMAGE_REPOSITORY'] + '/' + name + '@' + digest
-          qualified = json.loads(Path('image-artifacts.json').read_text())
           report = {'schema_version': 2, 'app_commit': os.environ['GITHUB_SHA'], 'source_state': 'clean',
                     'platform': 'linux/amd64', 'images': images,
                     'request_id': os.environ['BUILD_REQUEST_ID'],
-                    'uncompressed_image_bytes': {name: int(os.environ[name.upper() + '_BYTES']) for name in ('service', 'operator')},
+                    'uncompressed_image_bytes': {name: qualified['artifacts'][name]['uncompressed_layer_bytes'] for name in selected},
                     'uncompressed_measurement': 'Sum of gzip-expanded layer stream bytes, including repeated references',
                     'maximum_combined_image_bytes': 2147483648,
                     'storage_accounting': qualified['storage_accounting'],
@@ -381,6 +429,8 @@ jobs:
                     'maximum_retained_image_digests': 4,
                     'workflow_run_id': os.environ['GITHUB_RUN_ID'],
                     'workflow_run_attempt': os.environ['GITHUB_RUN_ATTEMPT']}
+          if selected != COMPONENTS:
+              report.update(schema_version=3, components=selected)
           Path('image-digests.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
               summary.write('Source commit: `' + report['app_commit'] + '`\n\n')

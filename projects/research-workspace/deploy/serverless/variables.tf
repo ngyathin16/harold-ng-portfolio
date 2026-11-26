@@ -36,6 +36,18 @@ variable "dispatcher_release" {
     error_message = "A dispatcher override requires both a complete source commit and a service image digest in this environment's regional repository."
   }
 }
+variable "api_release" {
+  type        = object({ image = string, app_commit = string })
+  default     = null
+  description = "Optional atomic API-only image and source commit. Null inherits the base release without changing the dispatcher, search Job, or operators. Image provenance must independently bind this commit to this digest."
+  validation {
+    condition = var.api_release == null ? true : (
+      can(regex("^[0-9a-f]{40}$", var.api_release.app_commit)) &&
+      can(regex("^${var.region}-docker\\.pkg\\.dev/${var.project_id}/research-${var.environment}/service@sha256:[0-9a-f]{64}$", var.api_release.image))
+    )
+    error_message = "An API override requires both a complete source commit and a service image digest in this environment's regional repository."
+  }
+}
 variable "review" {
   type = object({
     experiment_limit_usd = number

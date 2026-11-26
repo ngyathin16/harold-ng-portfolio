@@ -25,9 +25,9 @@ The `main` rule was activated and read back on 16 November 2026. It requires `re
 2. Protect `main` with an active GitHub branch rule or ruleset. Require a pull request, the `release-checks` status, and an up-to-date branch before merging. A sole maintainer can require a pull request without requiring another person's approval.
 3. Apply the rule to administrators. Leave the bypass list empty. Disable force pushes and branch deletion. Confirm an unverified direct push cannot reach `main`.
 4. Save the rule configuration and a blocked merge or push result in the deployment evidence. A workflow file alone does not activate branch protection.
-5. Set the repository Actions variable `APPROVED_SITE_URL` after the exact domain has been approved and connected. Use the HTTPS apex origin without a path, query, credentials, or port.
+5. Set the repository Actions variable `APPROVED_SITE_URL` after the exact domain has been approved and connected. Use the HTTPS apex origin without a path, query, credentials, or port. Set `PUBLIC_RESEARCH_API_URL` to the separately qualified HTTPS API origin when the research backend is ready for cutover.
 
-The `release-checks` job checks a noindex preview and a production-style artifact, runs the browser suite, and retains diagnostics on failure. Before domain selection, its local CI fixture is `https://portfolio-ci.invalid`. The release verifier accepts that origin only with `--mode ci`. That fixture must never be used for a provider deployment. Production deploy checks require the independently configured approved custom origin.
+The `release-checks` job checks a noindex preview and runs the portfolio browser suite against the nondeployable `https://portfolio-ci.invalid` fixture with no research API configured. When both repository URL variables are set, it also builds and verifies a production artifact, retained under `artifacts/production-release/`; this does not invoke the API or establish research availability. Missing variables leave production qualification incomplete. The fixture passes only `--mode ci`, which Workers Builds rejects. Production deployment requires the approved custom origin and an explicit public HTTPS research API origin that exactly matches the research page's emitted `data-api` attribute. Missing, local, insecure or mismatched API destinations stop deployment.
 
 ## Configure Workers Builds
 
@@ -46,8 +46,10 @@ Set these values under the Worker's build settings:
 | `SKIP_DEPENDENCY_INSTALL` | `1`, separately in production and previews |
 | Production `SITE_URL` | `https://haroldng.dev` |
 | Production `APPROVED_SITE_URL` | `https://haroldng.dev` |
+| Production `PUBLIC_RESEARCH_API_URL` | Exact qualified HTTPS API origin; required before research cutover |
 | Preview `SITE_URL` | Absent |
 | Preview `APPROVED_SITE_URL` | Absent |
+| Preview `PUBLIC_RESEARCH_API_URL` | Absent unless an explicitly budgeted research preview is intended |
 
 These are **build variables**. Runtime Worker variables cannot change URLs already written into HTML. Inspect both production and preview settings. Do not copy production `SITE_URL` into previews.
 
@@ -140,6 +142,8 @@ npm run audit
 Retain `artifacts/hosted/http-check.json`, `artifacts/portfolio/`, `artifacts/design/`, and all three `artifacts/lighthouse/` reports. Run `npm run test:design` for the responsive, no-JavaScript and navigation journeys. Record the Lighthouse test location, browser, mobile simulation conditions, individual scores, and median. The design upgrade requires median performance and accessibility of at least 95, LCP at most 2.5 seconds and CLS at most 0.1. Automated reports do not establish a Hong Kong or independent-network test by themselves.
 
 For an independent network check, open GitHub **Actions → Verify live deployment → Run workflow** on `main`. Set `expected_commit` to the full deployed Git SHA and `deployment_version` to its actual Cloudflare version ID. The workflow runs the live HTTP/browser suites and records the runner's country and Cloudflare edge. Download the reports and screenshots from the completed run; GitHub retains these artifacts for 14 days. Confirm the recorded network differs from the local test network before counting it as independent evidence.
+
+General portfolio checks fetch the research page as static HTML without starting its JavaScript. They do not browse the research API or establish its availability. The live workflow runs only when explicitly dispatched; it has no schedule. Run `npm run test:research` separately only after reviewing its request allowance and the target API. `TEST_COMPLETED_QUERY=1` additionally submits a search and requires its own approved execution allowance. Keep this dynamic verification separate from routine portfolio smoke checks so those checks do not wake the database.
 
 5. Open the production origin in a clean browser at 360, 768, and 1440 px. Follow navigation, case studies, email, LinkedIn, GitHub, resume, and source links. Confirm fonts and images load without mixed content or browser warnings. Record DNS and TLS checks from Hong Kong and a second actual network or location.
 6. Publish a small visible change through a fresh verified pull request. Confirm the new commit, deployed version, and visible result. Demonstrate that a failing check blocks a merge and that a failing hosted build leaves the last good version active.

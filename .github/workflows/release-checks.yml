@@ -22,6 +22,7 @@ jobs:
       CI: 'true'
       WRANGLER_SEND_METRICS: 'false'
       APPROVED_SITE_URL: ${{ vars.APPROVED_SITE_URL }}
+      PUBLIC_RESEARCH_API_URL: ${{ vars.PUBLIC_RESEARCH_API_URL }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -36,19 +37,23 @@ jobs:
         env:
           DEPLOYMENT_MODE: preview
           SITE_URL: ''
-      - name: Verify production metadata and browser journey
+          PUBLIC_RESEARCH_API_URL: ''
+      - name: Verify production configuration and isolated browser journey
         shell: bash
         run: |
           mkdir -p artifacts
-          if [ -n "$APPROVED_SITE_URL" ]; then
+          if [ -n "$APPROVED_SITE_URL" ] && [ -n "$PUBLIC_RESEARCH_API_URL" ]; then
             export SITE_URL="$APPROVED_SITE_URL"
             DEPLOYMENT_MODE=production npm run build:deployment
+            cp -a dist artifacts/production-release
           else
-            export SITE_URL=https://portfolio-ci.invalid
-            export APPROVED_SITE_URL=https://portfolio-ci.invalid
-            npm run build
-            npm run check:release -- --mode ci
+            echo 'Production URLs are incomplete; this run verifies only nondeployable fixtures.'
           fi
+          export SITE_URL=https://portfolio-ci.invalid
+          export APPROVED_SITE_URL=https://portfolio-ci.invalid
+          unset PUBLIC_RESEARCH_API_URL
+          npm run build
+          npm run check:release -- --mode ci
           npx wrangler deploy --dry-run > artifacts/wrangler-dry-run.log 2>&1
           npx wrangler dev --ip 127.0.0.1 --port 4321 > artifacts/local-workers.log 2>&1 &
           server_pid=$!

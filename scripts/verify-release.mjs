@@ -21,11 +21,35 @@ export function validateOrigin(value, name = 'SITE_URL') {
   return url.origin;
 }
 
+export function validateResearchApiUrl(value) {
+  const name = 'PUBLIC_RESEARCH_API_URL';
+  assert(typeof value === 'string' && value && value === value.trim(), `${name} must explicitly configure the production HTTPS API origin.`);
+  const url = new URL(value);
+  assert(url.protocol === 'https:' && (value === url.origin || value === `${url.origin}/`) && !url.port,
+    `${name} must be an HTTPS origin without a path, query, credentials, or nonstandard port.`);
+  assert(!isIP(url.hostname) && /^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z][a-z0-9-]*[a-z0-9]$/.test(url.hostname)
+    && !['localhost', 'local', 'internal', 'test', 'invalid', 'example', 'example.com', 'example.net', 'example.org'].some((host) => url.hostname === host || url.hostname.endsWith(`.${host}`)),
+  `${name} must use a public API hostname, not a local address or fixture.`);
+  return value;
+}
+
 function decodeEntities(value) {
   const named = { amp: '&', quot: '"', apos: "'", lt: '<', gt: '>' };
   return value.replace(/&(#x[\da-f]+|#\d+|amp|quot|apos|lt|gt);/gi, (_, entity) => entity.startsWith('#')
     ? String.fromCodePoint(entity[1].toLowerCase() === 'x' ? parseInt(entity.slice(2), 16) : Number(entity.slice(1)))
     : named[entity.toLowerCase()]);
+}
+
+function verifyResearchApi(html, apiUrl) {
+  const roots = [...html.matchAll(/<div\b[^>]*>/gi)]
+    .map(([tag]) => [...tag.matchAll(/\s([^\s=/>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g)]
+      .map(([, key, double, single, unquoted]) => [key.toLowerCase(), decodeEntities(double ?? single ?? unquoted ?? '')]))
+    .filter((attributes) => attributes.some(([key, value]) => key === 'id' && value === 'research-app'));
+  assert.equal(roots.length, 1, 'Research release must contain exactly one research-app root.');
+  assert.equal(roots[0].filter(([key]) => key === 'id').length, 1, 'Research root must contain exactly one id.');
+  const destinations = roots[0].filter(([key]) => key === 'data-api');
+  assert.equal(destinations.length, 1, 'Research root must contain exactly one data-api destination.');
+  assert.equal(destinations[0][1], apiUrl, 'Research data-api must exactly match PUBLIC_RESEARCH_API_URL; rebuild the artifact with the configured HTTPS API.');
 }
 
 function metadata(html) {
@@ -72,7 +96,7 @@ async function listFiles(directory, prefix = '') {
   }))).flat();
 }
 
-export async function verifyRelease({ mode, dist = 'dist', siteUrl = process.env.SITE_URL, approvedSiteUrl = process.env.APPROVED_SITE_URL }) {
+export async function verifyRelease({ mode, dist = 'dist', siteUrl = process.env.SITE_URL, approvedSiteUrl = process.env.APPROVED_SITE_URL, researchApiUrl = process.env.PUBLIC_RESEARCH_API_URL }) {
   assert(['production', 'preview', 'ci'].includes(mode), 'Choose --mode production, preview, or ci.');
   let origin = previewOrigin;
   if (mode === 'ci') {
@@ -83,6 +107,7 @@ export async function verifyRelease({ mode, dist = 'dist', siteUrl = process.env
   } else if (mode === 'production') {
     origin = validateOrigin(siteUrl);
     assert.equal(origin, validateOrigin(approvedSiteUrl, 'APPROVED_SITE_URL'), 'SITE_URL must match the independently approved production origin.');
+    validateResearchApiUrl(researchApiUrl);
   } else {
     assert(!siteUrl, 'Preview builds must leave SITE_URL unset.');
   }
@@ -91,6 +116,7 @@ export async function verifyRelease({ mode, dist = 'dist', siteUrl = process.env
   for (const required of ['index.html', 'work/ifc-gpt/index.html', 'work/relay-desk/index.html', '404.html', 'resume.pdf', 'downloads/relay-desk.zip', 'images/social-preview.png', 'robots.txt', 'sitemap.xml', '_headers']) {
     assert(files.includes(required), `Missing release asset: ${required}`);
   }
+  if (mode === 'production') assert(files.includes('applications/research/index.html'), 'Missing release asset: applications/research/index.html');
   assert(!files.some((file) => /(^|\/)(?:\.env(?:\..*)?|\.git|node_modules|src|docs|projects|artifacts)(\/|$)|\.(?:sqlite|sqlite3|db)(?:-|$)/i.test(file)), 'Release contains source, planning, credential, or database files.');
 
   const pages = files.filter((file) => file.endsWith('.html')).sort();
@@ -98,10 +124,12 @@ export async function verifyRelease({ mode, dist = 'dist', siteUrl = process.env
   for (const file of pages) {
     const route = `/${/(^|\/)index\.html$/.test(file) ? file.replace(/(^|\/)index\.html$/, '$1') : file.replace(/\.html$/, '')}`;
     const pathname = route.endsWith('/') ? route : `${route}/`;
+    const html = await readFile(resolve(dist, file), 'utf8');
     verifyPageMetadata({
-      html: await readFile(resolve(dist, file), 'utf8'), pathname, origin,
+      html, pathname, origin,
       noindex: mode === 'preview' || file === '404.html', label: file,
     });
+    if (mode === 'production' && file === 'applications/research/index.html') verifyResearchApi(html, researchApiUrl);
     if (file !== '404.html') routes.push(pathname);
   }
 

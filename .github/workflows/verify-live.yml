@@ -69,7 +69,7 @@ jobs:
           NODE
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - name: Verify production HTTP responses and visitor journeys
+      - name: Verify static production responses and portfolio journeys (no research API)
         shell: bash
         run: |
           [[ "$(git rev-parse HEAD)" == "$EXPECTED_COMMIT" ]] || { echo 'Checkout differs from the deployed commit'; exit 1; }

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
-import { validateOrigin, verifyRelease } from './verify-release.mjs';
+import { validateOrigin, validateResearchApiUrl, verifyRelease } from './verify-release.mjs';
 
 export function deploymentMode(env) {
   const branchMode = env.WORKERS_CI_BRANCH ? (env.WORKERS_CI_BRANCH === 'main' ? 'production' : 'preview') : undefined;
@@ -15,6 +15,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const mode = deploymentMode(process.env);
   if (mode === 'production') {
     assert.equal(validateOrigin(process.env.SITE_URL, 'SITE_URL'), validateOrigin(process.env.APPROVED_SITE_URL, 'APPROVED_SITE_URL'), 'SITE_URL must match the approved custom origin.');
+    validateResearchApiUrl(process.env.PUBLIC_RESEARCH_API_URL);
   } else {
     assert(!process.env.SITE_URL, 'Preview builds must leave SITE_URL unset.');
   }

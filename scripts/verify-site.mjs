@@ -7,6 +7,7 @@ import AxeBuilder from '@axe-core/playwright';
 const base = new URL(process.env.BASE_URL || process.env.TEST_BASE_URL || 'http://127.0.0.1:4321');
 const artifacts = new URL('../artifacts/portfolio/', import.meta.url);
 const missingRoute = '/__portfolio_missing__/';
+const researchRoute = '/applications/research/';
 const widths = [360, 768, 1440];
 await mkdir(artifacts, { recursive: true });
 const browser = await chromium.launch({
@@ -15,7 +16,7 @@ const browser = await chromium.launch({
     ? { executablePath: process.env.BROWSER_EXECUTABLE }
     : process.platform === 'win32' ? { channel: 'msedge' } : {}),
 });
-const report = { date: new Date().toISOString(), base: base.href, commit: process.env.GITHUB_SHA || null, deploymentVersion: process.env.DEPLOYMENT_VERSION || null, browser: browser.version(), routes: [], links: [], errors: [], passed: false };
+const report = { date: new Date().toISOString(), base: base.href, commit: process.env.GITHUB_SHA || null, deploymentVersion: process.env.DEPLOYMENT_VERSION || null, browser: browser.version(), routes: [], staticOnlyRoutes: [], links: [], errors: [], passed: false };
 const context = await browser.newContext({ reducedMotion: 'reduce' });
 const page = await context.newPage();
 page.on('pageerror', (error) => report.errors.push(error.message));
@@ -43,6 +44,12 @@ try {
   const routes = [...new Set(['/', ...paths, missingRoute])];
   for (const required of ['/work/ifc-gpt/', '/work/relay-desk/', '/applications/', '/applications/research/']) assert(routes.includes(required), `Sitemap includes ${required}`);
   for (const route of routes) {
+    if (route === researchRoute) {
+      const response = await context.request.get(new URL(route, base).href);
+      assert.equal(response.status(), 200, `${route}: static HTML is available`);
+      report.staticOnlyRoutes.push({ route, status: response.status(), reason: 'Dynamic research checks require a separately budgeted npm run test:research invocation.' });
+      continue;
+    }
     for (const width of widths) {
       await page.setViewportSize({ width, height: 1000 });
       const response = await page.goto(new URL(route, base).href);
@@ -86,7 +93,7 @@ try {
     const url = new URL(href);
     const response = await context.request.get(href);
     assert(response.ok(), `${url.pathname}: broken local link (${response.status()})`);
-    if (url.hash) {
+    if (url.hash && url.pathname !== researchRoute) {
       await page.goto(url.href);
       assert(await page.evaluate((id) => Boolean(document.getElementById(id)), decodeURIComponent(url.hash.slice(1))), `${href}: missing anchor target`);
     }

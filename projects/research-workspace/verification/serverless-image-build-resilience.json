@@ -1,0 +1,65 @@
+{
+  "recorded_at": "2026-11-26T01:36:30.098200+00:00",
+  "request_id": "20261126-resilience-05",
+  "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+  "workflow_runs": [
+    {
+      "id": 45736242720,
+      "name": "Research checks",
+      "conclusion": "success",
+      "html_url": "https://github.com/ngyathin16/harold-ng-portfolio/actions/runs/45736242720",
+      "head_sha": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+      "run_attempt": 1
+    },
+    {
+      "id": 45736242751,
+      "name": "Research image build",
+      "conclusion": "success",
+      "html_url": "https://github.com/ngyathin16/harold-ng-portfolio/actions/runs/45736242751",
+      "head_sha": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+      "run_attempt": 1
+    }
+  ],
+  "artifact": {
+    "schema_version": 2,
+    "artifact_id": 15079047731,
+    "report_sha256": "5e74f2160a6ac39909388a29b37c9dc08ec157fa70602c0fb035974b5e812eaa",
+    "downloaded_github_artifact_zip_sha256": "265fc856236b67a87f3615b33c95b516b36c0fc00e539194bdcf3b100c903785",
+    "platform": "linux/amd64",
+    "source_state": "clean",
+    "local_copy_verified": true,
+    "skopeo_version": "skopeo version 1.13.3; package 1.13.3+ds1-2ubuntu0.24.04.3",
+    "images": {
+      "service": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/service@sha256:244ea69546e459d317916c0011d79bd48e0bcf92d54ddc768f074d593b609f87",
+      "operator": "asia-southeast1-docker.pkg.dev/harold-research-20261125/research-staging/operator@sha256:a857f229d8ad501122ff476c44d9c66b81d41dac9bad7e51e70f97d4375f0d34"
+    },
+    "oci_manifest_media_type": "application/vnd.oci.image.manifest.v1+json",
+    "compressed_archive_bytes": {
+      "service": 169176576,
+      "operator": 298312704
+    },
+    "archive_sha256": {
+      "service": "982f22ed3c3d19838f4b7fe84573ad4288d8a5a916314ef4502f601724acc14f",
+      "operator": "b71830f9c71e6ab5525dfdc0571fde7a8a5291b5f6084deac5cfadab7d9e8635"
+    },
+    "expanded_layer_bytes": {
+      "service": 482684928,
+      "operator": 854687232
+    },
+    "expanded_measurement": "Sum of gzip-expanded layer stream bytes, including repeated references"
+  },
+  "registry_accounting": {
+    "storage_accounting": "full-compressed-oci-archives-v1",
+    "existing_registry_image_bytes": 469195762,
+    "existing_registry_image_count": 2,
+    "retained_storage_bytes": 923179605,
+    "accounted_existing_storage_bytes": 923179605,
+    "projected_registry_storage_bytes": 1390668885,
+    "maximum_retained_image_digests": 4
+  },
+  "maximum_registry_bytes": 2147483648,
+  "maximum_expanded_pair_bytes": 2147483648,
+  "corrected_runner_compatibility": "passed before Google authentication; exact archives copied locally and published with digest preservation",
+  "hosted_runtime_qualification": "Subsequent inventory and paused readiness passed; see serverless-resilience-runtime.json for timestamps and limits",
+  "spending_scope": "Conservative registry storage bound only; not a provider invoice or all-provider spending guarantee"
+}

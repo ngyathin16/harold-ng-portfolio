@@ -1,10 +1,10 @@
 {
-  "observed_at": "2026-11-25T06:59:55.958471+00:00",
+  "observed_at": "2026-11-26T01:40:51.922813+00:00",
   "passed": true,
   "read_only": true,
   "window": {
     "start": "2026-11-25T06:00:00Z",
-    "requested_end": "2026-11-25T06:59:49.930590Z"
+    "requested_end": "2026-11-26T01:40:46.004012Z"
   },
   "descriptor_pages": 2,
   "descriptor_count": 49,
@@ -22,17 +22,17 @@
       "by_resource_type": [
         {
           "resource_type": "cloud_run_revision",
-          "total": 49.1,
-          "points": 31,
-          "first_interval_start": "2026-11-25T06:28:49.930590Z",
-          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+          "total": 89.2,
+          "points": 76,
+          "first_interval_start": "2026-11-25T06:28:46.004012Z",
+          "latest_interval_end": "2026-11-25T10:10:46.004012Z"
         },
         {
           "resource_type": "cloud_run_job",
           "total": 212.07623394469846,
-          "points": 21,
-          "first_interval_start": "2026-11-25T06:29:49.930590Z",
-          "latest_interval_end": "2026-11-25T06:58:49.930590Z"
+          "points": 22,
+          "first_interval_start": "2026-11-25T06:29:46.004012Z",
+          "latest_interval_end": "2026-11-25T06:59:46.004012Z"
         }
       ],
       "no_data_returned": false
@@ -45,17 +45,17 @@
       "by_resource_type": [
         {
           "resource_type": "cloud_run_revision",
-          "total": 49.1,
-          "points": 31,
-          "first_interval_start": "2026-11-25T06:28:49.930590Z",
-          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+          "total": 89.2,
+          "points": 77,
+          "first_interval_start": "2026-11-25T06:28:46.004012Z",
+          "latest_interval_end": "2026-11-25T10:10:46.004012Z"
         },
         {
           "resource_type": "cloud_run_job",
           "total": 286.48899913384884,
           "points": 21,
-          "first_interval_start": "2026-11-25T06:29:49.930590Z",
-          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+          "first_interval_start": "2026-11-25T06:29:46.004012Z",
+          "latest_interval_end": "2026-11-25T06:59:46.004012Z"
         }
       ],
       "no_data_returned": false
@@ -68,17 +68,17 @@
       "by_resource_type": [
         {
           "resource_type": "cloud_run_revision",
-          "total": 24.550009329944952,
-          "points": 31,
-          "first_interval_start": "2026-11-25T06:28:49.930590Z",
-          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+          "total": 44.60001806499758,
+          "points": 76,
+          "first_interval_start": "2026-11-25T06:28:46.004012Z",
+          "latest_interval_end": "2026-11-25T10:10:46.004012Z"
         },
         {
           "resource_type": "cloud_run_job",
           "total": 804.4265674821415,
-          "points": 20,
-          "first_interval_start": "2026-11-25T06:29:49.930590Z",
-          "latest_interval_end": "2026-11-25T06:58:49.930590Z"
+          "points": 21,
+          "first_interval_start": "2026-11-25T06:29:46.004012Z",
+          "latest_interval_end": "2026-11-25T06:59:46.004012Z"
         }
       ],
       "no_data_returned": false
@@ -91,10 +91,10 @@
       "by_resource_type": [
         {
           "resource_type": "cloud_run_revision",
-          "total": 33.0,
-          "points": 31,
-          "first_interval_start": "2026-11-25T06:28:49.930590Z",
-          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+          "total": 39.0,
+          "points": 74,
+          "first_interval_start": "2026-11-25T06:28:46.004012Z",
+          "latest_interval_end": "2026-11-25T10:10:46.004012Z"
         }
       ],
       "no_data_returned": false
@@ -107,17 +107,17 @@
       "by_resource_type": [
         {
           "resource_type": "cloud_run_revision",
-          "total": 552883.0,
-          "points": 31,
-          "first_interval_start": "2026-11-25T06:28:49.930590Z",
-          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+          "total": 635526.0,
+          "points": 76,
+          "first_interval_start": "2026-11-25T06:28:46.004012Z",
+          "latest_interval_end": "2026-11-25T10:10:46.004012Z"
         },
         {
           "resource_type": "cloud_run_job",
           "total": 130877804.0,
           "points": 20,
-          "first_interval_start": "2026-11-25T06:30:49.930590Z",
-          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+          "first_interval_start": "2026-11-25T06:30:46.004012Z",
+          "latest_interval_end": "2026-11-25T06:59:46.004012Z"
         }
       ],
       "no_data_returned": false
@@ -130,17 +130,17 @@
       "by_resource_type": [
         {
           "resource_type": "cloud_run_revision",
-          "total": 1029882.0,
-          "points": 31,
-          "first_interval_start": "2026-11-25T06:28:49.930590Z",
-          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+          "total": 1610328.0,
+          "points": 76,
+          "first_interval_start": "2026-11-25T06:28:46.004012Z",
+          "latest_interval_end": "2026-11-25T10:10:46.004012Z"
         },
         {
           "resource_type": "cloud_run_job",
           "total": 643137249.0,
           "points": 20,
-          "first_interval_start": "2026-11-25T06:30:49.930590Z",
-          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+          "first_interval_start": "2026-11-25T06:30:46.004012Z",
+          "latest_interval_end": "2026-11-25T06:59:46.004012Z"
         }
       ],
       "no_data_returned": false
@@ -155,8 +155,8 @@
           "resource_type": "cloud_run_job",
           "total": 4.0,
           "points": 19,
-          "first_interval_start": "2026-11-25T06:30:49.930590Z",
-          "latest_interval_end": "2026-11-25T06:59:49.930590Z"
+          "first_interval_start": "2026-11-25T06:30:46.004012Z",
+          "latest_interval_end": "2026-11-25T06:59:46.004012Z"
         }
       ],
       "no_data_returned": false
@@ -164,27 +164,27 @@
   },
   "bounded_ledger_comparison": {
     "service_cpu_seconds": {
-      "reported_observation": 49.1,
+      "reported_observation": 89.2,
       "rehearsal_limit": 10000,
-      "reported_fraction_of_limit": 0.00491,
+      "reported_fraction_of_limit": 0.00892,
       "reported_below_limit": true
     },
     "service_memory_GiB_seconds": {
-      "reported_observation": 24.550009329944952,
+      "reported_observation": 44.60001806499758,
       "rehearsal_limit": 5000,
-      "reported_fraction_of_limit": 0.00491000186598899,
+      "reported_fraction_of_limit": 0.008920003612999515,
       "reported_below_limit": true
     },
     "service_request_count": {
-      "reported_observation": 33.0,
+      "reported_observation": 39.0,
       "rehearsal_limit": 500,
-      "reported_fraction_of_limit": 0.066,
+      "reported_fraction_of_limit": 0.078,
       "reported_below_limit": true
     },
     "all_container_sent_bytes": {
-      "reported_observation": 131430687.0,
+      "reported_observation": 131513330.0,
       "rehearsal_limit": 5368709120,
-      "reported_fraction_of_limit": 0.02448087316006422,
+      "reported_fraction_of_limit": 0.02449626661837101,
       "reported_below_limit": true
     }
   },

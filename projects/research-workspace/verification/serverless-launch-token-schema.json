@@ -1,0 +1,112 @@
+{
+  "checked_at": "2026-11-26T01:41:50.087423+00:00",
+  "passed": true,
+  "duration_seconds": 24.984,
+  "migration": {
+    "applied": [
+      "migrations/012_launch_tokens.sql"
+    ],
+    "already_applied": 11,
+    "role_mapping": {
+      "anon": "research_visitor",
+      "authenticated": "research_authenticated",
+      "service_role": "research_importer"
+    }
+  },
+  "worker_probe": {
+    "actual_login": true,
+    "allowed": [
+      "state",
+      "claimed_at"
+    ],
+    "denied": [
+      "launch_spec",
+      "launch_protocol",
+      "launch_confirmed_at",
+      "operation_name"
+    ],
+    "rows_changed": 0
+  },
+  "column_privileges": {
+    "state": true,
+    "claimed_at": true,
+    "launch_spec": false,
+    "launch_protocol": false,
+    "launch_confirmed_at": false,
+    "operation_name": false
+  },
+  "all_budget_rows_unchanged": true,
+  "retained_metadata_unchanged": true,
+  "existing_migration_entries_unchanged": true,
+  "provider_baseline_unchanged": true,
+  "runtime_roles_and_memberships_unchanged": true,
+  "google_or_r2_requests": 0,
+  "automatic_retries": 0,
+  "quiescence": {
+    "dispatch_paused": true,
+    "active_runs_or_leases": 0,
+    "outstanding_sql_reservations": 0,
+    "provider_execution_state_checked_by_this_helper": false
+  },
+  "source_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+  "schema_reference_commit": "495f8686d7588a7e747ddbc538bc5741ef83eff0",
+  "installed_migrations": [
+    {
+      "name": "migrations/001_publications.sql",
+      "sha256": "70a6a62803fed30973f80bde0c37d7585ab201de6fbf9e749c6498d76857dfc6"
+    },
+    {
+      "name": "migrations/002_source_tables.sql",
+      "sha256": "bb1ad411efaa1c0809578e4c032ddd207a32b1af589e2e6ed7ef17f57711074d"
+    },
+    {
+      "name": "migrations/003_source_views.sql",
+      "sha256": "da9d2f1a55df730125eebcf392403ad1b0e16f9e32d3ce315a936bf3f686c1ed"
+    },
+    {
+      "name": "migrations/005_service_roles.sql",
+      "sha256": "640cbd48a0d3c9d9d266b566927293f48288f0cfaf1b737531100a4b1ec0c9f0"
+    },
+    {
+      "name": "migrations/006_private_artifacts.sql",
+      "sha256": "a457b6db24be7ebf86f27be319101821b3a32098d5a2f11199e7537dad3868db"
+    },
+    {
+      "name": "migrations/007_serverless.sql",
+      "sha256": "cc8c239aed4e7fa81af018140176bb1ab6f66c69310f1f7f2c80d065212a7f3f"
+    },
+    {
+      "name": "migrations/008_managed_capacity.sql",
+      "sha256": "5a6398de247e3e68a3f299d28a259e27c7ad0967cd48746b0928ba03894fe948"
+    },
+    {
+      "name": "migrations/009_result_objects.sql",
+      "sha256": "add6d7cb62e5cffa9c7349f7baa225acac2b32e72ecdafe825dd4d0a2f06cc1b"
+    },
+    {
+      "name": "migrations/010_budget.sql",
+      "sha256": "3ac728412283bc59597116b1a103d0aad198d6fd91199233495327def848c0f1"
+    },
+    {
+      "name": "migrations/011_neon_capacity.sql",
+      "sha256": "265a14a2a82ae3394a26dd7af3275833955e17fd9d1e2ae191c42433270be103"
+    },
+    {
+      "name": "migrations/012_launch_tokens.sql",
+      "sha256": "00ce4477761dba75204bec6f0bcc9e630dfdd1b309bb4b8eec7e87dbe92e2e04"
+    },
+    {
+      "name": "service/migrations/002_queries.sql",
+      "sha256": "c95594d7925218a29b865f2b33dc404bda191881c571ce1468c35a31397a8256"
+    }
+  ],
+  "historical_result_counts": [
+    280543,
+    38809
+  ],
+  "historical_champion_set_counts": [
+    211961,
+    30935
+  ],
+  "limitation": "SQL quiescence and permissions only; live launch token execution/replay and provider IAM remain separate checks."
+}

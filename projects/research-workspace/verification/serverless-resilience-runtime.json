@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "scope": "Private staging deployment and paused readiness; not production acceptance.",
+  "source_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+  "runtime_readback": {
+    "captured_at": "2026-11-26T01:54:29.128805+00:00",
+    "completed_at": "2026-11-26T01:54:29.814598+00:00",
+    "bounded_control_plane_reads": 2,
+    "runtime_count": 9,
+    "service_count": 2,
+    "job_count": 7,
+    "all_templates_converged": true,
+    "service_ready_generations_verified": true,
+    "service_traffic_verified": true,
+    "source_capture_sha256": "582f02df4b0c74c2cec4f265f045963edef14284b248e8f0f079c8df0b0b1732",
+    "runtimes": [
+      {
+        "runtime": "api",
+        "image_digest": "sha256:244ea69546e459d317916c0011d79bd48e0bcf92d54ddc768f074d593b609f87",
+        "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+        "generation": 4,
+        "ready_revision": "research-staging-api-00004-8ln"
+      },
+      {
+        "runtime": "backup",
+        "image_digest": "sha256:a857f229d8ad501122ff476c44d9c66b81d41dac9bad7e51e70f97d4375f0d34",
+        "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+        "generation": 4
+      },
+      {
+        "runtime": "cleanup",
+        "image_digest": "sha256:a857f229d8ad501122ff476c44d9c66b81d41dac9bad7e51e70f97d4375f0d34",
+        "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+        "generation": 4
+      },
+      {
+        "runtime": "dispatcher",
+        "image_digest": "sha256:244ea69546e459d317916c0011d79bd48e0bcf92d54ddc768f074d593b609f87",
+        "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+        "generation": 4,
+        "ready_revision": "research-staging-dispatcher-00004-2sr"
+      },
+      {
+        "runtime": "import",
+        "image_digest": "sha256:a857f229d8ad501122ff476c44d9c66b81d41dac9bad7e51e70f97d4375f0d34",
+        "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+        "generation": 4
+      },
+      {
+        "runtime": "prune",
+        "image_digest": "sha256:a857f229d8ad501122ff476c44d9c66b81d41dac9bad7e51e70f97d4375f0d34",
+        "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+        "generation": 4
+      },
+      {
+        "runtime": "restore",
+        "image_digest": "sha256:a857f229d8ad501122ff476c44d9c66b81d41dac9bad7e51e70f97d4375f0d34",
+        "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+        "generation": 4
+      },
+      {
+        "runtime": "search",
+        "image_digest": "sha256:244ea69546e459d317916c0011d79bd48e0bcf92d54ddc768f074d593b609f87",
+        "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+        "generation": 4
+      },
+      {
+        "runtime": "verify",
+        "image_digest": "sha256:a857f229d8ad501122ff476c44d9c66b81d41dac9bad7e51e70f97d4375f0d34",
+        "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+        "generation": 4
+      }
+    ]
+  },
+  "readiness": {
+    "requested_at": "2026-11-26T01:54:41.631477+00:00",
+    "completed_at": "2026-11-26T01:54:42.641996+00:00",
+    "method": "GET",
+    "path": "/ready",
+    "http_status": 200,
+    "response": {
+      "status": "ok",
+      "search": "paused"
+    },
+    "request_count": 1,
+    "charged_before_request": true,
+    "response_bytes": 33,
+    "response_sha256": "9a2ef35044f5a1d4f62a4e7b955170d4ee1bfafe27af3c65537eacead8fb91f3",
+    "source_capture_sha256": "1287d216a57b2eb0140441ae8ca92ddd6cdbe198adb00b13697315fa44cc0119"
+  },
+  "database_schema": {
+    "through_migration": "012_launch_tokens.sql",
+    "installed": true,
+    "checked_at": "2026-11-26T01:41:50.087423+00:00",
+    "budget_rows_unchanged": true,
+    "retained_metadata_unchanged": true,
+    "provider_baseline_unchanged": true,
+    "runtime_roles_unchanged": true,
+    "evidence": "serverless-launch-token-schema.json"
+  },
+  "finite_window": {
+    "configuration_armed": true,
+    "starts_at": "2026-11-26T03:00:00Z",
+    "expires_at": "2026-11-27T05:00:00Z",
+    "configuration_audit_at": "2026-11-26T02:10:38.581971+00:00",
+    "configuration_audit_reads": 45,
+    "initial_dispatch_permits": 8,
+    "accepted_query_allowance": 2,
+    "all_four_schedulers_paused": true,
+    "dispatch_markers_present": false,
+    "public_api_enabled": false,
+    "search_admission": "paused",
+    "schedules_enabled_by_this_evidence": false,
+    "expiry_and_deadline_task_behavior_qualified_by_this_evidence": false
+  },
+  "operator_failure_alert": {
+    "operation": "verify",
+    "trigger": "Deliberately missing backup",
+    "error_type": "NoSuchKey",
+    "matching_incident_verified": true,
+    "owner_confirmed_new_failure_email": true,
+    "confirmation_recorded_at": "2026-11-26T02:13:33.713212+00:00",
+    "email_arrival_timestamp_measured": false,
+    "evidence": "serverless-operator-failure-alert.json"
+  },
+  "local_terraform_mock_plans_passed": 56,
+  "budget_scope": {
+    "fixed_reserve_usd": "1.91",
+    "finite_experiment_reserve_usd": "3.00",
+    "total_reserve_usd": "4.91",
+    "all_provider_monthly_ceiling_usd": "4.99",
+    "recurring_production_qualified": false,
+    "paid_database_upgrade_qualified": false
+  },
+  "remaining_acceptance": [
+    "Hosted full-search completion and target latency",
+    "Live conditional launch replay and recovery bounds",
+    "Retained-result V2 backup and independent restore",
+    "Deadline-task and IAM-expiry behavior",
+    "Hosted load, tenfold growth and browser acceptance",
+    "At least 24 hours of scheduled idle observation",
+    "Recurring all-provider monthly cost qualification"
+  ]
+}

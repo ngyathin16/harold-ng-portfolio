@@ -2,7 +2,7 @@
 
 Product requirements document. Version 1.3. November 25, 2026, Asia/Hong_Kong.
 
-Status: private runtime and managed source recovery verified; result-storage redesign and hosted search qualification in progress. The completed [capacity-wait implementation](RESEARCH-CAPACITY-IMPLEMENTATION.md) is the starting point. The owner authorized implementation and account setup with total monthly spending strictly below US$5. That authorization does not establish cost feasibility or production acceptance.
+Status updated November 26: release `de0ae1e2cf1e0500ae70f898876f8e7b7d01934f` is deployed privately with migration 012, passing paused readiness and a delivered operator-failure alert. Full hosted searches, retained-result recovery, the finite scheduled observation and recurring monthly cost qualification remain open. The [implementation record](RESEARCH-SERVERLESS-IMPLEMENTATION.md) preserves the exact evidence and limits. The completed [capacity-wait implementation](RESEARCH-CAPACITY-IMPLEMENTATION.md) is the starting point. The owner authorized implementation and setup with total monthly spending strictly below US$5; the finite rehearsal reserves US$4.91 within the US$4.99 ceiling. This is not production acceptance or a qualified paid-database decision.
 
 ## Purpose and outcome
 

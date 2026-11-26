@@ -1,0 +1,54 @@
+{
+  "alerts_inventory_truncated": false,
+  "automatic_retries": 0,
+  "checked_at": "2026-11-26T02:07:30.927661+00:00",
+  "condition_evidence_complete": true,
+  "deliberate_failure_verified": true,
+  "delivery_qualification_complete": true,
+  "documentation": [
+    "https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alerts/list",
+    "https://docs.cloud.google.com/monitoring/alerts/troubleshoot-missing-notifications",
+    "https://docs.cloud.google.com/monitoring/alerts/policies-in-api"
+  ],
+  "failed_execution": "projects/harold-research-20261125/locations/asia-southeast1/jobs/research-staging-verify/executions/research-staging-verify-j79xc",
+  "failure_error_type": "NoSuchKey",
+  "failure_policy_verified": true,
+  "incident_and_channel_bound_events": 0,
+  "incident_observed": true,
+  "incidents": [
+    {
+      "name": "projects/harold-research-20261125/alerts/0.ofghbzwjx63d",
+      "opened_at": "2026-11-26T01:59:59Z",
+      "state": "CLOSED"
+    }
+  ],
+  "matching_incidents": 1,
+  "mutations": 0,
+  "new_failure_email_delivery_confirmed": true,
+  "notification_attempt_evidence": "No explicit incident-bound attempt receipt returned",
+  "notification_channel_error_events": 0,
+  "notification_channel_events": 0,
+  "notification_logs_truncated": false,
+  "reused_captures": {
+    "alerts": {
+      "capture_sha256": "2414257568c986f3640a32c3a18a31975abb79c2bc11d38a191e1ba72f95dc41",
+      "request_number": 5,
+      "requested_at": "2026-11-26T02:06:58.089015+00:00"
+    },
+    "channel": {
+      "capture_sha256": "3ed1d46ade485fa58ce44e958de4618fd5093c2bdc820db2dafbc8f6396590f6",
+      "request_number": 2,
+      "requested_at": "2026-11-26T02:02:05.644774+00:00"
+    },
+    "policy": {
+      "capture_sha256": "0858966cdffa1904f8db2b518157c22e0ab349565de388efeaac9c478bd6dcb6",
+      "request_number": 1,
+      "requested_at": "2026-11-26T02:02:05.347468+00:00"
+    }
+  },
+  "same_previously_confirmed_email_channel": true,
+  "scope": "Exact failed execution from captured Cloud Run report; incident linked by policy, failed metric, Job and time. Owner confirmed receipt of this new failure email; exact arrival time was not measured.",
+  "source_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+  "total_read_requests": 6,
+  "delivery_confirmation_recorded_at": "2026-11-26T02:13:33.713212+00:00"
+}

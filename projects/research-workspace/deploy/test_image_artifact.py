@@ -89,8 +89,23 @@ def test_valid_archive_measures_exact_bytes_and_preserves_manifest_and_every_blo
     assert value['archive_sha256'] == hashlib.sha256(archive.read_bytes()).hexdigest()
     assert value['uncompressed_layer_bytes'] == len(b'fixture filesystem layer' * 40)
     assert len(value['blobs']) == 2
+    assert value['manifest_media_type'] == 'application/vnd.oci.image.manifest.v1+json'
+    assert {blob['mediaType'] for blob in value['blobs']} == {
+        'application/vnd.oci.image.config.v1+json', 'application/vnd.oci.image.layer.v1.tar+gzip'}
     module.verify_copy_directory(copy_directory(tmp_path/'copy', files, value), value)
     module.check_archive(archive, value)
+
+
+def test_docker_schema2_inside_oci_archive_is_rejected_before_copy(tmp_path, monkeypatch):
+    # Ubuntu 24.04 Skopeo 1.13.3 rejects these media types in oci-archive sources.
+    # The validator must reject them before reaching any copy or authentication.
+    with monkeypatch.context() as old_format:
+        old_format.setattr(module, 'MANIFEST', 'application/vnd.docker.distribution.manifest.v2+json')
+        old_format.setattr(module, 'CONFIG', 'application/vnd.docker.container.image.v1+json')
+        old_format.setattr(module, 'LAYER', 'application/vnd.docker.image.rootfs.diff.tar.gzip')
+        files = fixture_files()
+    with pytest.raises(ValueError, match='Descriptor type'):
+        validate(write_archive(tmp_path/'old-format.tar', files))
 
 
 @pytest.mark.parametrize('change', [

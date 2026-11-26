@@ -134,7 +134,7 @@ jobs:
           target: service
           platforms: linux/amd64
           push: false
-          outputs: type=oci,dest=${{ runner.temp }}/research-service.oci.tar,oci-mediatypes=false,compression=gzip,force-compression=true
+          outputs: type=oci,dest=${{ runner.temp }}/research-service.oci.tar,oci-mediatypes=true,compression=gzip,force-compression=true
           provenance: false
           sbom: false
           tags: ${{ steps.destination.outputs.repository }}/service:${{ github.sha }}
@@ -156,7 +156,7 @@ jobs:
           target: operator
           platforms: linux/amd64
           push: false
-          outputs: type=oci,dest=${{ runner.temp }}/research-operator.oci.tar,oci-mediatypes=false,compression=gzip,force-compression=true
+          outputs: type=oci,dest=${{ runner.temp }}/research-operator.oci.tar,oci-mediatypes=true,compression=gzip,force-compression=true
           provenance: false
           sbom: false
           tags: ${{ steps.destination.outputs.repository }}/operator:${{ github.sha }}

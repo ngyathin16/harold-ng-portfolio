@@ -1,6 +1,6 @@
 """Validate the exact local image archives before granting a registry upload.
 
-No archive member is extracted. Docker schema2 manifests and gzip layers are
+No archive member is extracted. Standard OCI manifests and gzip layers are
 required so a digest-preserving copy cannot silently change their storage size.
 """
 from __future__ import annotations
@@ -22,9 +22,9 @@ MAX_METADATA = 1024**2
 MAX_LAYERS = 128
 MAX_MEMBERS = MAX_LAYERS + 8
 CHUNK = 1024**2
-MANIFEST = 'application/vnd.docker.distribution.manifest.v2+json'
-CONFIG = 'application/vnd.docker.container.image.v1+json'
-LAYER = 'application/vnd.docker.image.rootfs.diff.tar.gzip'
+MANIFEST = 'application/vnd.oci.image.manifest.v1+json'
+CONFIG = 'application/vnd.oci.image.config.v1+json'
+LAYER = 'application/vnd.oci.image.layer.v1.tar+gzip'
 INDEX = 'application/vnd.oci.image.index.v1+json'
 DIGEST = re.compile(r'sha256:[0-9a-f]{64}')
 BLOB = re.compile(r'blobs/sha256/[0-9a-f]{64}')
@@ -192,7 +192,7 @@ def validate_archive(path, image, commit, *, max_uncompressed_bytes=MAX_BYTES):
         require({name for name, item in entries.items() if not item.get('directory')} == expected, 'Archive contains unreferenced content')
     require(uncompressed > 0, 'Image layers are empty')
     require(file_hash(path) == (archive_size, archive_sha), 'Archive changed during validation')
-    return dict(image=image, manifest_digest=top['digest'], manifest_bytes=top['size'],
+    return dict(image=image, manifest_digest=top['digest'], manifest_bytes=top['size'], manifest_media_type=MANIFEST,
                 archive_bytes=archive_size, archive_sha256=archive_sha, uncompressed_layer_bytes=uncompressed,
                 blobs=sorted(blobs.values(), key=lambda value: value['digest']))
 

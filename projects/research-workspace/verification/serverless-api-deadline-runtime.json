@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-26T04:29:35.360427+00:00",
+  "scope": "API watchdog release, six operator dump-limit updates, and continuation of the same two accepted queries",
+  "production_accepted": false,
+  "runtime": {
+    "api": {
+      "app_commit": "a56ea9006b65d7d600a9cbacd166fe77c219ef62",
+      "image_digest": "sha256:13c1ea437c53e1dff0a2ea288f4c8e38339d97b3383ed5b2fa99b3178eb3b889",
+      "ready_revision": "research-staging-api-00005-pdj",
+      "ready_traffic_percent": 100,
+      "generation": 5,
+      "startup_probe": {
+        "initialDelaySeconds": 0,
+        "timeoutSeconds": 1,
+        "periodSeconds": 10,
+        "failureThreshold": 3
+      },
+      "startup_path": "/live",
+      "platform_request_timeout_seconds": 15,
+      "application_request_watchdog_seconds": 15,
+      "watchdog_scope": "Hosted HTTP handling; normal completion disarms; escaping cancellation/error leaves timer armed"
+    },
+    "dispatcher": {
+      "app_commit": "a1fd32d3a2a2ce732f3952693032eb45db2c3b98",
+      "image_digest": "sha256:a7eeeab832b62419d4bc2a9bb7783410298b3b96e39be5323ee0b08c6f77cb64",
+      "full_provider_resource_unchanged_by_this_apply": true
+    },
+    "search_job": {
+      "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+      "image_digest": "sha256:244ea69546e459d317916c0011d79bd48e0bcf92d54ddc768f074d593b609f87",
+      "generation": 4,
+      "full_provider_resource_unchanged_by_this_apply": true
+    },
+    "operators": {
+      "app_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+      "image_digest": "sha256:a857f229d8ad501122ff476c44d9c66b81d41dac9bad7e51e70f97d4375f0d34",
+      "names": [
+        "backup",
+        "verify",
+        "prune",
+        "cleanup",
+        "import",
+        "restore"
+      ],
+      "generation": 5,
+      "previous_dump_limit_bytes": 1073741824,
+      "dump_limit_bytes": 67108864,
+      "all_other_desired_settings_unchanged": true
+    },
+    "execution_tokens_counts_and_history_unchanged": true
+  },
+  "plan_and_readback": {
+    "updated_resources": [
+      "google_cloud_run_v2_job.operator[\"backup\"]",
+      "google_cloud_run_v2_job.operator[\"cleanup\"]",
+      "google_cloud_run_v2_job.operator[\"import\"]",
+      "google_cloud_run_v2_job.operator[\"prune\"]",
+      "google_cloud_run_v2_job.operator[\"restore\"]",
+      "google_cloud_run_v2_job.operator[\"verify\"]",
+      "google_cloud_run_v2_service.api"
+    ],
+    "updated_count": 7,
+    "no_op_count": 75,
+    "owner_gets": 18,
+    "before_completed_at": "2026-11-26T04:26:05.279558+00:00",
+    "after_completed_at": "2026-11-26T04:27:12.021056+00:00",
+    "before_sha256": "93c0ead6cfb9e9ab940b3cb043dc8b35e3b2498717407ef7cdc4a312151b7abd",
+    "after_sha256": "e7aab4f054c31fb23e52a07c2534da0f812057d295dfea0ca9055f27ce077195",
+    "binary_plan_sha256": "070b1ba78ab4615d534f6b518a9a61945bdc864a9b6b4f7301d6a3e81d0d764d",
+    "candidate_sha256": "b44c9b286ecbc5a87e4ebfe80607ee7cdf7d32a2608bed5398f3dfe91c50313d",
+    "verifier_sha256": "6b0f01294fd5863631dd723bfc11a4a166c501d733b95736a6cac32e5ec95eab",
+    "offline_transport_and_mutation_tests_passed": 34,
+    "scope_limit": "Exact targeted plan and nine runtime resource captures; not an account-wide drift audit"
+  },
+  "validation": {
+    "research_checks": {
+      "run_id": 45753981812,
+      "url": "https://github.com/ngyathin16/harold-ng-portfolio/actions/runs/45753981812",
+      "conclusion": "success"
+    },
+    "image_build": {
+      "run_id": 45753981810,
+      "url": "https://github.com/ngyathin16/harold-ng-portfolio/actions/runs/45753981810",
+      "conclusion": "success"
+    },
+    "targeted_python_tests_passed": 92,
+    "terraform_mock_tests_passed": 73,
+    "image_artifact_workflow_tests_passed": 71
+  },
+  "retained_image_accounting": {
+    "prior_conservative_floor_bytes": 1858163285,
+    "complete_new_service_archive_bytes": 169183744,
+    "new_conservative_floor_bytes": 2027347029,
+    "maximum_bytes": 2147483648,
+    "remaining_bytes": 120136619,
+    "maximum_image_digests": 4,
+    "reclamation_credit_taken": false,
+    "measurement": "Complete compressed OCI archive added to the retained conservative floor; not a measured registry invoice"
+  },
+  "same_query_continuation": {
+    "sql_resumed_at": "2026-11-26T04:29:23.138166+00:00",
+    "reconciliation_resume_completed_at": "2026-11-26T04:29:35.360427+00:00",
+    "owner_control_calls": 8,
+    "new_query_submissions": 0,
+    "existing_query_count": 2,
+    "financial_counters_unchanged": true,
+    "accepted_rows_unchanged": true,
+    "service_invocations_at_resume": {
+      "used": 446,
+      "ceiling": 500
+    },
+    "search_attempt_reservations_at_resume": {
+      "used": 6,
+      "ceiling": 6
+    },
+    "operator_executions_at_resume": {
+      "used": 6,
+      "ceiling": 12
+    },
+    "operator_schedules_remain_paused": true,
+    "public_api_remains_disabled": true,
+    "private_journal_sha256": "879740797b7bcf96e78d982094c9899f11d62a92187be71c31ef34cf77e9f0de",
+    "result_status": "No completed result is established by this resume receipt"
+  },
+  "cost_and_acceptance_limits": {
+    "existing_fixed_reserve_usd": 1.91,
+    "existing_experiment_reserve_usd": 3.0,
+    "existing_total_reserve_usd": 4.91,
+    "all_provider_monthly_ceiling_usd": 4.99,
+    "budget_expansion_applied": false,
+    "proposed_650_service_calls_qualified": false,
+    "fixed_deadline_utc": "2026-11-27T05:00:00Z",
+    "counters_or_deadline_reset": false,
+    "initial_60_second_normal_start_passed": false,
+    "initial_combined_search_and_load_passed": false,
+    "future_55_second_whole_instance_billing_bound_qualified": false,
+    "open": [
+      "Hosted completed full searches and payload parity",
+      "Retained-result backup/verify/isolated restore",
+      "Restored API proof",
+      "24-hour idle observation",
+      "Recurring monthly production cost"
+    ]
+  },
+  "privacy": "Whitelisted summary only; private provider bodies, credentials, email, secret references and query capabilities omitted"
+}

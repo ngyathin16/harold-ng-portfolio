@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-26T04:52:28.559273+00:00",
+  "scope": "Two private Cloud Run services across all returned revisions; excludes Jobs.",
+  "window": {
+    "start": "2026-11-26T03:22:00Z",
+    "end": "2026-11-26T04:49:00+00:00",
+    "pause_at": "2026-11-26T04:41:15.214281+00:00",
+    "pause_commit_finished_at": "2026-11-26T04:41:15.387746+00:00",
+    "activity_observation_finished_at": "2026-11-26T04:48:59.293663+00:00"
+  },
+  "delta_observed": {
+    "container/cpu/allocation_time": 41.800000000000004,
+    "container/memory/allocation_time": 20.89999974499977,
+    "request_count": 10.0,
+    "container/billable_instance_time": 41.800000000000004
+  },
+  "cumulative_observed": {
+    "container/cpu/allocation_time": 222.8844992666941,
+    "container/memory/allocation_time": 103.27871661654167,
+    "request_count": 165.0,
+    "container/billable_instance_time": 210.46258578097076
+  },
+  "known_api_responses": 10,
+  "observed_api_requests": 7.0,
+  "api_request_coverage_complete": false,
+  "unmatched_known_api_responses": 3,
+  "direct_monitoring_reads": 8,
+  "final_invoice_settled": false,
+  "automatic_budget_refund": false,
+  "budget_expansion_qualified": false,
+  "source_sha256": "4d219e6a0737b61c700660c436dec4a1ca6f89ddf5aff2ef44b518ab47c756e6",
+  "plan_sha256": "225445447de3f22aaa7f1e581d5313313836f7f244c17d3b93387f431ebeb560",
+  "limitations": [
+    "Three known API responses are absent from this interval. Sampling/alignment at the final boundary is an unproven explanation; their prospective liability remains reserved.",
+    "Allocation metrics are observations, not complete startup/shutdown lifecycle proof or an invoice.",
+    "No counter, budget ceiling or fixed deadline changed. The larger continuation model remains conditional.",
+    "The original and delta intervals meet at03:22UTC; later provider activity lies outside this capture."
+  ]
+}

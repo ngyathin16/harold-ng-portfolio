@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-26T04:57:46.746498+00:00",
+  "provider_evidence_complete": true,
+  "full_pair_acceptance": false,
+  "source_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+  "api_commit": "a56ea9006b65d7d600a9cbacd166fe77c219ef62",
+  "physical_executions": 2,
+  "executions": {
+    "jazz": {
+      "execution_create": "2026-11-26T04:35:03.918160Z",
+      "execution_start": "2026-11-26T04:35:08.019173Z",
+      "execution_end": "2026-11-26T04:36:30.836903Z",
+      "task_start": "2026-11-26T04:35:18.149053Z",
+      "task_end": "2026-11-26T04:36:30.126276Z",
+      "task_wall_seconds": 71.977223,
+      "exact_bindings": true,
+      "succeeded": true,
+      "exit_code": 0,
+      "termination_signal": 0,
+      "attempt_status_code": 0,
+      "platform_retries": 0
+    },
+    "general": {
+      "execution_create": "2026-11-26T04:30:08.052229Z",
+      "execution_start": "2026-11-26T04:30:10.089437Z",
+      "execution_end": "2026-11-26T04:32:37.281383Z",
+      "task_start": "2026-11-26T04:30:18.203852Z",
+      "task_end": "2026-11-26T04:32:36.650642Z",
+      "task_wall_seconds": 138.44679,
+      "exact_bindings": true,
+      "succeeded": false,
+      "exit_code": 2,
+      "termination_signal": 0,
+      "attempt_status_code": 10,
+      "platform_retries": 0
+    }
+  },
+  "query_timings": {
+    "jazz": {
+      "created_at": "2026-11-26T03:10:19.139849+00:00",
+      "terminal_query_state": "complete",
+      "result_count": 38809,
+      "champion_set_count": 30935,
+      "worker_started_at": "2026-11-26T04:35:26.693798+00:00",
+      "worker_finished_at": "2026-11-26T04:36:28.137059+00:00",
+      "sql_claim_delay_seconds": 5107.553949,
+      "worker_wall_seconds": 61.443261,
+      "solver_summary_elapsed_seconds": 52.37753612499999
+    },
+    "general": {
+      "created_at": "2026-11-26T03:10:17.349483+00:00",
+      "terminal_query_state": "resource_limited",
+      "result_count": 86747,
+      "champion_set_count": 67791,
+      "worker_started_at": "2026-11-26T04:30:25.243055+00:00",
+      "worker_finished_at": "2026-11-26T04:32:34.631316+00:00",
+      "sql_claim_delay_seconds": 4807.893572,
+      "worker_wall_seconds": 129.388261,
+      "solver_summary_elapsed_seconds": 120.74684040199999
+    }
+  },
+  "combined_job_metrics": {
+    "container/startup_latencies": {
+      "observed": true,
+      "series": 1,
+      "points": 12,
+      "scope": "combined search Job and fixed interval; not per execution",
+      "observed_distribution_max": null,
+      "unit": "ms",
+      "exact_worker_peak": false
+    },
+    "container/memory/usage": {
+      "observed": true,
+      "series": 1,
+      "points": 12,
+      "scope": "combined search Job and fixed interval; not per execution",
+      "observed_distribution_max": null,
+      "unit": "bytes",
+      "exact_worker_peak": false
+    },
+    "container/cpu/allocation_time": {
+      "observed": true,
+      "series": 1,
+      "points": 12,
+      "scope": "combined search Job and fixed interval; not per execution",
+      "allocated_cpu_seconds": 443.945071999759
+    }
+  },
+  "creator_identity_available": false,
+  "control_plane_attempts": 7,
+  "additional_interpretation_account_calls": 0,
+  "actual_response_bytes": 102402,
+  "original_capture_failure": "Execution belongs to another Job",
+  "interpretation": "The recorded short Job/Execution parent fields were resolved only against exact full reserved resource paths. Original successful responses, parser failure and journal remain unchanged.",
+  "source_sha256": "7ee95ccc6c4c4abff9153b59e9e63bc07cf5ebbe95fb8f91bc61abf2c70aa313",
+  "original_files_sha256": {
+    "collect.py": "c9d2b090625fac0b2cd95521099b613e4d0c32d78b10f51f64392cc482f425d0",
+    "plan-private.json": "29909959ab50b449bfca2b2cbcca81b1adfbcad460c12760bcb25fcf2e749e00",
+    "execution-private.json": "331d61ae9d17445455872e1ca861e76369d5d34f92f2f20ac311dace101cfb3b"
+  },
+  "interpreter_sha256": "8df8354acecf3b6d89694d037206b09f2832b68586fa9ab64b95d2ce1a6aca07",
+  "limitations": [
+    "Only the existing responses were interpreted; original request journal and failure remain unchanged.",
+    "Short parent fields are observed provider forms; full reserved resource paths establish identity.",
+    "General is resource_limited and Jazz is complete; this is not full pair acceptance or parity proof.",
+    "Sampled shared Job metrics are neither per-query peaks nor invoice measurements.",
+    "No compilation/enumeration/persistence breakdown, exact RSS peak, or Neon connection telemetry."
+  ],
+  "references": [
+    "https://docs.cloud.google.com/run/docs/reference/rest/v2/projects.locations.jobs.executions",
+    "https://docs.cloud.google.com/run/docs/reference/rest/v2/projects.locations.jobs.executions.tasks"
+  ]
+}

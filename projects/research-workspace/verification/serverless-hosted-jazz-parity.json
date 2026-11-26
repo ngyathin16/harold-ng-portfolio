@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-26T04:48:59.293663+00:00",
+  "scope": "One recovered Jazz query; General remains incomplete and production acceptance is false.",
+  "jazz_full_payload_parity_verified": true,
+  "full_pair_acceptance": false,
+  "stored_rows": 38809,
+  "stored_champion_sets": 30935,
+  "logical": {
+    "stored_rows": 38809,
+    "stored_champion_sets": 30935,
+    "rows_sha256": "f3aaee4d9ca6fb28e2934d720061b73dfa71ae27b0b325a1bdb87a90eb1689aa"
+  },
+  "full_order_hashes": {
+    "active_traits": "d2ed2dc8694c11ec0bd2d99146807acfe4f454ac5a3afe8df43ba5efecb79f9f",
+    "total_cost": "169781a9460dd1d6c58e24297626961df88174bc1d545748fb56b5aa38759419",
+    "champions": "1ab9bab8bee2ea7e9fc9b6d824e7ec55cc469dcd16b15a9616c162026f3204b1"
+  },
+  "api_pages": [
+    {
+      "sort": "active_traits",
+      "page": 1,
+      "page_size": 1,
+      "rows_sha256": "d585eb912d4e9e632c79ce13f338e7c3f6a271b2f67dee154b8c1e6b7172470e",
+      "rows": 1,
+      "passed": true
+    },
+    {
+      "sort": "active_traits",
+      "page": 21,
+      "page_size": 200,
+      "rows_sha256": "85a6765095067e91365c6d47469ac0d957718d1cbac57a515ff22c18b1d43b9c",
+      "rows": 200,
+      "passed": true
+    },
+    {
+      "sort": "total_cost",
+      "page": 1,
+      "page_size": 7,
+      "rows_sha256": "610b1fe7d12bfd20a02835193ef31b90963a35e1f03ace7a1eb1c47695372916",
+      "rows": 7,
+      "passed": true
+    },
+    {
+      "sort": "total_cost",
+      "page": 21,
+      "page_size": 200,
+      "rows_sha256": "90dadea53220d3c114c13cda11ad2678cce4d8e715a901e92aa9a09a850cc922",
+      "rows": 200,
+      "passed": true
+    },
+    {
+      "sort": "champions",
+      "page": 1,
+      "page_size": 200,
+      "rows_sha256": "2a69e406b6554070cabd29f3f7b63fe0dc2818fc950c1c767b4bb12733b9146d",
+      "rows": 200,
+      "passed": true
+    },
+    {
+      "sort": "champions",
+      "page": 21,
+      "page_size": 200,
+      "rows_sha256": "f551466c58149e9320e6a1ddc26665a55679d90f5e3a65e9186466accf5167d5",
+      "rows": 200,
+      "passed": true
+    },
+    {
+      "sort": "champions",
+      "page": 195,
+      "page_size": 200,
+      "rows_sha256": "4d693ab4efead162729041223f36c2f7ceb3761b95065813af8b65cfc7e9f2e9",
+      "rows": 9,
+      "passed": true
+    },
+    {
+      "sort": "active_traits",
+      "page": 196,
+      "page_size": 200,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "rows": 0,
+      "passed": true
+    }
+  ],
+  "full_r2_objects_read": 4,
+  "api_page_requests": 8,
+  "owner_snapshot_connections": 1,
+  "original_counters_before": {
+    "http": 7,
+    "r2": 2,
+    "sql": 67
+  },
+  "original_counters_after": {
+    "http": 15,
+    "r2": 6,
+    "sql": 68
+  },
+  "worker_commit": "de0ae1e2cf1e0500ae70f898876f8e7b7d01934f",
+  "api_commit": "a56ea9006b65d7d600a9cbacd166fe77c219ef62",
+  "plan_sha256": "c81df5692b2582445ac61780926263cd3afaddad5f931452a79fa07be014edb9",
+  "private_report_sha256": "52964e0e5d0e26e83104cee455c8b84d4202327eba2d016c9503035c9aab9c55",
+  "private_execution_sha256": "c58bef1a0c54603362a6f6f6c5480af55f5d9da526f0fe99f5a14e5cdfdf5964",
+  "preflight_history": "The first local preflight failed on decoded binary journal values before any database, R2 or service request. Native-value comparison fixed it; the original plan and failure record are retained.",
+  "limitations": [
+    "This does not repair General completeness, original normal-start timing or combined-load failures.",
+    "The original failed query observations and all financial counters were preserved.",
+    "Eight real API reads were made after the final admission pause; source query and control state were not rewritten."
+  ]
+}

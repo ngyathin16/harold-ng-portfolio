@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "observation_scope": "Last saved snapshots of the original watcher; not continuous state after this capture",
+  "source_journal_sha256": "a0f4b394b3138caed8ef8a9f0d38e28c69732aa650e35ea1b112f96d8841f29c",
+  "general": {
+    "state": "resource_limited",
+    "complete": false,
+    "configurations": 86747,
+    "expected_full_configurations": 280543,
+    "champion_sets": 67791,
+    "expected_full_champion_sets": 211961,
+    "attempts": 1,
+    "started_at": "2026-11-26T04:30:25.243055+00:00",
+    "finished_at": "2026-11-26T04:32:34.631316+00:00",
+    "solver_elapsed_seconds": 120.74684040199999,
+    "visited_nodes": 34020923,
+    "reason": "Execution time limit reached",
+    "completeness_scope": "Incomplete",
+    "exhaustive_acceptance_passed": false
+  },
+  "jazz_at_last_snapshot": {
+    "state": "queued",
+    "attempts": 0,
+    "configurations": 0
+  },
+  "watcher_counts": {
+    "watch_polls": 58,
+    "sql_snapshots": 66
+  },
+  "watcher_http_attempts": 7,
+  "initial_60_second_normal_start_passed": false,
+  "initial_combined_search_and_load_passed": false,
+  "budget_increase_or_automatic_query_retry": false,
+  "limitations": [
+    "Partial results do not establish full-result parity or successful exhaustive enumeration.",
+    "Elapsed solver time includes synchronous callbacks; this receipt does not identify the bottleneck.",
+    "Increasing the time limit would not establish the original performance requirement.",
+    "The earlier two-search acceptance/start and overlapping-load requirements remain failed."
+  ],
+  "subsequent_jazz_observation": {
+    "state": "complete",
+    "result_count": 38809,
+    "champion_set_count": 30935,
+    "attempts": 1,
+    "started_at": "2026-11-26T04:35:26.693798+00:00",
+    "finished_at": "2026-11-26T04:36:28.137059+00:00",
+    "solver_elapsed_seconds": 52.377536,
+    "worker_start_to_finish_seconds": 61.443261,
+    "full_payload_parity_verified": false,
+    "source_journal_sha256": "0fb5fa634a81629efe24c25cd4bcf45b751e4c76680923c29dab4614502b0ea7",
+    "observed_at": "2026-11-26T04:36:30.397101+00:00"
+  },
+  "subsequent_watcher_counts": {
+    "watch_polls": 59,
+    "sql_snapshots": 67
+  },
+  "subsequent_http_attempts": 7,
+  "final_pause": {
+    "committed_at": "2026-11-26T04:41:15.387746+00:00",
+    "admission_paused": true,
+    "all_four_schedules_paused": true,
+    "active_queries": 0,
+    "outstanding_executions": 0,
+    "service_invocations": {
+      "used": 451,
+      "ceiling": 500
+    },
+    "search_attempt_reservations": {
+      "used": 6,
+      "ceiling": 6
+    },
+    "operator_executions": {
+      "used": 6,
+      "ceiling": 12
+    },
+    "capacity_used_bytes": 259530752,
+    "capacity_limit_bytes": 1073741824,
+    "storage_liability_used_bytes": 3994497071,
+    "storage_liability_ceiling_bytes": 5664056162,
+    "budget_expansion": false,
+    "sql_receipt_sha256": "6fcc4ca66b67c8a6bcfe010484e98414518122325f9234da794ddd5f222de382",
+    "scheduler_receipt_sha256": "dafc1d699efdd946a276e310dbb030fd261c698f48f6a06514e8d3dc05883268"
+  },
+  "source_journal_provenance": {
+    "immutable_capture": "hosted-full-search-after-recovery-before-parity-private.json",
+    "freeze_counters": {
+      "watch_polls": 59,
+      "sql_snapshots": 67
+    },
+    "original_watcher_stop_counters_source": "accepted-jazz-post-failure-observation-private.json initial_counters",
+    "scope": "The frozen journal retains the original04:32 query snapshots; the separate04:36 observer supplies Jazz completion and the one later SQL observation."
+  }
+}
